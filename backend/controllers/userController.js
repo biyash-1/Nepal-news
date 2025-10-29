@@ -26,10 +26,18 @@ exports.register = async (req, res) => {
       { expiresIn: '7d' }
     );
 
+   
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+ 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
-      token,
       user: {
         id: user._id,
         username: user.username,
@@ -37,6 +45,7 @@ exports.register = async (req, res) => {
         role: user.role
       }
     });
+    
   } catch (error) {
     res.status(500).json({ 
       success: false, 
@@ -45,7 +54,6 @@ exports.register = async (req, res) => {
     });
   }
 };
-
 // Login user
 exports.login = async (req, res) => {
   try {
@@ -69,6 +77,8 @@ exports.login = async (req, res) => {
       });
     }
 
+
+
     // Generate token
     const token = jwt.sign(
       { userId: user._id, role: user.role },
@@ -76,10 +86,17 @@ exports.login = async (req, res) => {
       { expiresIn: '7d' }
     );
 
+
+      res.cookie('token',token,{
+      httpOnly:true,
+      secure:process.env.NODE_ENV==='production',
+      sameSite:'Strict',
+      maxAge:7*24*60*60*1000
+    })
     res.json({
       success: true,
       message: 'Login successful',
-      token,
+
       user: {
         id: user._id,
         username: user.username,
@@ -87,6 +104,8 @@ exports.login = async (req, res) => {
         role: user.role
       }
     });
+
+  
   } catch (error) {
     res.status(500).json({ 
       success: false, 
@@ -174,6 +193,28 @@ exports.saveArticle = async (req, res) => {
       success: false, 
       message: 'Failed to save article', 
       error: error.message 
+    });
+  }
+};
+
+// Logout user
+exports.logout = (req, res) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+    });
+
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Logout failed',
+      error: error.message
     });
   }
 };
