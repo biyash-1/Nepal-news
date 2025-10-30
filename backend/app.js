@@ -1,13 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const userRoutes = require('./routes/userRoutes');
 require('dotenv').config();
+
 const cors = require('cors');
 
 const app = express();
 
 // Middleware
-app.use(express.json());
+app.use(express.json())
+app.use(cookieParser());;
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: 'http://localhost:3000', // frontend URL

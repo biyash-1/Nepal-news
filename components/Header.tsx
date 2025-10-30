@@ -1,27 +1,42 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaCalendarAlt } from "react-icons/fa";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import AuthModal from "./AuthModel";
 import UserProfileDropdown from "./UserProfileDropdown";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [currentDate, setCurrentDate] = useState("");
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const { isAuthenticated } = useAuthStore();
+const { isAuthenticated, checkAuth, isLoading } = useAuthStore();
+  const router = useRouter();
 
+  // Set Nepali formatted date
   useEffect(() => {
-    const options = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      weekday: "long",
-    } as const;
+    const options = { year: "numeric", month: "long", day: "numeric", weekday: "long" } as const;
     const date = new Date().toLocaleDateString("ne-NP", options);
     setCurrentDate(date);
   }, []);
+
+ 
+useEffect(() => {
+  const handleOAuthRedirect = async () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("auth") === "success") {
+      try {
+        await checkAuth();
+        router.replace(window.location.pathname); // clean URL
+      } catch (error) {
+        console.error('OAuth auth check failed:', error);
+      }
+    }
+  };
+
+  handleOAuthRedirect();
+}, [checkAuth, router]);
 
   return (
     <>
@@ -41,35 +56,27 @@ export default function Header() {
                 className="bg-transparent w-full focus:outline-none text-sm"
               />
               <button className="text-gray-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
             </div>
 
-            <div className="flex items-center space-x-4">
-              {isAuthenticated ? (
-                <UserProfileDropdown />
-              ) : (
-                <button 
-                  onClick={() => setIsAuthModalOpen(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full text-sm font-medium transition-colors"
-                >
-                  Login
-                </button>
-              )}
-            </div>
+        <div className="flex items-center space-x-4">
+  {isLoading ? (
+    <div className="w-8 h-8 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+  ) : isAuthenticated ? (
+    <UserProfileDropdown  />
+  ) : (
+    <button
+      onClick={() => setIsAuthModalOpen(true)}
+      className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full text-sm font-medium transition-colors"
+    >
+      Login
+    </button>
+  )}
+</div>
+
 
             {/* Date */}
             <div className="hidden md:block text-sm text-gray-600">
@@ -81,73 +88,22 @@ export default function Header() {
         <nav className="border-t border-gray-200">
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center overflow-x-auto space-x-6 py-3">
-              <Link
-                href="/"
-                className="whitespace-nowrap text-red-600 font-medium border-b-2 border-red-600 pb-1"
-              >
-                गृहपृष्ठ
-              </Link>
-              <Link
-                href="/politics"
-                className="whitespace-nowrap text-gray-700 hover:text-red-600"
-              >
-                राजनीति
-              </Link>
-              <Link
-                href="/sports"
-                className="whitespace-nowrap text-gray-700 hover:text-red-600"
-              >
-                खेलकुद
-              </Link>
-              <Link
-                href="#"
-                className="whitespace-nowrap text-gray-700 hover:text-red-600"
-              >
-                अर्थतन्त्र
-              </Link>
-              <Link
-                href="#"
-                className="whitespace-nowrap text-gray-700 hover:text-red-600"
-              >
-                स्वास्थ्य
-              </Link>
-              <Link
-                href="/technology"
-                className="whitespace-nowrap text-gray-700 hover:text-red-600"
-              >
-                विज्ञान र प्रविधि
-              </Link>
-              <Link
-                href="#"
-                className="whitespace-nowrap text-gray-700 hover:text-red-600"
-              >
-                मनोरञ्जन
-              </Link>
-              <Link
-                href="/global"
-                className="whitespace-nowrap text-gray-700 hover:text-red-600"
-              >
-                विश्व
-              </Link>
-              <Link
-                href="#"
-                className="whitespace-nowrap text-gray-700 hover:text-red-600"
-              >
-                ब्लग
-              </Link>
-
-              <div className="relative">
-                <FaCalendarAlt className="text-gray-600" />
-              </div>
+              <Link href="/" className="whitespace-nowrap text-red-600 font-medium border-b-2 border-red-600 pb-1">गृहपृष्ठ</Link>
+              <Link href="/politics" className="whitespace-nowrap text-gray-700 hover:text-red-600">राजनीति</Link>
+              <Link href="/sports" className="whitespace-nowrap text-gray-700 hover:text-red-600">खेलकुद</Link>
+              <Link href="#" className="whitespace-nowrap text-gray-700 hover:text-red-600">अर्थतन्त्र</Link>
+              <Link href="#" className="whitespace-nowrap text-gray-700 hover:text-red-600">स्वास्थ्य</Link>
+              <Link href="/technology" className="whitespace-nowrap text-gray-700 hover:text-red-600">विज्ञान र प्रविधि</Link>
+              <Link href="#" className="whitespace-nowrap text-gray-700 hover:text-red-600">मनोरञ्जन</Link>
+              <Link href="/global" className="whitespace-nowrap text-gray-700 hover:text-red-600">विश्व</Link>
+              <Link href="#" className="whitespace-nowrap text-gray-700 hover:text-red-600">ब्लग</Link>
+              <div className="relative"><FaCalendarAlt className="text-gray-600" /></div>
             </div>
           </div>
         </nav>
       </header>
 
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
-      />
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </>
   );
 }

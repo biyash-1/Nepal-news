@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-
+const Article = require('./Article');
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
     trim: true
   },
   email: {
@@ -15,9 +14,21 @@ const userSchema = new mongoose.Schema({
     lowercase: true
   },
   password: {
+  type: String,
+  minlength: 6,
+  required: function() {
+    return !this.googleId; 
+  }
+},
+  googleId: {
     type: String,
-    required: true,
-    minlength: 6
+    unique: true,
+    sparse: true 
+  },
+  provider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
   },
   role: {
     type: String,
@@ -35,18 +46,19 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  },
+  savedArticles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }]
 });
 
-// Hash password before saving
+// Hash password only if it exists
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password') || !this.password) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
 };
 

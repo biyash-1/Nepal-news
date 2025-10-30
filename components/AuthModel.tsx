@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -32,10 +33,10 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
-
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true);
   const { login, signup, isLoading } = useAuthStore();
+  const router = useRouter();
 
   const {
     register: loginRegister,
@@ -64,10 +65,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const onLoginSubmit = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password);
-   
       handleClose();
     } catch (err) {
-     
       toast.error(err instanceof Error ? err.message : "Login failed");
     }
   };
@@ -75,10 +74,10 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const onSignupSubmit = async (data: SignupFormData) => {
     try {
       await signup(data.username, data.email, data.password);
-     
       handleClose();
     } catch (err) {
-       console.error("Signup error:", err);
+      console.error("Signup error:", err);
+      toast.error("Signup failed");
     }
   };
 
@@ -184,6 +183,23 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               >
                 {isLoading ? "Processing..." : "Login"}
               </button>
+
+              {/* Google Login Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href =
+                    "http://localhost:5000/api/users/google";
+                }}
+                className="w-full mt-4 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-all"
+              >
+              <img
+  src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg"
+  alt="Google"
+  className="w-5 h-5 mr-2"
+/>
+                Continue with Google
+              </button>
             </form>
           ) : (
             <form
@@ -268,6 +284,24 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 className="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-lg font-medium transition-colors focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center justify-center"
               >
                 {isLoading ? "Processing..." : "Create Account"}
+              </button>
+
+              {/* Google Login Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href =
+                    "http://localhost:5000/api/users/google";
+                }}
+                className="w-full mt-4 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-all"
+              >
+          <img
+  src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg"
+  alt="Google"
+  className="w-5 h-5 mr-2"
+/>
+
+                Continue with Google
               </button>
             </form>
           )}

@@ -16,6 +16,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>
   signup: (name: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
+  checkAuth: () => Promise<void>    
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -86,7 +87,38 @@ export const useAuthStore = create<AuthState>()(
           })
           toast.success('Logged out successfully')
         }
+      },
+
+   checkAuth: async () => {
+  try {
+    const res = await axiosInstance.get('/users/profile', { withCredentials: true });
+
+    if (res.data.success && res.data.user) {
+      set({
+        user: {
+          id: res.data.user._id,
+          name: res.data.user.username,
+          email: res.data.user.email,
+          avatar: res.data.user.avatar,
+        },
+        isAuthenticated: true,
+      });
+      console.log('User is authenticated from checkAuth function', res.data.user);
+    } else {
+      set({ user: null, isAuthenticated: false });
+    }
+  } catch (error: any) {
+    if (error.response?.status !== 401) {
+      console.error('Fetching profile failed', error);
+      // Log the response data for 500 errors to see the server message
+      if (error.response?.status === 500) {
+        console.error('Server 500 error details:', error.response.data);
       }
+    }
+    set({ user: null, isAuthenticated: false });
+  }
+}
+
     }),
     {
       name: 'auth-storage',

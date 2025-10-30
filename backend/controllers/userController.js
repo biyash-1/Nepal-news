@@ -118,29 +118,25 @@ exports.login = async (req, res) => {
 // Get user profile
 exports.getProfile = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Not authenticated" });
+    }
+
     const user = await User.findById(req.user.userId)
       .select('-password')
       .populate('savedArticles');
-    
+
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    res.json({
-      success: true,
-      user
-    });
+    res.json({ success: true, user });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch profile', 
-      error: error.message 
-    });
+    console.error('getProfile error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch profile', error: error.message });
   }
 };
+
 
 // Update user profile
 exports.updateProfile = async (req, res) => {
