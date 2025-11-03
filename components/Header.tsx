@@ -29,6 +29,7 @@ const navItems: NavItem[] = [
       { label: "सुदूरपश्चिम प्रदेश", href: "/pradesh/7" },
     ],
   },
+    { label: "स्थानीय तह", href: "/local-level" },
   {
     label: "खेलकुद",
     href: "/sports",
