@@ -6,6 +6,7 @@ import Footer from '@/components/Footer'
 import GlobalNews from '@/components/GlobalNews'
 import SportsNews from '@/components/SportsNews'
 import TechNews from '@/components/TechNews'
+import PortfolioSection from '@/components/Portfolio'
 export default function Home() {
   return (
     <>
@@ -16,6 +17,7 @@ export default function Home() {
         <LatestNews />
         <GlobalNews />
         <SportsNews/>
+        <PortfolioSection/>
         <TechNews/>
         <PoliticsSection />
       </div>
