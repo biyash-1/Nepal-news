@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const ArticleSchema = new mongoose.Schema({
   title: String,
   content: String,
+  image: String,
+  categories: [String],
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   createdAt: { type: Date, default: Date.now }
 });
