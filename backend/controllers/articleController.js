@@ -13,6 +13,8 @@ exports.getAllArticles = async (req, res) => {
       .limit(limit * 1)
       .skip((page - 1) * limit);
 
+      console.log("articles",articles)
+
     const count = await Article.countDocuments(query);
 
     res.json({

@@ -10,15 +10,15 @@ const cors = require('cors');
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:3000', // frontend URL
+  credentials: true,               // if you use cookies
+}));
 // Middleware
 app.use(express.json())
 app.use(cookieParser());;
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/articles', articleRoutes);
-app.use(cors({
-  origin: 'http://localhost:3000', // frontend URL
-  credentials: true,               // if you use cookies
-}));
 // Database connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
