@@ -70,6 +70,7 @@ exports.getArticlesByCategory = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
+      console.log("articles",articles)
 
     const count = await Article.countDocuments({ categories: category });
 

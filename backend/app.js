@@ -19,10 +19,27 @@ app.use(express.json())
 app.use(cookieParser());;
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/articles', articleRoutes);
-// Database connection
+
+
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  .then(async () => {
+    console.log(' MongoDB connected');
+    console.log(' Using database:', mongoose.connection.db.databaseName);
+
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    console.log(' Collections in this database:');
+    collections.forEach(col => console.log(`- ${col.name}`));
+
+    const articles = await mongoose.connection.db
+      .collection('articles')
+      .find({})
+      .limit(5) 
+      .toArray();
+
+    console.log('📰 Sample articles:', articles);
+  })
+  .catch(err => console.error('❌ MongoDB connection error:', err));
+
 
 // Routes
 app.use('/api/users', userRoutes);

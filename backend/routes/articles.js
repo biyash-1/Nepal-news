@@ -5,8 +5,8 @@ const { authenticate } = require('../middleware/auth');
 
 // Public routes
 router.get('/', articleController.getAllArticles);
-router.get('/:id', articleController.getArticleById);
 router.get('/category/:category', articleController.getArticlesByCategory);
+router.get('/:id', articleController.getArticleById);
 
 // Protected routes (require authentication)
 router.post('/', authenticate, articleController.createArticle);

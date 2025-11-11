@@ -18,6 +18,7 @@ export const useCategoryNews = (category: string) => {
       );
 
       const data = res.data;
+      console.log("data is",data)
       if (page === 1) setNews(data.articles);
       else setNews((prev) => [...prev, ...data.articles]);
 
@@ -31,7 +32,7 @@ export const useCategoryNews = (category: string) => {
   };
 
   useEffect(() => {
-    fetchNews(1);
+    fetchNews();
   }, [category]);
 
   const loadMore = () => {
