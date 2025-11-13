@@ -43,32 +43,37 @@ const gossipNews = [
     id: 7,
     title: "स्वस्तिमा खड्काको नयाँ तस्बिर भाइरल",
     image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    id: 8,
+    title: "निराजन गुरुङको नयाँ गीत सार्वजनिक",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   }
 ];
 
 const bollywoodHollywoodNews = [
   {
-    id: 8,
+    id: 10,
     title: "शाहरुख खानको 'जवान' नेपालमा रेकर्ड कमाउँदै",
     image: "https://images.unsplash.com/photo-1594908900066-3f47337549d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: 9,
+    id: 11,
     title: "हलिउडको 'बार्बी' नेपालमा रिलिज हुने",
     image: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: 10,
+    id: 12,
     title: "रणबीर कपुर र आलिया भट्टको पहिलो बच्चा जन्मियो",
     image: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: 11,
+    id: 13,
     title: "टम क्रुजको 'मिशन इम्पोसिबल' को नयाँ भाग घोषणा",
     image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: 12,
+    id: 14,
     title: "मार्वलको 'एभेन्जर्स' को नयाँ टिम घोषणा",
     image: "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   }
@@ -76,22 +81,22 @@ const bollywoodHollywoodNews = [
 
 const musicNews = [
   {
-    id: 13,
+    id: 15,
     title: "नेपाली संगीत उत्सव २०२४ को तयारी पूरा",
     image: "https://images.unsplash.com/photo-1501612780327-45045538702b?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: 14,
+    id: 16,
     title: "सुगम पोखरेलको एल्बम 'फर्केर हेर्दा' रिलिज",
     image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: 15,
+    id: 17,
     title: "आनन्दी र बाबु बोगटीको डुएट गीत आयो",
     image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: 16,
+    id: 18,
     title: "बिपुल छेत्रीले गरे अन्तर्राष्ट्रिय सहकार्य",
     image: "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   }
@@ -99,19 +104,24 @@ const musicNews = [
 
 const featuredNews = [
   {
-    id: 17,
+    id: 19,
     title: "नेपाली फिल्म इन्डस्ट्रीको ५० वर्ष: एक यात्रा",
     image: "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: 18,
+    id: 20,
     title: "युवा कलाकारहरूको उदय: नेपाली मनोरञ्जनमा नयाँ लहर",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   },
   {
-    id: 19,
+    id: 21,
     title: "डिजिटल युगमा नेपाली सिनेमा",
-    image: "https://images.unsplash.com/photo-1574267432644-f610dd5ac6f2?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: 18,
+    title: "बिपुल छेत्रीले गरे अन्तर्राष्ट्रिय सहकार्य",
+    image: "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
   }
 ];
 
@@ -163,7 +173,7 @@ export default function EntertainmentPage() {
 
             <div className="space-y-6">
               {headlineNews.side.map((news) => (
-                <div key={news.id} className="relative h-60 overflow-hidden rounded-2xl group cursor-pointer">
+                <div key={news.id} className="relative h-59 overflow-hidden rounded-2xl group cursor-pointer">
                   <img 
                     src={news.image} 
                     alt={news.title}
@@ -195,13 +205,19 @@ export default function EntertainmentPage() {
                 </a>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {gossipNews.map((news) => (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {gossipNews.map((news, i) => (
                   <div
                     key={news.id}
-                    className="group cursor-pointer rounded-lg overflow-hidden"
+                    className={`group cursor-pointer rounded-lg overflow-hidden ${
+                      i % 5 === 0 ? "md:col-span-2 md:row-span-2" : ""
+                    }`}
                   >
-                    <div className="relative h-72 overflow-hidden">
+                    <div
+                      className={`relative overflow-hidden ${
+                        i % 5 === 0 ? "h-95" : "h-32"
+                      }`}
+                    >
                       <img
                         src={news.image}
                         alt={news.title}
@@ -209,12 +225,18 @@ export default function EntertainmentPage() {
                       />
                     </div>
 
-                    <h4 className="mt-3 font-bold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
+                    <h4
+                      className={`mt-3 font-bold ${
+                        i % 5 === 0 ? "text-lg md:text-2xl" : "text-sm md:text-base"
+                      } text-gray-900 group-hover:text-red-600 transition-colors`}
+                    >
                       {news.title}
                     </h4>
                   </div>
                 ))}
               </div>
+
+
             </section>
 
             {/* Section Divider */}
@@ -306,30 +328,7 @@ export default function EntertainmentPage() {
             <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
 
             {/* Featured Section */}
-          <section>
-  <div className="flex items-center justify-between mb-8">
-    <h3 className="text-3xl font-bold text-gray-900">⭐ विशेष</h3>
-    <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
-  </div>
-  
-  {/* Change from space-y-6 to grid layout */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    {featuredNews.map((news) => (
-      <div key={news.id} className="group cursor-pointer">
-        <div className="relative h-80 overflow-hidden rounded-lg">
-          <img 
-            src={news.image} 
-            alt={news.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </div>
-        <h4 className="mt-3 font-bold text-2xl text-gray-900 group-hover:text-red-600 transition-colors">
-          {news.title}
-        </h4>
-      </div>
-    ))}
-  </div>
-</section>
+          
           </div>
 
           {/* Sidebar */}
@@ -438,7 +437,30 @@ export default function EntertainmentPage() {
             </div>
           </div>
         </div>
-
+        <section>
+  <div className="flex items-center justify-between mb-8">
+    <h3 className="text-3xl font-bold text-gray-900">⭐ विशेष</h3>
+    <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
+  </div>
+  
+  {/* Change from space-y-6 to grid layout */}
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    {featuredNews.map((news) => (
+      <div key={news.id} className="group cursor-pointer">
+        <div className="relative h-90 overflow-hidden rounded-lg">
+          <img 
+            src={news.image} 
+            alt={news.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <h4 className="mt-3 font-bold text-2xl text-gray-900 group-hover:text-red-600 transition-colors">
+          {news.title}
+        </h4>
+      </div>
+    ))}
+  </div>
+</section>
         {/* Section Divider */}
         <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-16"></div>
 
