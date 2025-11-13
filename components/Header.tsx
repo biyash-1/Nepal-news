@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { FaCalendarAlt, FaChevronDown } from "react-icons/fa";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import AuthModal from "./AuthModel";
 import UserProfileDropdown from "./UserProfileDropdown";
 import { useRouter } from "next/navigation";
-
+import { usePathname } from "next/navigation";
 type NavItem = {
   label: string;
   href?: string;
@@ -18,7 +18,7 @@ const navItems: NavItem[] = [
   { label: "गृहपृष्ठ", href: "/" },
   {
     label: "प्रदेश",
-    href: "/pradesh",
+    href: "/pradesh/3",
     dropdownItems: [
       { label: "कोशी  प्रदेश", href: "/pradesh/1" },
       { label: "मधेश प्रदेश", href: "/pradesh/2" },
@@ -74,6 +74,11 @@ const navItems: NavItem[] = [
 function NavDropdown({ item }: { item: NavItem }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
   let showTimeout: NodeJS.Timeout;
   let hideTimeout: NodeJS.Timeout;
 
@@ -102,11 +107,12 @@ function NavDropdown({ item }: { item: NavItem }) {
       </Link>
 
       {item.dropdownItems && (
-        <div
-          className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 w-44 bg-white rounded-xl shadow-lg transition-all duration-300 ease-in-out transform z-50 ${
-            isOpen ? "opacity-100 visible translate-y-2" : "opacity-0 invisible translate-y-1"
-          }`}
-        >
+     <div
+  className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 w-44 bg-white rounded-xl shadow-lg transition-all duration-300 ease-in-out transform z-[200] ${
+    isOpen ? "opacity-100 visible translate-y-2" : "opacity-0 invisible translate-y-1"
+  }`}
+>
+
           <ul className="py-2 text-sm text-gray-700">
             {item.dropdownItems.map((dItem, index) => (
               <li key={index}>
@@ -145,8 +151,9 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-white shadow-sm sticky top-0 z-50 w-[80%] mx-auto">
-        <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+      <header className="bg-white shadow-sm sticky top-0 z-[100] w-full ">
+
+        <div className= " w-[80%] mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
           <Link href="/" className="text-2xl font-bold text-red-600 hover:text-red-700">नेपाल समाचार</Link>
 
           <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-1/3">
