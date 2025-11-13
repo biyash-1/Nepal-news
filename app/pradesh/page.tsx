@@ -1,6 +1,5 @@
 "use client";
 
-import React from 'react';
 import Link from 'next/link';
 import { allProvinces, pradeshNewsData, trendingProvinceNews } from '@/lib/PradeshData';
 

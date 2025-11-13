@@ -236,11 +236,24 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       tags: ["इलाम", "चिया बगान", "पर्यटन"],
       views: 1670,
       isBreaking: false
+    },
+    {
+      id: "6",
+      title: "ताप्लेजुङमा हिमपात सुरु, पर्यटकहरूको आगमन बढेको",
+      excerpt: "ताप्लेजुङमा हिमपात सुरु भएसँगै पर्यटकहरूको आगमन बढेको छ।",
+      content: "ताप्लेजुङमा हिमपात सुरु भएसँगै पर्यटकहरूको आगमन बढेको छ। स्थानीय होटलहरूमा आवासको माग बढेको छ।",
+      image: "https://images.unsplash.com/photo-1455218873509-8097305ee378?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "पर्यटन",
+      date: "२०८२ मंसिर २२",
+      author: "कुमार लिम्बू",
+      tags: ["ताप्लेजुङ", "हिमपात", "पर्यटन"],
+      views: 1420,
+      isBreaking: false
     }
   ],
   "2": [
     {
-      id: "6",
+      id: "7",
       title: "मधेश प्रदेशमा कृषि उत्पादनमा वृद्धि, रेकर्ड उत्पादनको सम्भावना",
       excerpt: "यस वर्ष मधेश प्रदेशमा कृषि उत्पादनमा ठूलो वृद्धि भएको छ।",
       content: "अनुकूल मौसम र सरकारी सहयोगले गर्दा मधेश प्रदेशमा कृषि उत्पादनमा ठूलो वृद्धि भएको छ।",
@@ -253,7 +266,7 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       isBreaking: false
     },
     {
-      id: "7",
+      id: "8",
       title: "जनकपुर धाममा धार्मिक पर्यटनमा वृद्धि",
       excerpt: "जनकपुर धाममा धार्मिक पर्यटकहरूको संख्या बढेको छ।",
       content: "धार्मिक पर्यटनको लागि प्रसिद्ध जनकपुर धाममा पर्यटकहरूको संख्या बढेको छ।",
@@ -266,7 +279,7 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       isBreaking: false
     },
     {
-      id: "8",
+      id: "9",
       title: "बिरगञ्ज सीमा क्षेत्रमा व्यापारमा वृद्धि",
       excerpt: "बिरगञ्ज सीमा क्षेत्रमा नेपाल-भारत व्यापारमा वृद्धि भएको छ।",
       content: "बिरगञ्ज सीमा क्षेत्रमा नेपाल-भारत व्यापारमा वृद्धि भएको छ। व्यापारिक गतिविधिहरू बढेका छन्।",
@@ -277,11 +290,50 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       tags: ["बिरगञ्ज", "व्यापार", "सीमा"],
       views: 1450,
       isBreaking: false
+    },
+    {
+      id: "10",
+      title: "प्रदेश २ मा शिक्षा सुधारका लागि नयाँ योजना",
+      excerpt: "प्रदेश सरकारले शिक्षा क्षेत्रमा सुधार गर्न नयाँ योजना बनाएको छ।",
+      content: "मधेश प्रदेश सरकारले शिक्षा क्षेत्रमा सुधार गर्न नयाँ योजना बनाएको छ।",
+      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "शिक्षा",
+      date: "२०८२ मंसिर २४",
+      author: "रामनाथ यादव",
+      tags: ["शिक्षा", "योजना", "मधेश"],
+      views: 1320,
+      isBreaking: false
+    },
+    {
+      id: "11",
+      title: "प्रदेश २ मा स्वास्थ्य सेवाको विस्तार",
+      excerpt: "प्रदेशका ग्रामीण क्षेत्रहरूमा स्वास्थ्य सेवा विस्तार गरिने।",
+      content: "प्रदेशका ग्रामीण क्षेत्रहरूमा स्वास्थ्य सेवा विस्तार गरिने।",
+      image: "https://images.unsplash.com/photo-1516549655669-df6654e447e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "स्वास्थ्य",
+      date: "२०८२ मंसिर २३",
+      author: "डा. सीता कुमारी",
+      tags: ["स्वास्थ्य", "सेवा", "ग्रामीण"],
+      views: 1180,
+      isBreaking: false
+    },
+    {
+      id: "12",
+      title: "मधेश प्रदेशमा सडक निर्माणको गति बढेको",
+      excerpt: "प्रदेशका विभिन्न सडक निर्माण कार्यहरूमा गति आएको छ।",
+      content: "प्रदेशका विभिन्न सडक निर्माण कार्यहरूमा गति आएको छ।",
+      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "विकास",
+      date: "२०८२ मंसिर २२",
+      author: "अमित यादव",
+      tags: ["सडक", "निर्माण", "विकास"],
+      views: 1250,
+      isBreaking: false
     }
   ],
   "3": [
     {
-      id: "9",
+      id: "13",
       title: "बागमती प्रदेशमा नयाँ स्मार्ट सिटी परियोजना सुरु",
       excerpt: "बागमती प्रदेश सरकारले काठमाडौँ उपत्यकामा नयाँ स्मार्ट सिटी परियोजना सुरु गरेको छ।",
       content: "बागमती प्रदेश सरकारले काठमाडौँ उपत्यकामा नयाँ स्मार्ट सिटी परियोजना सुरु गरेको छ।",
@@ -294,7 +346,7 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       isBreaking: true
     },
     {
-      id: "10",
+      id: "14",
       title: "काठमाडौँ उपत्यकामा यातायात जामको समस्या बढ्दो",
       excerpt: "काठमाडौँ उपत्यकामा यातायात जामको समस्या दिनप्रतिदिन बढ्दै गएको छ।",
       content: "काठमाडौँ उपत्यकामा यातायात जामको समस्या दिनप्रतिदिन बढ्दै गएको छ। स्थानीय बासिन्दाहरूलाई ठूलो समस्या भोग्नुपरिरहेको छ।",
@@ -305,11 +357,63 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       tags: ["यातायात", "जाम", "काठमाडौँ"],
       views: 1890,
       isBreaking: false
+    },
+    {
+      id: "15",
+      title: "भक्तपुर दरबार क्षेत्रमा पर्यटकहरूको भिड बढेको",
+      excerpt: "भक्तपुर दरबार क्षेत्रमा पर्यटकहरूको संख्या बढेको छ।",
+      content: "भक्तपुर दरबार क्षेत्रमा पर्यटकहरूको संख्या बढेको छ। सांस्कृतिक पर्यटनमा रुचि राख्ने पर्यटकहरूको आगमन बढेको छ।",
+      image: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "पर्यटन",
+      date: "२०८२ मंसिर २५",
+      author: "सन्जीव श्रेष्ठ",
+      tags: ["भक्तपुर", "दरबार", "पर्यटन"],
+      views: 1670,
+      isBreaking: false
+    },
+    {
+      id: "16",
+      title: "ललितपुरमा सांस्कृतिक कार्यक्रमको आयोजना",
+      excerpt: "ललितपुरमा परम्परागत सांस्कृतिक कार्यक्रमको आयोजना गरिनेछ।",
+      content: "ललितपुरमा परम्परागत सांस्कृतिक कार्यक्रमको आयोजना गरिनेछ।",
+      image: "https://images.unsplash.com/photo-1547996160-81c5e7af8cbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "संस्कृति",
+      date: "२०८२ मंसिर २४",
+      author: "रश्मिला महर्जन",
+      tags: ["ललितपुर", "संस्कृति", "कार्यक्रम"],
+      views: 1420,
+      isBreaking: false
+    },
+    {
+      id: "17",
+      title: "हेटौंडामा नयाँ व्यापारिक केन्द्र निर्माण",
+      excerpt: "हेटौंडामा नयाँ व्यापारिक केन्द्र निर्माण गरिनेछ।",
+      content: "हेटौंडामा नयाँ व्यापारिक केन्द्र निर्माण गरिनेछ।",
+      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "व्यापार",
+      date: "२०८२ मंसिर २३",
+      author: "रामेश्वर अधिकारी",
+      tags: ["हेटौंडा", "व्यापार", "केन्द्र"],
+      views: 1350,
+      isBreaking: false
+    },
+    {
+      id: "18",
+      title: "प्रदेश ३ मा शैक्षिक संस्थानहरूको गुणस्तर सुधार",
+      excerpt: "प्रदेश ३ का शैक्षिक संस्थानहरूको गुणस्तर सुधार गर्न नयाँ योजना।",
+      content: "प्रदेश ३ का शैक्षिक संस्थानहरूको गुणस्तर सुधार गर्न नयाँ योजना।",
+      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "शिक्षा",
+      date: "२०८२ मंसिर २२",
+      author: "डा. गीता शर्मा",
+      tags: ["शिक्षा", "संस्थान", "गुणस्तर"],
+      views: 1280,
+      isBreaking: false
     }
   ],
   "4": [
     {
-      id: "11",
+      id: "19",
       title: "गण्डकी प्रदेशमा पर्यटन उद्योगमा ठूलो उछाल",
       excerpt: "पोखरा र आसपासका पर्यटकीय स्थलहरूमा पर्यटकहरूको संख्या बढेको छ।",
       content: "गण्डकी प्रदेशमा पर्यटन उद्योगमा ठूलो उछाल आएको छ। पोखरा र आसपासका पर्यटकीय स्थलहरूमा पर्यटकहरूको संख्या बढेको छ।",
@@ -322,7 +426,7 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       isBreaking: false
     },
     {
-      id: "12",
+      id: "20",
       title: "माछापुछ्रे क्षेत्रमा नयाँ ट्रेकिङ मार्ग खुल्ने",
       excerpt: "माछापुछ्रे क्षेत्रमा नयाँ ट्रेकिङ मार्ग खोल्ने योजना बनाइएको छ।",
       content: "माछापुछ्रे क्षेत्रमा नयाँ ट्रेकिङ मार्ग खोल्ने योजना बनाइएको छ। यसले गर्दा पर्यटकहरूलाई थप सहजता प्राप्त हुनेछ।",
@@ -333,11 +437,63 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       tags: ["माछापुछ्रे", "ट्रेकिङ", "पर्यटन"],
       views: 1670,
       isBreaking: false
+    },
+    {
+      id: "21",
+      title: "गोरखामा ऐतिहासिक स्थलहरूको जीर्णोद्धार",
+      excerpt: "गोरखाका ऐतिहासिक स्थलहरूको जीर्णोद्धार कार्य सुरु भएको छ।",
+      content: "गोरखाका ऐतिहासिक स्थलहरूको जीर्णोद्धार कार्य सुरु भएको छ।",
+      image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "संस्कृति",
+      date: "२०८२ मंसिर २५",
+      author: "बिक्रम थापा",
+      tags: ["गोरखा", "ऐतिहासिक", "जीर्णोद्धार"],
+      views: 1450,
+      isBreaking: false
+    },
+    {
+      id: "22",
+      title: "स्याङ्जामा कृषि उत्पादनमा वृद्धि",
+      excerpt: "स्याङ्जामा कृषि उत्पादनमा ठूलो वृद्धि भएको छ।",
+      content: "स्याङ्जामा कृषि उत्पादनमा ठूलो वृद्धि भएको छ।",
+      image: "https://images.unsplash.com/photo-1621252171976-12af6ea4d2c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "कृषि",
+      date: "२०८२ मंसिर २४",
+      author: "हरि पौडेल",
+      tags: ["स्याङ्जा", "कृषि", "उत्पादन"],
+      views: 1320,
+      isBreaking: false
+    },
+    {
+      id: "23",
+      title: "बेगनास तालमा नौका विहार सेवा विस्तार",
+      excerpt: "बेगनास तालमा नौका विहार सेवा विस्तार गरिनेछ।",
+      content: "बेगनास तालमा नौका विहार सेवा विस्तार गरिनेछ।",
+      image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "पर्यटन",
+      date: "२०८२ मंसिर २३",
+      author: "सन्तोष गुरुङ",
+      tags: ["बेगनास", "ताल", "नौका विहार"],
+      views: 1280,
+      isBreaking: false
+    },
+    {
+      id: "24",
+      title: "मनकामना मन्दिरमा भक्तजनहरूको भीड",
+      excerpt: "मनकामना मन्दिरमा भक्तजनहरूको संख्या बढेको छ।",
+      content: "मनकामना मन्दिरमा भक्तजनहरूको संख्या बढेको छ।",
+      image: "https://images.unsplash.com/photo-1547996160-81c5e7af8cbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "धर्म",
+      date: "२०८२ मंसिर २२",
+      author: "कृष्ण बहादुर",
+      tags: ["मनकामना", "मन्दिर", "भक्तजन"],
+      views: 1420,
+      isBreaking: false
     }
   ],
   "5": [
     {
-      id: "13",
+      id: "25",
       title: "लुम्बिनी प्रदेशमा अन्तर्राष्ट्रिय बुद्ध सम्मेलनको आयोजना",
       excerpt: "लुम्बिनीमा अन्तर्राष्ट्रिय बुद्ध सम्मेलनको आयोजना गरिनेछ।",
       content: "लुम्बिनी प्रदेशमा अन्तर्राष्ट्रिय बुद्ध सम्मेलनको आयोजना गरिनेछ। विभिन्न देशहरूका प्रतिनिधिहरू सहभागी हुनेछन्।",
@@ -348,11 +504,76 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       tags: ["लुम्बिनी", "बुद्ध", "सम्मेलन"],
       views: 1760,
       isBreaking: false
+    },
+    {
+      id: "26",
+      title: "बुटवलमा व्यापारिक गतिविधिमा वृद्धि",
+      excerpt: "बुटवलमा व्यापारिक गतिविधिमा ठूलो वृद्धि भएको छ।",
+      content: "बुटवलमा व्यापारिक गतिविधिमा ठूलो वृद्धि भएको छ।",
+      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "व्यापार",
+      date: "२०८२ मंसिर २६",
+      author: "रामकुमार गुप्ता",
+      tags: ["बुटवल", "व्यापार", "गतिविधि"],
+      views: 1540,
+      isBreaking: false
+    },
+    {
+      id: "27",
+      title: "नेपालगञ्जमा स्वास्थ्य सेवा सुधार",
+      excerpt: "नेपालगञ्जमा स्वास्थ्य सेवाको गुणस्तर सुधार गरिनेछ।",
+      content: "नेपालगञ्जमा स्वास्थ्य सेवाको गुणस्तर सुधार गरिनेछ।",
+      image: "https://images.unsplash.com/photo-1516549655669-df6654e447e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "स्वास्थ्य",
+      date: "२०८२ मंसिर २५",
+      author: "डा. सुनीता शर्मा",
+      tags: ["नेपालगञ्ज", "स्वास्थ्य", "सेवा"],
+      views: 1320,
+      isBreaking: false
+    },
+    {
+      id: "28",
+      title: "कपिलवस्तुमा पुरातात्विक खनन कार्य सुरु",
+      excerpt: "कपिलवस्तुमा पुरातात्विक खनन कार्य सुरु भएको छ।",
+      content: "कपिलवस्तुमा पुरातात्विक खनन कार्य सुरु भएको छ।",
+      image: "https://images.unsplash.com/photo-1547996160-81c5e7af8cbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "संस्कृति",
+      date: "२०८२ मंसिर २४",
+      author: "डा. राजेश यादव",
+      tags: ["कपिलवस्तु", "पुरातात्विक", "खनन"],
+      views: 1280,
+      isBreaking: false
+    },
+    {
+      id: "29",
+      title: "प्रदेश ५ मा सडक जडानमा सुधार",
+      excerpt: "प्रदेश ५ मा सडक जडानमा सुधार भएको छ।",
+      content: "प्रदेश ५ मा सडक जडानमा सुधार भएको छ।",
+      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "विकास",
+      date: "२०८२ मंसिर २३",
+      author: "हरि प्रसाद",
+      tags: ["सडक", "जडान", "विकास"],
+      views: 1250,
+      isBreaking: false
+    },
+    {
+      id: "30",
+      title: "तिलौराकोटमा पर्यटकहरूको आगमन बढेको",
+      excerpt: "तिलौराकोटमा पर्यटकहरूको आगमन बढेको छ।",
+      content: "तिलौराकोटमा पर्यटकहरूको आगमन बढेको छ।",
+      image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "पर्यटन",
+      date: "२०८२ मंसिर २२",
+      author: "अनिल कुमार",
+      tags: ["तिलौराकोट", "पर्यटन", "आगमन"],
+      views: 1180,
+      isBreaking: false
     }
   ],
   "6": [
     {
-      id: "14",
+      id: "31",
       title: "कर्णाली प्रदेशमा सडक जडानमा ठूलो अवरोध",
       excerpt: "बर्षाको कारण कर्णाली प्रदेशको सडक जडानमा ठूलो अवरोध उत्पन्न भएको छ।",
       content: "बर्षाको कारण कर्णाली प्रदेशको सडक जडानमा ठूलो अवरोध उत्पन्न भएको छ। स्थानीय बासिन्दाहरूलाई समस्या भोग्नुपरेको छ।",
@@ -363,11 +584,76 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       tags: ["सडक", "जडान", "कर्णाली"],
       views: 1420,
       isBreaking: true
+    },
+    {
+      id: "32",
+      title: "रारा तालमा पर्यटकहरूको आगमन बढेको",
+      excerpt: "रारा तालमा पर्यटकहरूको आगमन बढेको छ।",
+      content: "रारा तालमा पर्यटकहरूको आगमन बढेको छ।",
+      image: "https://images.unsplash.com/photo-1464822759849-deb49ff8aea7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "पर्यटन",
+      date: "२०८२ मंसिर २६",
+      author: "सुरेश थापा",
+      tags: ["रारा ताल", "पर्यटन", "आगमन"],
+      views: 1670,
+      isBreaking: false
+    },
+    {
+      id: "33",
+      title: "जुम्लामा कृषि उत्पादनमा वृद्धि",
+      excerpt: "जुम्लामा कृषि उत्पादनमा वृद्धि भएको छ।",
+      content: "जुम्लामा कृषि उत्पादनमा वृद्धि भएको छ।",
+      image: "https://images.unsplash.com/photo-1621252171976-12af6ea4d2c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "कृषि",
+      date: "२०८२ मंसिर २५",
+      author: "हरि बोहोरा",
+      tags: ["जुम्ला", "कृषि", "उत्पादन"],
+      views: 1280,
+      isBreaking: false
+    },
+    {
+      id: "34",
+      title: "वीरेन्द्रनगरमा शैक्षिक संस्थानहरूको विकास",
+      excerpt: "वीरेन्द्रनगरमा शैक्षिक संस्थानहरूको विकास भएको छ।",
+      content: "वीरेन्द्रनगरमा शैक्षिक संस्थानहरूको विकास भएको छ।",
+      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "शिक्षा",
+      date: "२०८२ मंसिर २४",
+      author: "डा. प्रेम बहादुर",
+      tags: ["वीरेन्द्रनगर", "शिक्षा", "संस्थान"],
+      views: 1180,
+      isBreaking: false
+    },
+    {
+      id: "35",
+      title: "शे-फोकसुन्डो राष्ट्रिय निकुञ्जमा वन्यजन्तु संरक्षण",
+      excerpt: "शे-फोकसुन्डो राष्ट्रिय निकुञ्जमा वन्यजन्तु संरक्षण कार्यक्रम सुरु।",
+      content: "शे-फोकसुन्डो राष्ट्रिय निकुञ्जमा वन्यजन्तु संरक्षण कार्यक्रम सुरु।",
+      image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "पर्यावरण",
+      date: "२०८२ मंसिर २३",
+      author: "डा. सन्तोष सापकोटा",
+      tags: ["शे-फोकसुन्डो", "वन्यजन्तु", "संरक्षण"],
+      views: 1350,
+      isBreaking: false
+    },
+    {
+      id: "36",
+      title: "कर्णाली प्रदेशमा स्वास्थ्य सेवा विस्तार",
+      excerpt: "कर्णाली प्रदेशमा स्वास्थ्य सेवा विस्तार गरिनेछ।",
+      content: "कर्णाली प्रदेशमा स्वास्थ्य सेवा विस्तार गरिनेछ।",
+      image: "https://images.unsplash.com/photo-1516549655669-df6654e447e8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "स्वास्थ्य",
+      date: "२०८२ मंसिर २२",
+      author: "डा. लिला शर्मा",
+      tags: ["स्वास्थ्य", "सेवा", "विस्तार"],
+      views: 1220,
+      isBreaking: false
     }
   ],
   "7": [
     {
-      id: "15",
+      id: "37",
       title: "सुदूरपश्चिम प्रदेशमा स्वास्थ्य सेवामा सुधार",
       excerpt: "सुदूरपश्चिम प्रदेशमा स्वास्थ्य सेवाको गुणस्तरमा सुधार भएको छ।",
       content: "सुदूरपश्चिम प्रदेशमा स्वास्थ्य सेवाको गुणस्तरमा सुधार भएको छ। नयाँ स्वास्थ्य केन्द्रहरू स्थापना गरिएका छन्।",
@@ -377,6 +663,71 @@ export const pradeshNewsData: { [key: string]: PradeshNews[] } = {
       author: "डा. सुनिल बिष्ट",
       tags: ["स्वास्थ्य", "सेवा", "सुदूरपश्चिम"],
       views: 1280,
+      isBreaking: false
+    },
+    {
+      id: "38",
+      title: "धनगढीमा व्यापारिक गतिविधिमा वृद्धि",
+      excerpt: "धनगढीमा व्यापारिक गतिविधिमा वृद्धि भएको छ।",
+      content: "धनगढीमा व्यापारिक गतिविधिमा वृद्धि भएको छ।",
+      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "व्यापार",
+      date: "२०८२ मंसिर २६",
+      author: "राम बहादुर",
+      tags: ["धनगढी", "व्यापार", "गतिविधि"],
+      views: 1450,
+      isBreaking: false
+    },
+    {
+      id: "39",
+      title: "महेन्द्रनगरमा शैक्षिक संस्थानहरूको विकास",
+      excerpt: "महेन्द्रनगरमा शैक्षिक संस्थानहरूको विकास भएको छ।",
+      content: "महेन्द्रनगरमा शैक्षिक संस्थानहरूको विकास भएको छ।",
+      image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "शिक्षा",
+      date: "२०८२ मंसिर २५",
+      author: "शर्मिला पन्त",
+      tags: ["महेन्द्रनगर", "शिक्षा", "संस्थान"],
+      views: 1320,
+      isBreaking: false
+    },
+    {
+      id: "40",
+      title: "शुक्लाफाँट राष्ट्रिय निकुञ्जमा पर्यटकहरूको आगमन",
+      excerpt: "शुक्लाफाँट राष्ट्रिय निकुञ्जमा पर्यटकहरूको आगमन बढेको छ।",
+      content: "शुक्लाफाँट राष्ट्रिय निकुञ्जमा पर्यटकहरूको आगमन बढेको छ।",
+      image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "पर्यटन",
+      date: "२०८२ मंसिर २४",
+      author: "कृष्ण चन्द",
+      tags: ["शुक्लाफाँट", "पर्यटन", "आगमन"],
+      views: 1560,
+      isBreaking: false
+    },
+    {
+      id: "41",
+      title: "टिकापुरमा सडक निर्माण कार्य सुरु",
+      excerpt: "टिकापुरमा सडक निर्माण कार्य सुरु भएको छ।",
+      content: "टिकापुरमा सडक निर्माण कार्य सुरु भएको छ।",
+      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "विकास",
+      date: "२०८२ मंसिर २३",
+      author: "हरि दत्त",
+      tags: ["टिकापुर", "सडक", "निर्माण"],
+      views: 1280,
+      isBreaking: false
+    },
+    {
+      id: "42",
+      title: "बदलिका मन्दिरमा भक्तजनहरूको भीड",
+      excerpt: "बदलिका मन्दिरमा भक्तजनहरूको संख्या बढेको छ।",
+      content: "बदलिका मन्दिरमा भक्तजनहरूको संख्या बढेको छ।",
+      image: "https://images.unsplash.com/photo-1547996160-81c5e7af8cbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
+      category: "धर्म",
+      date: "२०८२ मंसिर २२",
+      author: "गोपाल भट्ट",
+      tags: ["बदलिका", "मन्दिर", "भक्तजन"],
+      views: 1420,
       isBreaking: false
     }
   ]
@@ -392,7 +743,7 @@ export const trendingProvinceNews = [
     views: 2450
   },
   {
-    id: "9",
+    id: "13",
     title: "बागमती प्रदेशमा स्मार्ट सिटी परियोजना",
     province: "बागमती",
     image: "https://images.unsplash.com/photo-1542744095-291d1f67b221?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
@@ -406,14 +757,14 @@ export const trendingProvinceNews = [
     views: 1890
   },
   {
-    id: "6",
+    id: "7",
     title: "मधेशमा कृषि उत्पादनमा वृद्धि",
     province: "मधेश",
     image: "https://images.unsplash.com/photo-1621252171976-12af6ea4d2c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
     views: 1780
   },
   {
-    id: "11",
+    id: "19",
     title: "गण्डकीमा पर्यटन उद्योगमा उछाल",
     province: "गण्डकी",
     image: "https://images.unsplash.com/photo-1526772662000-3f88f10405ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
@@ -422,3 +773,15 @@ export const trendingProvinceNews = [
 ];
 
 export const allProvinces = Object.values(pradeshData);
+
+
+
+
+
+
+
+
+
+
+
+
