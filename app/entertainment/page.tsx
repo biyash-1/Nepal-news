@@ -190,82 +190,28 @@ export default function EntertainmentPage() {
             <section>
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-3xl font-bold text-gray-900">💬 गपशप</h3>
-                <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
+                <a href="#" className="text-red-600 hover:text-red-700 font-medium">
+                  सबै हेर्नुहोस् →
+                </a>
               </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {gossipNews.map((news) => (
-                  <div key={news.id} className="relative h-72 overflow-hidden rounded-xl group cursor-pointer">
-                    <img 
-                      src={news.image} 
-                      alt={news.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h4 className="font-bold text-xl text-white drop-shadow-md hover:text-red-300 transition-colors">
-                        {news.title}
-                      </h4>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Section Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-
-            {/* Bollywood/Hollywood Section - 1 Large + 4 Small */}
-            <section>
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-3xl font-bold text-gray-900">🎬 बलिउड / हलिउड</h3>
-                <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 relative h-96 overflow-hidden rounded-xl group cursor-pointer">
-                  <img 
-                    src={bollywoodHollywoodNews[0].image} 
-                    alt={bollywoodHollywoodNews[0].title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h4 className="font-bold text-2xl text-white drop-shadow-md hover:text-red-300 transition-colors">
-                      {bollywoodHollywoodNews[0].title}
-                    </h4>
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  {bollywoodHollywoodNews.slice(1, 3).map((news) => (
-                    <div key={news.id} className="relative h-44 overflow-hidden rounded-xl group cursor-pointer">
-                      <img 
-                        src={news.image} 
+                  <div
+                    key={news.id}
+                    className="group cursor-pointer rounded-lg overflow-hidden"
+                  >
+                    <div className="relative h-72 overflow-hidden">
+                      <img
+                        src={news.image}
                         alt={news.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h5 className="font-bold text-base text-white drop-shadow-md hover:text-red-300 transition-colors">
-                          {news.title}
-                        </h5>
-                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                {bollywoodHollywoodNews.slice(3).map((news) => (
-                  <div key={news.id} className="relative h-64 overflow-hidden rounded-xl group cursor-pointer">
-                    <img 
-                      src={news.image} 
-                      alt={news.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h5 className="font-bold text-lg text-white drop-shadow-md hover:text-red-300 transition-colors">
-                        {news.title}
-                      </h5>
-                    </div>
+
+                    <h4 className="mt-3 font-bold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
+                      {news.title}
+                    </h4>
                   </div>
                 ))}
               </div>
@@ -274,26 +220,83 @@ export default function EntertainmentPage() {
             {/* Section Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
 
-            {/* Music Section - 3 Column Grid */}
+            {/* Bollywood/Hollywood Section */}
+           {/* Bollywood/Hollywood Section */}
+{/* Bollywood/Hollywood Section */}
+{/* Bollywood/Hollywood Section */}
+{/* Bollywood/Hollywood Section */}
+<section>
+  <div className="flex items-center justify-between mb-8">
+    <h3 className="text-3xl font-bold text-gray-900">🎬 बलिउड / हलिउड</h3>
+    <a href="#" className="text-red-600 hover:text-red-700 font-medium">
+      सबै हेर्नुहोस् →
+    </a>
+  </div>
+
+  {/* Large featured item */}
+  <div className="group cursor-pointer mb-6">
+    <div className="relative h-96 overflow-hidden rounded-lg">
+      <img
+        src={bollywoodHollywoodNews[0].image}
+        alt={bollywoodHollywoodNews[0].title}
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      />
+    </div>
+    
+    {/* Title in separate container below image */}
+    <div className="mt-4 bg-white">
+      <h4 className="font-bold text-xl text-gray-900 group-hover:text-red-600 transition-colors">
+        {bollywoodHollywoodNews[0].title}
+      </h4>
+    </div>
+  </div>
+
+  {/* Grid for remaining items */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {bollywoodHollywoodNews.slice(1).map((news) => (
+      <div key={news.id} className="group cursor-pointer">
+        <div className="relative h-64 overflow-hidden rounded-lg">
+          <img
+            src={news.image}
+            alt={news.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        
+        {/* Title in separate container below image */}
+        <div className="mt-4 bg-white">
+          <h5 className="font-bold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
+            {news.title}
+          </h5>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
+
+            {/* Section Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+
+            {/* Music Section */}
             <section>
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-3xl font-bold text-gray-900">🎵 संगीत</h3>
                 <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {musicNews.map((news) => (
-                  <div key={news.id} className="relative h-72 overflow-hidden rounded-xl group cursor-pointer">
-                    <img 
-                      src={news.image} 
-                      alt={news.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h4 className="font-bold text-lg text-white drop-shadow-md hover:text-red-300 transition-colors">
-                        {news.title}
-                      </h4>
+                  <div key={news.id} className="group cursor-pointer rounded-lg overflow-hidden">
+                    <div className="relative h-72 overflow-hidden">
+                      <img 
+                        src={news.image} 
+                        alt={news.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
                     </div>
+                    <h4 className="mt-3 font-bold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
+                      {news.title}
+                    </h4>
                   </div>
                 ))}
               </div>
@@ -302,30 +305,31 @@ export default function EntertainmentPage() {
             {/* Section Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
 
-            {/* Featured Section - Vertical List */}
-            <section>
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-3xl font-bold text-gray-900">⭐ विशेष</h3>
-                <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
-              </div>
-              <div className="space-y-6">
-                {featuredNews.map((news) => (
-                  <div key={news.id} className="relative h-80 overflow-hidden rounded-xl group cursor-pointer">
-                    <img 
-                      src={news.image} 
-                      alt={news.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-8">
-                      <h4 className="font-bold text-2xl md:text-3xl text-white drop-shadow-lg hover:text-red-300 transition-colors">
-                        {news.title}
-                      </h4>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
+            {/* Featured Section */}
+          <section>
+  <div className="flex items-center justify-between mb-8">
+    <h3 className="text-3xl font-bold text-gray-900">⭐ विशेष</h3>
+    <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
+  </div>
+  
+  {/* Change from space-y-6 to grid layout */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {featuredNews.map((news) => (
+      <div key={news.id} className="group cursor-pointer">
+        <div className="relative h-80 overflow-hidden rounded-lg">
+          <img 
+            src={news.image} 
+            alt={news.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <h4 className="mt-3 font-bold text-2xl text-gray-900 group-hover:text-red-600 transition-colors">
+          {news.title}
+        </h4>
+      </div>
+    ))}
+  </div>
+</section>
           </div>
 
           {/* Sidebar */}
@@ -489,4 +493,4 @@ export default function EntertainmentPage() {
       </div>
     </div>
   );
-} 
+}
