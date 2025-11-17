@@ -38,8 +38,7 @@ const navItems: NavItem[] = [
       { label: "फुटबल", href: "/sports/football" },
       { label: "भलिबल", href: "/sports/volleyball" },
       { label: "बास्केटबल", href: "/sports/basketball" },
-      { label: "एथलेटिक्स", href: "/sports/athletics" },
-      { label: "अन्य खेलहरू", href: "/sports/others" },
+    
     ],
   },
   {

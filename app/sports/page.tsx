@@ -1,57 +1,18 @@
+
+
 import SportsNews from '@/components/SportsNews'
 import Link from 'next/link'
+import { sportsNewsData, upcomingMatchesData } from '@/app/datas/sportsNewsData'
 
-
-const additionalSportsNews = [
-  {
-    id: 1,
-    title: "नेपाली महिला क्रिकेट टिमको तयारी",
-    category: "क्रिकेट",
-    image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-    description: "आगामी अन्तर्राष्ट्रिय प्रतियोगिताका लागि नेपाली महिला क्रिकेट टिमको तयारी सुरु",
-    time: "१ दिन अघि",
-    reads: "८००+"
-  },
-  {
-    id: 2,
-    title: "फुटबल लिगको नयाँ संस्करण",
-    category: "फुटबल",
-    image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-    description: "राष्ट्रिय फुटबल लिगको नयाँ संस्करणमा १२ टिमहरूको सहभागिता",
-    time: "२ दिन अघि",
-    reads: "१,२००+"
-  },
-  {
-    id: 3,
-    title: "बास्केटबलमा नयाँ प्रतिभा",
-    category: "बास्केटबल",
-    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-    description: "युवा बास्केटबल खेलाडीहरूले अन्तर्राष्ट्रिय स्तरमा उत्कृष्ट प्रदर्शन गरे",
-    time: "३ दिन अघि",
-    reads: "६००+"
-  }
+const categories = [
+  { key: 'all', label: 'सबै' },
+  { key: 'cricket', label: 'क्रिकेट' },
+  { key: 'football', label: 'फुटबल' },
+  { key: 'basketball', label: 'बास्केटबल' },
+  { key: 'volleyball', label: 'भलिबल' }
 ]
 
-const upcomingMatches = [
-  {
-    sport: "क्रिकेट",
-    match: "नेपाल vs भारत",
-    time: "शनिबार, १:०० PM",
-    venue: "त्रिभुवन विश्वविद्यालय अन्तर्राष्ट्रिय क्रिकेट मैदान"
-  },
-  {
-    sport: "फुटबल",
-    match: "नेपाल vs बंगलादेश",
-    time: "आइतबार, ३:०० PM", 
-    venue: "दशरथ रंगशाला"
-  },
-  {
-    sport: "भलिबल",
-    match: "नेपाल vs श्रीलंका",
-    time: "सोमबार, १०:०० AM",
-    venue: "नेपाल खेलकुद परिषद् हल"
-  }
-]
+const allNews = Object.values(sportsNewsData).flat()
 
 export default function SportsPage() {
   return (
@@ -79,13 +40,14 @@ export default function SportsPage() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Quick Navigation */}
         <div className="flex overflow-x-auto space-x-4 mb-8 pb-4">
-          {['सबै', 'क्रिकेट', 'फुटबल', 'बास्केटबल', 'भलिबल', 'अन्य'].map((category) => (
-            <button
-              key={category}
+          {categories.map((category) => (
+            <Link
+              key={category.key}
+              href={`/sports/${category.key}`}
               className="bg-white px-6 py-3 rounded-lg shadow-sm hover:shadow-md transition-shadow whitespace-nowrap font-medium"
             >
-              {category}
-            </button>
+              {category.label}
+            </Link>
           ))}
         </div>
 
@@ -107,8 +69,8 @@ export default function SportsPage() {
           <div className="lg:col-span-2">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">अन्य खेल समाचार</h3>
             <div className="space-y-6">
-              {additionalSportsNews.map((news) => (
-                <div key={news.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              {allNews.slice(0, 3).map((news) => (
+                <div key={`${news.category}-${news.id}`} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-1/3">
                       <img 
@@ -128,7 +90,7 @@ export default function SportsPage() {
                         <span>👁️ {news.reads}</span>
                       </div>
                       <Link 
-                        href={`/news/sports-${news.id}`}
+                        href={`/sports/${news.category.toLowerCase()}/${news.id}`}
                         className="inline-block mt-4 text-blue-600 hover:text-blue-700 font-medium"
                       >
                         पूरै पढ्नुहोस् →
@@ -151,7 +113,10 @@ export default function SportsPage() {
                 आगामी खेलहरू
               </h4>
               <div className="space-y-4">
-                {upcomingMatches.map((match, index) => (
+                {Object.values(upcomingMatchesData)
+                  .flat()
+                  .slice(0, 3)
+                  .map((match, index) => (
                   <div key={index} className="border-l-4 border-green-500 pl-4 py-2">
                     <div className="font-semibold text-gray-900">{match.match}</div>
                     <div className="text-sm text-gray-600">{match.sport}</div>
@@ -211,27 +176,6 @@ export default function SportsPage() {
           </div>
         </div>
 
-        {/* Sports Gallery */}
-        <div className="mb-12">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">खेलकुदको ग्यालेरी</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-              "https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-              "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-              "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
-            ].map((image, index) => (
-              <div key={index} className="aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                <img 
-                  src={image} 
-                  alt={`Sports gallery ${index + 1}`}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Newsletter Subscription */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-white text-center">
           <h3 className="text-2xl font-bold mb-4">खेलकुद अपडेट पाउनुहोस्</h3>
@@ -243,7 +187,7 @@ export default function SportsPage() {
               className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
             <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
-                सदस्यता लिनुहोस्
+              सदस्यता लिनुहोस्
             </button>
           </div>
         </div>

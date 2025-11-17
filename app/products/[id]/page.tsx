@@ -6,10 +6,10 @@ const {id} = params;
 
   return (
     <div>
+        <h1>hello im</h1>
    <h1>Product ID: {id}</h1>
     </div>
   )
 }
 
 export default page
-    aaaaaa
