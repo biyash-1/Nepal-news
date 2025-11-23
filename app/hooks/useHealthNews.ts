@@ -1,89 +1,70 @@
+"use client";
 
-import { useState, useEffect } from 'react';
-import axiosInstance from '@/lib/axios';
+import { useState, useEffect } from "react";
+import axiosInstance from "@/lib/axios";
 
 export interface Article {
-  _id: string;
+  id: string; // matches your backend JSON
   title: string;
   content: string;
   excerpt?: string;
   image: string;
   categories: string[];
   author: {
-    _id: string;
+    userId?: string;
     username: string;
     avatar?: string;
   };
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   featured?: boolean;
   views?: number;
 }
 
-interface UseHealthNewsReturn {
-  healthNews: Article[];
-  featuredHealthNews: Article[];
-  loading: boolean;
-  error: string | null;
-  totalPages: number;
-  currentPage: number;
-  loadMore: () => void;
-  refreshNews: () => void;
-}
-
-export const useHealthNews = (): UseHealthNewsReturn => {
+export const useHealthNews = () => {
   const [healthNews, setHealthNews] = useState<Article[]>([]);
   const [featuredHealthNews, setFeaturedHealthNews] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const fetchHealthNews = async (page: number = 1) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Fetch health category articles directly from API
-      const response = await axiosInstance.get(`/articles`, {
-        params: { page, limit: 8 }
+      // Fetch regular health news
+      const res = await axiosInstance.get(`/articles/category/health`, {
+        params: { page, limit: 8 },
       });
-      console.log("respnse",response.data)
-      
-      if (response.data.success) {
-        if (page === 1) {
-          setHealthNews(response.data.articles);
-        } else {
-          setHealthNews(prev => [...prev, ...response.data.articles]);
-        }
-        setTotalPages(response.data.totalPages);
-        setCurrentPage(response.data.currentPage);
+
+      if (res.data.success) {
+        if (page === 1) setHealthNews(res.data.articles);
+        else setHealthNews(prev => [...prev, ...res.data.articles]);
+
+        setCurrentPage(res.data.currentPage);
+        setTotalPages(res.data.totalPages);
       }
 
-
-      const featuredResponse = await axiosInstance.get('/articles', {
-        params: { 
-          category: 'health', 
-          page: 1, 
-          limit: 3,
-          featured: true 
-        }
-      });
-      
-      if (featuredResponse.data.success) {
-        setFeaturedHealthNews(featuredResponse.data.articles);
+      // Fetch featured health news once
+      if (featuredHealthNews.length === 0) {
+        const featuredRes = await axiosInstance.get(`/articles/category/health`, {
+          params: { page: 1, limit: 3, featured: true },
+        });
+        if (featuredRes.data.success) setFeaturedHealthNews(featuredRes.data.articles);
       }
 
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch health news');
-      console.error('Error fetching health news:', err);
+      setError(err.response?.data?.message || "Failed to fetch health news");
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   const loadMore = () => {
-    if (currentPage < totalPages && !loading) {
+    if (!loading && currentPage < totalPages) {
       fetchHealthNews(currentPage + 1);
     }
   };
@@ -101,9 +82,9 @@ export const useHealthNews = (): UseHealthNewsReturn => {
     featuredHealthNews,
     loading,
     error,
-    totalPages,
     currentPage,
+    totalPages,
     loadMore,
-    refreshNews
+    refreshNews,
   };
 };

@@ -96,7 +96,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
           <div className="lg:col-span-3">
             {featuredNews && (
               <div className="mb-10 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                <Link href={`/news/${featuredNews._id}`}>
+                <Link href={`/news/${featuredNews.id}`}>
                   <div className="relative cursor-pointer group">
                     <img
                       src={featuredNews.image}
@@ -120,8 +120,9 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {otherNews.map((article, index) => (
-                <div
-                  key={article._id}
+                <Link
+                  href={`/news/${featuredNews.id}`}
+                  key={article.id}
                   className="group cursor-pointer  border-gray-100 pb-6 hover:border-gray-300 transition-all duration-300"
                 >
                   {/* Image with overlay effect */}
@@ -141,7 +142,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                       {article.title}
                     </h3>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 
@@ -207,8 +208,8 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
               </div>
               <div className="p-6 space-y-6">
                 {news.slice(0, 4).map((article, index) => (
-                  <div
-                    key={article._id}
+                  <Link href={`/news/${featuredNews.id}`}
+                    key={article.id} 
                     className="group cursor-pointer  pb-4 last:border-0 last:pb-0"
                   >
                     <div className="flex space-x-4">
@@ -229,7 +230,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

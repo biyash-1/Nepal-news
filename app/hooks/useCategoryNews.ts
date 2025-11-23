@@ -5,41 +5,45 @@ import axiosInstance from "@/lib/axios";
 
 export const useCategoryNews = (category: string) => {
   const [news, setNews] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
-  const fetchNews = async (page = 1) => {
+  const fetchNews = async (page: number = 1) => {
     try {
       setLoading(true);
-      const res = await axiosInstance.get(
-        `/articles/category/${category}?page=${page}&limit=8`
-      );
+      setError(null);
 
-      const data = res.data;
-      console.log("data is",data)
-      if (page === 1) setNews(data.articles);
-      else setNews((prev) => [...prev, ...data.articles]);
+      const res = await axiosInstance.get(`/articles/category/${category}`, {
+        params: { page, limit: 8 },
+      });
 
-      setCurrentPage(data.currentPage);
-      setTotalPages(data.totalPages);
+      if (res.data.success) {
+        if (page === 1) setNews(res.data.articles);
+        else setNews(prev => [...prev, ...res.data.articles]);
+
+        setCurrentPage(res.data.currentPage);
+        setTotalPages(res.data.totalPages);
+      }
+
     } catch (err: any) {
       setError(err.response?.data?.message || "समाचार ल्याउन समस्या भयो");
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchNews();
-  }, [category]);
-
   const loadMore = () => {
-    if (currentPage < totalPages) {
+    if (!loading && currentPage < totalPages) {
       fetchNews(currentPage + 1);
     }
   };
 
-  return { news, loading, error, loadMore, totalPages, currentPage };
+  useEffect(() => {
+    if (category) fetchNews(1);
+  }, [category]);
+
+  return { news, loading, error, currentPage, totalPages, loadMore };
 };

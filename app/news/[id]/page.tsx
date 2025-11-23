@@ -290,7 +290,7 @@ export default function NewsDetailPage() {
               <div className="p-6 space-y-6">
                 {relatedNews.length > 0 ? (
                   relatedNews.map((news) => (
-                    <Link key={news._id} href={`/news/${news._id}`}>
+                    <Link key={news.id} href={`/news/${news.id}`}>
                       <div className="group cursor-pointer border-b border-gray-100 pb-6 last:border-0 last:pb-0">
                         <div className="flex space-x-4">
                           <img
@@ -323,7 +323,7 @@ export default function NewsDetailPage() {
               </h4>
               <div className="space-y-3">
                 {relatedNews.slice(0, 5).map((news, index) => (
-                  <Link key={news._id} href={`/news/${news._id}`}>
+                  <Link key={news.id} href={`/news/${news.id}`}>
                     <div className="flex items-center space-x-3 p-3 bg-white rounded-lg hover:shadow-md cursor-pointer transition-all">
                       <span className="font-bold text-red-600 text-xl w-8">{index + 1}</span>
                       <p className="text-sm font-medium text-gray-800 flex-1 line-clamp-2">
