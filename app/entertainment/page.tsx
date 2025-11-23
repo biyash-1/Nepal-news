@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import React from 'react';
 
 // Mock Data with all images
@@ -156,24 +156,29 @@ export default function EntertainmentPage() {
         <div className="mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
-              <div className="relative h-[500px] overflow-hidden rounded-2xl group cursor-pointer">
-                <img 
-                  src={headlineNews.main.image} 
-                  alt={headlineNews.main.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-8">
-                  <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg hover:text-red-300 transition-colors">
-                    {headlineNews.main.title}
-                  </h2>
+              <Link href={`/news/${headlineNews.main.id}`}>
+                <div className="relative h-[500px] overflow-hidden rounded-2xl group cursor-pointer">
+                  <img 
+                    src={headlineNews.main.image} 
+                    alt={headlineNews.main.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-8">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg hover:text-red-300 transition-colors">
+                      {headlineNews.main.title}
+                    </h2>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
 
             <div className="space-y-6">
               {headlineNews.side.map((news) => (
+                
                 <div key={news.id} className="relative h-59 overflow-hidden rounded-2xl group cursor-pointer">
+
+                  <Link href={`/news/${news.id}`}>
                   <img 
                     src={news.image} 
                     alt={news.title}
@@ -185,6 +190,7 @@ export default function EntertainmentPage() {
                       {news.title}
                     </h3>
                   </div>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -207,12 +213,14 @@ export default function EntertainmentPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {gossipNews.map((news, i) => (
-                  <div
+                  
+                  <Link href={`/news/${news.id}`}
                     key={news.id}
                     className={`group cursor-pointer rounded-lg overflow-hidden ${
                       i % 5 === 0 ? "md:col-span-2 md:row-span-2" : ""
                     }`}
                   >
+                   
                     <div
                       className={`relative overflow-hidden ${
                         i % 5 === 0 ? "h-95" : "h-32"
@@ -224,7 +232,7 @@ export default function EntertainmentPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
-
+                    
                     <h4
                       className={`mt-3 font-bold ${
                         i % 5 === 0 ? "text-lg md:text-2xl" : "text-sm md:text-base"
@@ -232,7 +240,8 @@ export default function EntertainmentPage() {
                     >
                       {news.title}
                     </h4>
-                  </div>
+                  </Link>
+                
                 ))}
               </div>
 
@@ -256,7 +265,7 @@ export default function EntertainmentPage() {
   </div>
 
   {/* Large featured item */}
-  <div className="group cursor-pointer mb-6">
+  <Link className="group cursor-pointer mb-6" href={`/news/${bollywoodHollywoodNews[0].id}`}>
     <div className="relative h-96 overflow-hidden rounded-lg">
       <img
         src={bollywoodHollywoodNews[0].image}
@@ -271,12 +280,12 @@ export default function EntertainmentPage() {
         {bollywoodHollywoodNews[0].title}
       </h4>
     </div>
-  </div>
+  </Link>
 
   {/* Grid for remaining items */}
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
     {bollywoodHollywoodNews.slice(1).map((news) => (
-      <div key={news.id} className="group cursor-pointer">
+      <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer">
         <div className="relative h-64 overflow-hidden rounded-lg">
           <img
             src={news.image}
@@ -291,7 +300,7 @@ export default function EntertainmentPage() {
             {news.title}
           </h5>
         </div>
-      </div>
+      </Link>
     ))}
   </div>
 </section>
@@ -308,7 +317,7 @@ export default function EntertainmentPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {musicNews.map((news) => (
-                  <div key={news.id} className="group cursor-pointer rounded-lg overflow-hidden">
+                  <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer rounded-lg overflow-hidden">
                     <div className="relative h-72 overflow-hidden">
                       <img 
                         src={news.image} 
@@ -319,7 +328,7 @@ export default function EntertainmentPage() {
                     <h4 className="mt-3 font-bold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
                       {news.title}
                     </h4>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </section>
@@ -446,7 +455,7 @@ export default function EntertainmentPage() {
   {/* Change from space-y-6 to grid layout */}
   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
     {featuredNews.map((news) => (
-      <div key={news.id} className="group cursor-pointer">
+      <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer">
         <div className="relative h-90 overflow-hidden rounded-lg">
           <img 
             src={news.image} 
@@ -457,7 +466,7 @@ export default function EntertainmentPage() {
         <h4 className="mt-3 font-bold text-2xl text-gray-900 group-hover:text-red-600 transition-colors">
           {news.title}
         </h4>
-      </div>
+      </Link>
     ))}
   </div>
 </section>

@@ -1,5 +1,6 @@
 "use client";
 import { useCategoryNews } from "@/app/hooks/useCategoryNews";
+import Link from "next/link";
 
 interface Props {
   category: string;
@@ -95,20 +96,25 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
           <div className="lg:col-span-3">
             {featuredNews && (
               <div className="mb-10 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                <div className="relative">
-                  <img
-                    src={featuredNews.image}
-                    alt={featuredNews.title}
-                    className="w-full h-96 object-cover"
-                  />
-                  <div className="absolute top-6 left-6"></div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8">
-                    <div className="flex items-center space-x-4 text-white/90 text-sm mb-3"></div>
-                    <h2 className="text-white text-3xl font-bold mb-4 leading-tight">
-                      {featuredNews.title}
-                    </h2>
+                <Link href={`/news/${featuredNews._id}`}>
+                  <div className="relative cursor-pointer group">
+                    <img
+                      src={featuredNews.image}
+                      alt={featuredNews.title}
+                      className="w-full h-96 object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    
+                    <div className="absolute top-6 left-6"></div>
+
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8">
+                      <div className="flex items-center space-x-4 text-white/90 text-sm mb-3"></div>
+
+                      <h2 className="text-white text-3xl font-bold mb-4 leading-tight hover:text-red-300 transition-colors">
+                        {featuredNews.title}
+                      </h2>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </div>
             )}
 
