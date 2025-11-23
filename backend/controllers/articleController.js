@@ -1,198 +1,241 @@
-const Article = require('../models/Article');
+const fs = require("fs").promises;
+const path = require("path");
 
-// Get all articles with pagination and filters
+// Path to the JSON file
+const NEWS_JSON_PATH = path.join(__dirname, "../data/news.json");
+
+// Read JSON
+const readNewsData = async () => {
+  try {
+    const raw = await fs.readFile(NEWS_JSON_PATH, "utf-8");
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error("Error reading news.json:", err);
+    return [];
+  }
+};
+
+// Write JSON
+const writeNewsData = async (data) => {
+  try {
+    await fs.writeFile(NEWS_JSON_PATH, JSON.stringify(data, null, 2), "utf-8");
+    return true;
+  } catch (err) {
+    console.error("Error writing news.json:", err);
+    return false;
+  }
+};
+
+// GET ALL ARTICLES (with pagination + category filter)
 exports.getAllArticles = async (req, res) => {
   try {
     const { page = 1, limit = 10, category } = req.query;
-    
-    const query = category ? { categories: category } : {};
-    
-    const articles = await Article.find(query)
-      .populate('author', 'username avatar')
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
 
-      console.log("articles",articles)
+    let articles = await readNewsData();
 
-    const count = await Article.countDocuments(query);
+    if (category) {
+      articles = articles.filter((a) => a.categories?.includes(category));
+    }
+
+    // Sort newest first
+    articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    const start = (page - 1) * parseInt(limit);
+    const paginated = articles.slice(start, start + parseInt(limit));
 
     res.json({
       success: true,
-      articles,
-      totalPages: Math.ceil(count / limit),
-      currentPage: page,
-      total: count
+      articles: paginated,
+      totalPages: Math.ceil(articles.length / limit),
+      currentPage: Number(page),
+      total: articles.length,
     });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch articles', 
-      error: error.message 
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch articles",
+      error: err.message,
     });
   }
 };
 
-// Get single article by ID
+// GET SINGLE ARTICLE BY ID
 exports.getArticleById = async (req, res) => {
   try {
-    const article = await Article.findById(req.params.id)
-      .populate('author', 'username avatar');
+    const articles = await readNewsData();
+    const article = articles.find((a) => a.id === req.params.id);
 
     if (!article) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Article not found' 
+      return res.status(404).json({
+        success: false,
+        message: "Article not found",
       });
     }
 
-    res.json({
-      success: true,
-      article
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch article', 
-      error: error.message 
+    res.json({ success: true, article });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch article",
+      error: err.message,
     });
   }
 };
 
-// Get articles by category
+// GET ARTICLES BY CATEGORY
 exports.getArticlesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, exclude } = req.query;
 
-    const articles = await Article.find({ categories: category })
-      .populate('author', 'username avatar')
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
-      console.log("articles",articles)
+    let articles = await readNewsData();
 
-    const count = await Article.countDocuments({ categories: category });
+    articles = articles.filter((a) => a.categories?.includes(category));
+
+    if (exclude) {
+      articles = articles.filter((a) => a.id !== exclude);
+    }
+
+    articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    const start = (page - 1) * parseInt(limit);
+    const paginated = articles.slice(start, start + parseInt(limit));
 
     res.json({
       success: true,
-      articles,
-      totalPages: Math.ceil(count / limit),
-      currentPage: page,
-      total: count
+      articles: paginated,
+      totalPages: Math.ceil(articles.length / limit),
+      currentPage: Number(page),
+      total: articles.length,
     });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch articles', 
-      error: error.message 
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch category articles",
+      error: err.message,
     });
   }
 };
 
-// Create new article (requires authentication)
+// CREATE ARTICLE
 exports.createArticle = async (req, res) => {
   try {
     const { title, content, image, categories } = req.body;
 
-    const article = new Article({
+    let articles = await readNewsData();
+
+    // Generate ID
+    const newId =
+      articles.length > 0
+        ? (Math.max(...articles.map((a) => Number(a.id))) + 1).toString()
+        : "1";
+
+    const newArticle = {
+      id: newId,
       title,
       content,
       image,
-      categories,
-      author: req.user.userId
-    });
+      categories: categories || [],
+      author: {
+        userId: req.user?.userId || "anonymous",
+        username: req.user?.username || "Anonymous",
+        avatar: req.user?.avatar || null,
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-    await article.save();
+    articles.push(newArticle);
+    await writeNewsData(articles);
 
     res.status(201).json({
       success: true,
-      message: 'Article created successfully',
-      article
+      message: "Article created successfully",
+      article: newArticle,
     });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to create article', 
-      error: error.message 
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to create article",
+      error: err.message,
     });
   }
 };
 
-// Update article (requires authentication)
+// UPDATE ARTICLE
 exports.updateArticle = async (req, res) => {
   try {
     const { title, content, image, categories } = req.body;
 
-    const article = await Article.findById(req.params.id);
+    let articles = await readNewsData();
+    const index = articles.findIndex((a) => a.id === req.params.id);
 
-    if (!article) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Article not found' 
+    if (index === -1) {
+      return res.status(404).json({ success: false, message: "Not found" });
+    }
+
+    const old = articles[index];
+
+    if (req.user && old.author?.userId !== req.user.userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized",
       });
     }
 
-    // Check if user is the author
-    if (article.author.toString() !== req.user.userId) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Not authorized to update this article' 
-      });
-    }
+    articles[index] = {
+      ...old,
+      title: title ?? old.title,
+      content: content ?? old.content,
+      image: image ?? old.image,
+      categories: categories ?? old.categories,
+      updatedAt: new Date().toISOString(),
+    };
 
-    article.title = title || article.title;
-    article.content = content || article.content;
-    article.image = image || article.image;
-    article.categories = categories || article.categories;
-
-    await article.save();
+    await writeNewsData(articles);
 
     res.json({
       success: true,
-      message: 'Article updated successfully',
-      article
+      message: "Article updated",
+      article: articles[index],
     });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to update article', 
-      error: error.message 
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update article",
+      error: err.message,
     });
   }
 };
 
-// Delete article (requires authentication)
+// DELETE ARTICLE
 exports.deleteArticle = async (req, res) => {
   try {
-    const article = await Article.findById(req.params.id);
+    let articles = await readNewsData();
+    const index = articles.findIndex((a) => a.id === req.params.id);
 
-    if (!article) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Article not found' 
+    if (index === -1) {
+      return res.status(404).json({ success: false, message: "Not found" });
+    }
+
+    const article = articles[index];
+
+    if (req.user && article.author?.userId !== req.user.userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized",
       });
     }
 
-    // Check if user is the author
-    if (article.author.toString() !== req.user.userId) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Not authorized to delete this article' 
-      });
-    }
+    articles.splice(index, 1);
+    await writeNewsData(articles);
 
-    await Article.findByIdAndDelete(req.params.id);
-
-    res.json({
-      success: true,
-      message: 'Article deleted successfully'
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to delete article', 
-      error: error.message 
+    res.json({ success: true, message: "Article deleted" });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete article",
+      error: err.message,
     });
   }
 };

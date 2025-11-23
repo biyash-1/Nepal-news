@@ -1,5 +1,6 @@
 "use client";
 import { useCategoryNews } from "@/app/hooks/useCategoryNews";
+import Link from "next/link";
 
 interface Props {
   category: string;
@@ -95,27 +96,33 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
           <div className="lg:col-span-3">
             {featuredNews && (
               <div className="mb-10 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                <div className="relative">
-                  <img
-                    src={featuredNews.image}
-                    alt={featuredNews.title}
-                    className="w-full h-96 object-cover"
-                  />
-                  <div className="absolute top-6 left-6"></div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8">
-                    <div className="flex items-center space-x-4 text-white/90 text-sm mb-3"></div>
-                    <h2 className="text-white text-3xl font-bold mb-4 leading-tight">
-                      {featuredNews.title}
-                    </h2>
+                <Link href={`/news/${featuredNews.id}`}>
+                  <div className="relative cursor-pointer group">
+                    <img
+                      src={featuredNews.image}
+                      alt={featuredNews.title}
+                      className="w-full h-96 object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    
+                    <div className="absolute top-6 left-6"></div>
+
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8">
+                      <div className="flex items-center space-x-4 text-white/90 text-sm mb-3"></div>
+
+                      <h2 className="text-white text-3xl font-bold mb-4 leading-tight hover:text-red-300 transition-colors">
+                        {featuredNews.title}
+                      </h2>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {otherNews.map((article, index) => (
-                <div
-                  key={article._id}
+                <Link
+                  href={`/news/${featuredNews.id}`}
+                  key={article.id}
                   className="group cursor-pointer  border-gray-100 pb-6 hover:border-gray-300 transition-all duration-300"
                 >
                   {/* Image with overlay effect */}
@@ -135,7 +142,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                       {article.title}
                     </h3>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 
@@ -201,8 +208,8 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
               </div>
               <div className="p-6 space-y-6">
                 {news.slice(0, 4).map((article, index) => (
-                  <div
-                    key={article._id}
+                  <Link href={`/news/${featuredNews.id}`}
+                    key={article.id} 
                     className="group cursor-pointer  pb-4 last:border-0 last:pb-0"
                   >
                     <div className="flex space-x-4">
@@ -223,7 +230,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
