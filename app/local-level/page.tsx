@@ -3,34 +3,37 @@ import { localNewsData, localCategories } from "@/app/datas/localNewsData";
 
 const allLocalNews = Object.values(localNewsData).flat();
 
+const getLocationKey = (nepaliName: string) => {
+  const locationMap: Record<string, string> = {
+    'काठमाडौं': 'kathmandu',
+    'ललितपुर': 'lalitpur',
+    'भक्तपुर': 'bhaktapur',
+    'पोखरा': 'pokhara',
+    'बिराटनगर': 'biratnagar'
+  };
+  return locationMap[nepaliName] || nepaliName.toLowerCase();
+};
+
 export default function LocalLevelPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-r from-green-600 to-teal-600 text-white py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                स्थानीय तह
-              </h1>
-              <p className="text-xl text-green-100 max-w-2xl">
-                स्थानीय सरकार, विकास कार्य, समुदाय समाचार र स्थानीय स्तरका
-                जानकारीहरू
-              </p>
-            </div>
-            <div className="hidden lg:block">
-              <div className="bg-white/20 p-6 rounded-2xl text-center">
-                <div className="text-2xl font-bold">स्थानीय</div>
-                <div className="text-sm">समाचार</div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-white">
+      {/* Simple Header */}
+      <div className="border-b bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              स्थानीय तह
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              स्थानीय सरकार, विकास कार्य, समुदाय समाचार र स्थानीय स्तरका जानकारीहरू
+            </p>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Navigation */}
-        <div className="flex overflow-x-auto space-x-4 mb-8 pb-4">
+        {/* Location Navigation */}
+        <div className="flex overflow-x-auto space-x-2 mb-12 pb-4 border-b">
           {localCategories.map((category) => (
             <Link
               key={category.key}
@@ -39,142 +42,100 @@ export default function LocalLevelPage() {
                   ? "/local-level"
                   : `/local-level/${category.key}`
               }
-              className="bg-white px-6 py-3 rounded-lg shadow-sm hover:shadow-md transition-shadow whitespace-nowrap font-medium"
+              className="bg-gray-100 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap font-medium text-gray-700 hover:text-gray-900"
             >
               {category.label}
             </Link>
           ))}
         </div>
 
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-bold text-gray-900">
-              ताजा स्थानीय समाचार
-            </h2>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              <span>नयाँ अपडेट</span>
-            </div>
-          </div>
+        {/* Featured News Grid */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 pb-4 border-b">
+            ताजा स्थानीय समाचार
+          </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {allLocalNews.slice(0, 3).map((news) => (
-              <div
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {allLocalNews.slice(0, 6).map((news) => (
+              <Link
                 key={`${news.location}-${news.id}`}
-                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                href={`/local-level/${getLocationKey(news.location)}/${news.id}`}
+                className="group"
               >
-                <div className="h-48 overflow-hidden">
-                  <img
-                    src={news.image}
-                    alt={news.title}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {news.category}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {news.location}
-                    </span>
+                <div className="bg-white rounded-lg overflow-hidden">
+                  <div className="h-56 overflow-hidden">
+                    <img
+                      src={news.image}
+                      alt={news.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
-                  <h4 className="font-bold text-xl mb-3 text-gray-900 line-clamp-2">
-                    {news.title}
-                  </h4>
-                  <p className="text-gray-600 mb-4 line-clamp-2">
-                    {news.description}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{news.time}</span>
-                    <span>👁️ {news.reads}</span>
+                  <div className="py-4">
+                    <h3 className="font-bold text-xl text-gray-900 group-hover:text-green-600 transition-colors leading-tight mb-2 line-clamp-2">
+                      {news.title}
+                    </h3>
+                  
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>{news.time}</span>
+                      <span>{news.location}</span>
+                    </div>
                   </div>
-                  <Link
-                    href={`/local-level/${news.location}/${news.id}`}
-                    className="inline-block mt-4 text-green-600 hover:text-green-700 font-medium"
-                  >
-                    पूरै पढ्नुहोस् →
-                  </Link>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
 
-        {/* Additional Local News */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Latest Local News */}
-          <div className="lg:col-span-2">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-16">
+          {/* Main News Content */}
+          <div className="lg:col-span-3">
+            <h3 className="text-2xl font-bold text-gray-900 mb-8 pb-4 border-b">
               अन्य स्थानीय समाचार
             </h3>
-            <div className="space-y-6">
-              {allLocalNews.slice(3).map((news) => (
-                <div
+            
+            <div className="space-y-8">
+              {allLocalNews.slice(6).map((news) => (
+                <Link
                   key={`${news.location}-${news.id}`}
-                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                  href={`/local-level/${news.location}/${news.id}`}
+                  className="group block"
                 >
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-1/3">
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="md:w-48 flex-shrink-0">
                       <img
                         src={news.image}
                         alt={news.title}
-                        className="w-full h-48 md:h-full object-cover"
+                        className="w-full h-36 object-cover rounded-lg"
                       />
                     </div>
-                    <div className="md:w-2/3 p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                          {news.category}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {news.location}
-                        </span>
-                      </div>
-                      <h4 className="font-bold text-xl mb-3 text-gray-900">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-xl text-gray-900 group-hover:text-green-600 transition-colors leading-tight mb-3">
                         {news.title}
                       </h4>
-                      <p className="text-gray-600 mb-4">{news.description}</p>
-                      <div className="flex items-center justify-between text-sm text-gray-500">
+                      <p className="text-gray-600 mb-3 leading-relaxed">
+                        {news.description}
+                      </p>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
                         <span>{news.time}</span>
-                        <span>👁️ {news.reads}</span>
+                        <span>•</span>
+                        <span>{news.location}</span>
                       </div>
-                      <Link
-                        href={`/local-level/${news.location.toLowerCase()}/${
-                          news.id
-                        }`}
-                        className="inline-block mt-4 text-green-600 hover:text-green-700 font-medium"
-                      >
-                        पूरै पढ्नुहोस् →
-                      </Link>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Local Government Updates */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                <svg
-                  className="w-5 h-5 text-green-500 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                  />
-                </svg>
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h4 className="text-xl font-bold text-gray-900 mb-6 pb-3 border-b">
                 स्थानीय सरकार अपडेट
               </h4>
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {[
                   {
                     title: "नयाँ बजट घोषणा",
@@ -183,7 +144,7 @@ export default function LocalLevelPage() {
                   },
                   {
                     title: "नागरिक सेवा कार्यक्रम",
-                    location: "ललितपुर",
+                    location: "ललितपुर", 
                     time: "१ दिन अघि",
                   },
                   {
@@ -197,23 +158,23 @@ export default function LocalLevelPage() {
                     time: "३ दिन अघि",
                   },
                 ].map((item, index) => (
-                  <div
-                    key={index}
-                    className="border-l-4 border-green-500 pl-4 py-2"
-                  >
-                    <div className="font-semibold text-gray-900">
+                  <div key={index} className="pb-4 border-b last:border-b-0 last:pb-0">
+                    <h5 className="font-semibold text-gray-900 mb-1 leading-tight">
                       {item.title}
+                    </h5>
+                    <div className="flex items-center space-x-3 text-sm text-gray-600">
+                      <span>{item.location}</span>
+                      <span>•</span>
+                      <span>{item.time}</span>
                     </div>
-                    <div className="text-sm text-gray-600">{item.location}</div>
-                    <div className="text-sm text-gray-500">{item.time}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Quick Links */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h4 className="text-xl font-bold text-gray-900 mb-4">
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h4 className="text-xl font-bold text-gray-900 mb-6">
                 स्थानीय योजनाहरू
               </h4>
               <div className="space-y-3">
@@ -226,45 +187,47 @@ export default function LocalLevelPage() {
                 ].map((item, index) => (
                   <div
                     key={index}
-                    className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg"
+                    className="flex items-center space-x-3 p-3 hover:bg-white rounded-lg transition-colors"
                   >
                     <span className="text-2xl">{item.icon}</span>
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {item.name}
-                      </div>
+                    <div className="font-medium text-gray-900">
+                      {item.name}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Contact Local Government */}
-            <div className="bg-gradient-to-r from-green-500 to-teal-600 rounded-xl p-6 text-white">
-              <h4 className="text-xl font-bold mb-4">सम्पर्क गर्नुहोस्</h4>
-              <p className="text-green-100 mb-4">
+            {/* Contact */}
+            <div className="bg-green-50 rounded-lg p-6 border border-green-200">
+              <h4 className="text-xl font-bold text-gray-900 mb-4">
+                सम्पर्क गर्नुहोस्
+              </h4>
+              <p className="text-gray-700 mb-4">
                 स्थानीय समस्याहरू र सुझावका लागि
               </p>
-              <button className="bg-white text-green-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-100 transition-colors w-full">
+              <button className="bg-green-600 text-white px-4 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors w-full">
                 सम्पर्क फर्म
               </button>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl p-8 text-white text-center">
-          <h3 className="text-2xl font-bold mb-4">स्थानीय अपडेट पाउनुहोस्</h3>
-          <p className="text-green-100 mb-6">
-            तपाईंको इमेलमा ताजा स्थानीय समाचार र सरकारी अपडेटहरू प्राप्त
-            गर्नुहोस्
+        {/* Newsletter */}
+        <div className="bg-gray-100 rounded-xl p-8 text-center">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            स्थानीय अपडेट पाउनुहोस्
+          </h3>
+          <p className="text-gray-700 mb-6 max-w-md mx-auto">
+            तपाईंको इमेलमा ताजा स्थानीय समाचार र सरकारी अपडेटहरू प्राप्त गर्नुहोस्
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
             <input
               type="email"
               placeholder="तपाईंको इमेल ठेगाना"
-              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
-            <button className="bg-white text-green-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+            <button className="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors">
               सदस्यता लिनुहोस्
             </button>
           </div>

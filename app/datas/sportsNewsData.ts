@@ -1,4 +1,4 @@
-export const sportsNewsData = {
+export const sportsNewsData = { 
   cricket: [
     {
       id: 1,
