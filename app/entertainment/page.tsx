@@ -1,129 +1,12 @@
 "use client";
 import Link from "next/link";
 import React from 'react';
+import { useEntertainmentNews } from "@/app/hooks/useEntertainmentNews";
 
-// Mock Data with all images
-const headlineNews = {
-  main: {
-    id: 1,
-    title: "प्रदीप खड्काको नयाँ फिल्म 'पुष्प २' मा विशेष भूमिका",
-    image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
-  },
-  side: [
-    {
-      id: 2,
-      title: "रेखा थापाको 'कबड्डी ५' को ट्रेलर सार्वजनिक",
-      image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-    },
-    {
-      id: 3,
-      title: "सुजाता कोइराला र पुष्प कमल दाहालको नयाँ गीत 'माया' रिलिज",
-      image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-    }
-  ]
+// Fallback image for missing images
+const getImageUrl = (article: any) => {
+  return article?.featuredImage || article?.image || "https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80";
 };
-
-const gossipNews = [
-  {
-    id: 4,
-    title: "अनमोल केसी र सुहाना थापा सँगै देखिए, के भइरहेको छ?",
-    image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 5,
-    title: "मिर्णा मगरले गरिन् नयाँ कारको किनमेल",
-    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 6,
-    title: "दयाहाङ राई र निखिल उप्रेतीबीच कस्तो छ सम्बन्ध?",
-    image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 7,
-    title: "स्वस्तिमा खड्काको नयाँ तस्बिर भाइरल",
-    image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 8,
-    title: "निराजन गुरुङको नयाँ गीत सार्वजनिक",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  }
-];
-
-const bollywoodHollywoodNews = [
-  {
-    id: 10,
-    title: "शाहरुख खानको 'जवान' नेपालमा रेकर्ड कमाउँदै",
-    image: "https://images.unsplash.com/photo-1594908900066-3f47337549d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 11,
-    title: "हलिउडको 'बार्बी' नेपालमा रिलिज हुने",
-    image: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 12,
-    title: "रणबीर कपुर र आलिया भट्टको पहिलो बच्चा जन्मियो",
-    image: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 13,
-    title: "टम क्रुजको 'मिशन इम्पोसिबल' को नयाँ भाग घोषणा",
-    image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 14,
-    title: "मार्वलको 'एभेन्जर्स' को नयाँ टिम घोषणा",
-    image: "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  }
-];
-
-const musicNews = [
-  {
-    id: 15,
-    title: "नेपाली संगीत उत्सव २०२४ को तयारी पूरा",
-    image: "https://images.unsplash.com/photo-1501612780327-45045538702b?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 16,
-    title: "सुगम पोखरेलको एल्बम 'फर्केर हेर्दा' रिलिज",
-    image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 17,
-    title: "आनन्दी र बाबु बोगटीको डुएट गीत आयो",
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 18,
-    title: "बिपुल छेत्रीले गरे अन्तर्राष्ट्रिय सहकार्य",
-    image: "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  }
-];
-
-const featuredNews = [
-  {
-    id: 19,
-    title: "नेपाली फिल्म इन्डस्ट्रीको ५० वर्ष: एक यात्रा",
-    image: "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 20,
-    title: "युवा कलाकारहरूको उदय: नेपाली मनोरञ्जनमा नयाँ लहर",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: 21,
-    title: "डिजिटल युगमा नेपाली सिनेमा",
-    image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    id: 18,
-    title: "बिपुल छेत्रीले गरे अन्तर्राष्ट्रिय सहकार्य",
-    image: "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-  }
-];
 
 const celebrities = [
   { name: "दयाहाङ राई", role: "अभिनेता", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" },
@@ -132,15 +15,46 @@ const celebrities = [
   { name: "रेखा थापा", role: "निर्देशक", image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" }
 ];
 
-const trendingNews = [
-  { title: "प्रदीप खड्काको नयाँ फिल्म", image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" },
-  { title: "शाहरुख खानको 'जवान'", image: "https://images.unsplash.com/photo-1594908900066-3f47337549d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" },
-  { title: "सुगम पोखरेलको एल्बम", image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" },
-  { title: "अनमोल केसी र सुहाना", image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" },
-  { title: "रेखा थापाको कबड्डी ५", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" }
-];
-
 export default function EntertainmentPage() {
+  const { headlineNews, gossipNews, bollywoodHollywoodNews, musicNews, featuredNews, loading, error } = useEntertainmentNews();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+        <div className="bg-gradient-to-r from-red-600 via-red-500 to-pink-600 text-white py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-5xl md:text-6xl font-bold mb-3">मनोरञ्जन</h1>
+            <p className="text-red-100 text-lg">ताजा मनोरञ्जन समाचार र अपडेट</p>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+            <p className="mt-4 text-gray-600">समाचार लोड हुँदैछ...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+        <div className="bg-gradient-to-r from-red-600 via-red-500 to-pink-600 text-white py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-5xl md:text-6xl font-bold mb-3">मनोरञ्जन</h1>
+            <p className="text-red-100 text-lg">ताजा मनोरञ्जन समाचार र अपडेट</p>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center py-20">
+            <p className="text-red-600 text-lg">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
       {/* Header */}
@@ -153,191 +67,182 @@ export default function EntertainmentPage() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Top 3 Headlines */}
-        <div className="mb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <Link href={`/news/${headlineNews.main.id}`}>
-                <div className="relative h-[500px] overflow-hidden rounded-2xl group cursor-pointer">
-                  <img 
-                    src={headlineNews.main.image} 
-                    alt={headlineNews.main.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg hover:text-red-300 transition-colors">
-                      {headlineNews.main.title}
-                    </h2>
+        {headlineNews.main && (
+          <div className="mb-16">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Link href={`/news/${headlineNews.main.id}`}>
+                  <div className="relative h-[500px] overflow-hidden rounded-2xl group cursor-pointer">
+                    <img 
+                      src={getImageUrl(headlineNews.main)} 
+                      alt={headlineNews.main.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-8">
+                      <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg hover:text-red-300 transition-colors">
+                        {headlineNews.main.title}
+                      </h2>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </div>
+                </Link>
+              </div>
 
-            <div className="space-y-6">
-              {headlineNews.side.map((news) => (
-                
-                <div key={news.id} className="relative h-59 overflow-hidden rounded-2xl group cursor-pointer">
-
-                  <Link href={`/news/${news.id}`}>
-                  <img 
-                    src={news.image} 
-                    alt={news.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h3 className="font-bold text-xl text-white drop-shadow-lg hover:text-red-300 transition-colors">
-                      {news.title}
-                    </h3>
+              <div className="space-y-6">
+                {headlineNews.side.map((news: any) => (
+                  <div key={news.id} className="relative h-59 overflow-hidden rounded-2xl group cursor-pointer">
+                    <Link href={`/news/${news.id}`}>
+                      <img 
+                        src={getImageUrl(news)} 
+                        alt={news.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <h3 className="font-bold text-xl text-white drop-shadow-lg hover:text-red-300 transition-colors">
+                          {news.title}
+                        </h3>
+                      </div>
+                    </Link>
                   </div>
-                  </Link>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Section Divider */}
         <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-16"></div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-16">
-            {/* Gossip Section - 2x2 Grid */}
-            <section>
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-3xl font-bold text-gray-900">💬 गपशप</h3>
-                <a href="#" className="text-red-600 hover:text-red-700 font-medium">
-                  सबै हेर्नुहोस् →
-                </a>
-              </div>
+            {/* Gossip Section */}
+            {gossipNews.length > 0 && (
+              <section>
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-3xl font-bold text-gray-900">💬 गपशप</h3>
+                  <Link href="/category/गपशप" className="text-red-600 hover:text-red-700 font-medium">
+                    सबै हेर्नुहोस् →
+                  </Link>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {gossipNews.map((news, i) => (
-                  
-                  <Link href={`/news/${news.id}`}
-                    key={news.id}
-                    className={`group cursor-pointer rounded-lg overflow-hidden ${
-                      i % 5 === 0 ? "md:col-span-2 md:row-span-2" : ""
-                    }`}
-                  >
-                   
-                    <div
-                      className={`relative overflow-hidden ${
-                        i % 5 === 0 ? "h-95" : "h-32"
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  {gossipNews.map((news: any, i: number) => (
+                    <Link href={`/news/${news.id}`}
+                      key={news.id}
+                      className={`group cursor-pointer rounded-lg overflow-hidden ${
+                        i % 5 === 0 ? "md:col-span-2 md:row-span-2" : ""
                       }`}
                     >
-                      <img
-                        src={news.image}
-                        alt={news.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                    
-                    <h4
-                      className={`mt-3 font-bold ${
-                        i % 5 === 0 ? "text-lg md:text-2xl" : "text-sm md:text-base"
-                      } text-gray-900 group-hover:text-red-600 transition-colors`}
-                    >
-                      {news.title}
-                    </h4>
-                  </Link>
-                
-                ))}
-              </div>
-
-
-            </section>
+                      <div
+                        className={`relative overflow-hidden ${
+                          i % 5 === 0 ? "h-95" : "h-32"
+                        }`}
+                      >
+                        <img
+                          src={getImageUrl(news)}
+                          alt={news.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      
+                      <h4
+                        className={`mt-3 font-bold ${
+                          i % 5 === 0 ? "text-lg md:text-2xl" : "text-sm md:text-base"
+                        } text-gray-900 group-hover:text-red-600 transition-colors`}
+                      >
+                        {news.title}
+                      </h4>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Section Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
 
             {/* Bollywood/Hollywood Section */}
-           {/* Bollywood/Hollywood Section */}
-{/* Bollywood/Hollywood Section */}
-{/* Bollywood/Hollywood Section */}
-{/* Bollywood/Hollywood Section */}
-<section>
-  <div className="flex items-center justify-between mb-8">
-    <h3 className="text-3xl font-bold text-gray-900">🎬 बलिउड / हलिउड</h3>
-    <a href="#" className="text-red-600 hover:text-red-700 font-medium">
-      सबै हेर्नुहोस् →
-    </a>
-  </div>
+            {bollywoodHollywoodNews.length > 0 && (
+              <section>
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-3xl font-bold text-gray-900">🎬 बलिउड / हलिउड</h3>
+                  <Link href="/category/बलिउड" className="text-red-600 hover:text-red-700 font-medium">
+                    सबै हेर्नुहोस् →
+                  </Link>
+                </div>
 
-  {/* Large featured item */}
-  <Link className="group cursor-pointer mb-6" href={`/news/${bollywoodHollywoodNews[0].id}`}>
-    <div className="relative h-96 overflow-hidden rounded-lg">
-      <img
-        src={bollywoodHollywoodNews[0].image}
-        alt={bollywoodHollywoodNews[0].title}
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-      />
-    </div>
-    
-    {/* Title in separate container below image */}
-    <div className="mt-4 bg-white">
-      <h4 className="font-bold text-xl text-gray-900 group-hover:text-red-600 transition-colors">
-        {bollywoodHollywoodNews[0].title}
-      </h4>
-    </div>
-  </Link>
+                <Link className="group cursor-pointer mb-6" href={`/news/${bollywoodHollywoodNews[0].id}`}>
+                  <div className="relative h-96 overflow-hidden rounded-lg">
+                    <img
+                      src={getImageUrl(bollywoodHollywoodNews[0])}
+                      alt={bollywoodHollywoodNews[0].title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  
+                  <div className="mt-4 bg-white">
+                    <h4 className="font-bold text-xl text-gray-900 group-hover:text-red-600 transition-colors">
+                      {bollywoodHollywoodNews[0].title}
+                    </h4>
+                  </div>
+                </Link>
 
-  {/* Grid for remaining items */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    {bollywoodHollywoodNews.slice(1).map((news) => (
-      <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer">
-        <div className="relative h-64 overflow-hidden rounded-lg">
-          <img
-            src={news.image}
-            alt={news.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </div>
-        
-        {/* Title in separate container below image */}
-        <div className="mt-4 bg-white">
-          <h5 className="font-bold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
-            {news.title}
-          </h5>
-        </div>
-      </Link>
-    ))}
-  </div>
-</section>
-
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {bollywoodHollywoodNews.slice(1).map((news: any) => (
+                    <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer">
+                      <div className="relative h-64 overflow-hidden rounded-lg">
+                        <img
+                          src={getImageUrl(news)}
+                          alt={news.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      
+                      <div className="mt-4 bg-white">
+                        <h5 className="font-bold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
+                          {news.title}
+                        </h5>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Section Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
 
             {/* Music Section */}
-            <section>
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-3xl font-bold text-gray-900">🎵 संगीत</h3>
-                <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {musicNews.map((news) => (
-                  <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer rounded-lg overflow-hidden">
-                    <div className="relative h-72 overflow-hidden">
-                      <img 
-                        src={news.image} 
-                        alt={news.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                    <h4 className="mt-3 font-bold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
-                      {news.title}
-                    </h4>
+            {musicNews.length > 0 && (
+              <section>
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-3xl font-bold text-gray-900">🎵 संगीत</h3>
+                  <Link href="/category/संगीत" className="text-red-600 hover:text-red-700 font-medium">
+                    सबै हेर्नुहोस् →
                   </Link>
-                ))}
-              </div>
-            </section>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {musicNews.map((news: any) => (
+                    <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer rounded-lg overflow-hidden">
+                      <div className="relative h-72 overflow-hidden">
+                        <img 
+                          src={getImageUrl(news)} 
+                          alt={news.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <h4 className="mt-3 font-bold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
+                        {news.title}
+                      </h4>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Section Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-
-            {/* Featured Section */}
-          
           </div>
 
           {/* Sidebar */}
@@ -346,19 +251,19 @@ export default function EntertainmentPage() {
             <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-6 shadow-sm">
               <h4 className="text-2xl font-bold text-gray-900 mb-6">🔥 ट्रेन्डिङ</h4>
               <div className="space-y-4">
-                {trendingNews.map((trend, index) => (
-                  <div key={index} className="flex items-center space-x-4 p-3 bg-white rounded-xl hover:shadow-md cursor-pointer transition-all">
+                {[headlineNews.main, ...headlineNews.side].filter(Boolean).slice(0, 5).map((trend: any, index: number) => (
+                  <Link href={`/news/${trend.id}`} key={trend.id} className="flex items-center space-x-4 p-3 bg-white rounded-xl hover:shadow-md cursor-pointer transition-all">
                     <span className="font-bold text-red-600 text-xl w-8">{index + 1}</span>
-                    <img src={trend.image} alt={trend.title} className="w-16 h-16 object-cover rounded-lg" />
+                    <img src={getImageUrl(trend)} alt={trend.title} className="w-16 h-16 object-cover rounded-lg" />
                     <span className="text-gray-800 text-sm font-medium flex-1">{trend.title}</span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
 
             {/* Celebrity Spotlight */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h4 className="text-2xl font-bold text-gray-900 mb-6">लोकप्रिय कलाकार</h4>
+              <h4 className="text-2xl font-bold text-gray-900 mb-6">⭐ लोकप्रिय कलाकार</h4>
               <div className="space-y-4">
                 {celebrities.map((celeb, index) => (
                   <div key={index} className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-all">
@@ -446,30 +351,37 @@ export default function EntertainmentPage() {
             </div>
           </div>
         </div>
-        <section>
-  <div className="flex items-center justify-between mb-8">
-    <h3 className="text-3xl font-bold text-gray-900">⭐ विशेष</h3>
-    <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
-  </div>
-  
-  {/* Change from space-y-6 to grid layout */}
-  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-    {featuredNews.map((news) => (
-      <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer">
-        <div className="relative h-90 overflow-hidden rounded-lg">
-          <img 
-            src={news.image} 
-            alt={news.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        </div>
-        <h4 className="mt-3 font-bold text-2xl text-gray-900 group-hover:text-red-600 transition-colors">
-          {news.title}
-        </h4>
-      </Link>
-    ))}
-  </div>
-</section>
+
+        {/* Featured Section */}
+        {featuredNews.length > 0 && (
+          <section className="mt-16">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-3xl font-bold text-gray-900">⭐ विशेष</h3>
+              <Link href="/category/विशेष" className="text-red-600 hover:text-red-700 font-medium">
+                सबै हेर्नुहोस् →
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {featuredNews.map((news: any) => (
+                <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer">
+                  <div className="relative h-90 overflow-hidden rounded-lg">
+                    <img 
+                      src={getImageUrl(news)} 
+                      alt={news.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <h4 className="mt-3 font-bold text-2xl text-gray-900 group-hover:text-red-600 transition-colors">
+                    {news.title}
+                  </h4>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+
         {/* Section Divider */}
         <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-16"></div>
 
@@ -480,21 +392,14 @@ export default function EntertainmentPage() {
             <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[
-              "https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-              "https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-              "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-              "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-              "https://images.unsplash.com/photo-1478720568477-152d9b164e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
-              "https://images.unsplash.com/photo-1501612780327-45045538702b?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
-            ].map((image, index) => (
-              <div key={index} className="aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all group cursor-pointer">
+            {[...gossipNews, ...musicNews].slice(0, 6).map((news: any, index: number) => (
+              <Link href={`/news/${news.id}`} key={news.id} className="aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all group cursor-pointer">
                 <img 
-                  src={image} 
-                  alt={`Gallery ${index + 1}`}
+                  src={getImageUrl(news)} 
+                  alt={news.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-              </div>
+              </Link>
             ))}
           </div>
         </div>

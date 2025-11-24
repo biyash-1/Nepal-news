@@ -9,10 +9,11 @@ interface Props {
 }
 
 const CategoryNewsPage = ({ category, title, gradient }: Props) => {
-  const { news, loading, error, loadMore, totalPages, currentPage } =
+  const { news, popularNews, loading, error, loadMore, totalPages, currentPage } =
     useCategoryNews(category);
 
   console.log(`News for category "${category}":`, news);
+  console.log("Popular news:", popularNews);
 
   const bg = gradient || "from-green-50 to-blue-50";
 
@@ -90,8 +91,6 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
           </div>
         </div>
 
-        {/* Page Info */}
-
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
             {featuredNews && (
@@ -99,7 +98,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 <Link href={`/news/${featuredNews.id}`}>
                   <div className="relative cursor-pointer group">
                     <img
-                      src={featuredNews.image}
+                      src={featuredNews.featuredImage || featuredNews.image}
                       alt={featuredNews.title}
                       className="w-full h-96 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -121,14 +120,13 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {otherNews.map((article, index) => (
                 <Link
-                  href={`/news/${featuredNews.id}`}
+                  href={`/news/${article.id}`}
                   key={article.id}
-                  className="group cursor-pointer  border-gray-100 pb-6 hover:border-gray-300 transition-all duration-300"
+                  className="group cursor-pointer border-gray-100 pb-6 hover:border-gray-300 transition-all duration-300"
                 >
-                  {/* Image with overlay effect */}
-                  <div className="relative mb-4 overflow-hidden ">
+                  <div className="relative mb-4 overflow-hidden">
                     <img
-                      src={article.image}
+                      src={article.featuredImage || article.image}
                       alt={article.title}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -136,7 +134,6 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
                   </div>
 
-                  {/* Content */}
                   <div className="space-y-3">
                     <h3 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-700 transition-colors line-clamp-3">
                       {article.title}
@@ -149,7 +146,6 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
             {/* Load More and Pagination Controls */}
             {news.length > 0 && (
               <div className="flex flex-col items-center mt-12 space-y-4">
-                {/* Load More Button */}
                 {currentPage < totalPages && (
                   <button
                     onClick={loadMore}
@@ -184,7 +180,6 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                   </button>
                 )}
 
-                {/* End of Results Message */}
                 {currentPage === totalPages && totalPages > 1 && (
                   <div className="text-center text-gray-600 py-6 border-t border-gray-200 w-full">
                     <p className="text-lg">
@@ -199,27 +194,27 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
             )}
           </div>
 
-          {/* Sidebar - Clean professional style */}
+          {/* Sidebar */}
           <div className="lg:col-span-1 space-y-8">
-            {/* Popular News - Enhanced design */}
-            <div className="   overflow-hidden">
+            {/* Popular News - Now using स्वास्थ्य and लोकप्रिय categories */}
+            <div className="overflow-hidden">
               <div className="py-2 px-2">
                 <h4 className="font-bold text-lg text-center">लोकप्रिय समाचार</h4>
               </div>
               <div className="p-6 space-y-6">
-                {news.slice(0, 4).map((article, index) => (
-                  <Link href={`/news/${featuredNews.id}`}
+                {popularNews.map((article, index) => (
+                  <Link 
+                    href={`/news/${article.id}`}
                     key={article.id} 
-                    className="group cursor-pointer  pb-4 last:border-0 last:pb-0"
+                    className="group cursor-pointer p-1 pb-4 last:border-0 last:pb-0"
                   >
                     <div className="flex space-x-4">
                       <div className="relative flex-shrink-0">
                         <img
-                          src={article.image}
+                          src={article.featuredImage || article.image}
                           alt={article.title}
                           className="w-30 h-20 object-cover rounded group-hover:scale-110 transition-transform duration-300"
                         />
-                       
                       </div>
                       <div className="flex-1 min-w-0">
                         <h5 className="font-semibold text-gray-900 text-sm leading-tight group-hover:text-blue-700 transition-colors line-clamp-2 mb-1">
@@ -235,15 +230,15 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
               </div>
             </div>
 
-            {/* Quick Links - Modern design */}
+            {/* Quick Links */}
             <div
               className={`bg-gradient-to-br from-${primary}-50 to-${primary}-100 rounded-xl shadow-md border border-${primary}-200 overflow-hidden`}
             >
               <div className={`bg-${primary}-700 px-6 py-4`}>
-                <h4 className="font-bold text-lg">द्रुत लिंकहरू</h4>
+                <h4 className="font-bold text-lg text-white">दुरुत लिंकहरू</h4>
               </div>
               <div className="p-6 space-y-3">
-                <button className="w-full text-left  hover:text-blue-600 transition-all duration-300 flex items-center justify-between group py-3 px-4 hover:bg-white rounded-lg">
+                <button className="w-full text-left hover:text-blue-600 transition-all duration-300 flex items-center justify-between group py-3 px-4 hover:bg-white rounded-lg">
                   <span className="font-medium">{category} भिडियो</span>
                   <svg
                     className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"

@@ -4,9 +4,12 @@ const articleController = require('../controllers/articleController');
 const { authenticate } = require('../middleware/auth');
 
 // Public routes
-router.get('/', articleController.getAllArticles);
+
+
+router.get('/multiple-categories', articleController.getArticlesByMultipleCategories);
 router.get('/category/:category', articleController.getArticlesByCategory);
 router.get('/:id', articleController.getArticleById);
+router.get('/', articleController.getAllArticles);
 
 // Protected routes (require authentication)
 router.post('/', authenticate, articleController.createArticle);

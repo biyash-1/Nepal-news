@@ -82,6 +82,55 @@ exports.getArticleById = async (req, res) => {
   }
 };
 
+exports.getArticlesByMultipleCategories = async (req, res) => {
+  try {
+    let { categories, limit = 10 } = req.query;
+
+    if (!categories) {
+      return res.status(400).json({
+        success: false,
+        message: "Categories are required",
+      });
+    }
+
+    let categoryArray;
+    try {
+      categoryArray = JSON.parse(categories);
+      if (!Array.isArray(categoryArray)) throw new Error();
+    } catch (e) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid categories format. Must be valid JSON array.",
+      });
+    }
+
+    // Read all articles
+    let articles = await readNewsData();
+
+    // Filter articles to ensure they include all categories in categoryArray
+    articles = articles.filter(article =>
+      categoryArray.every(cat => article.categories?.includes(cat))
+    );
+
+    // Sort newest first
+    articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // Apply limit
+    articles = articles.slice(0, parseInt(limit));
+
+    res.json({ success: true, articles });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch articles",
+      error: err.message,
+    });
+  }
+};
+
+
+
+
 // GET ARTICLES BY CATEGORY
 exports.getArticlesByCategory = async (req, res) => {
   try {
@@ -90,14 +139,20 @@ exports.getArticlesByCategory = async (req, res) => {
 
     let articles = await readNewsData();
 
+    // Filter by category
     articles = articles.filter((a) => a.categories?.includes(category));
 
     if (exclude) {
       articles = articles.filter((a) => a.id !== exclude);
     }
 
+    // Exclude articles with the tag "लोकप्रिय"
+    articles = articles.filter((a) => !a.tags?.includes("लोकप्रिय"));
+
+    // Sort by newest first
     articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+    // Pagination
     const start = (page - 1) * parseInt(limit);
     const paginated = articles.slice(start, start + parseInt(limit));
 
@@ -116,6 +171,7 @@ exports.getArticlesByCategory = async (req, res) => {
     });
   }
 };
+
 
 // CREATE ARTICLE
 exports.createArticle = async (req, res) => {

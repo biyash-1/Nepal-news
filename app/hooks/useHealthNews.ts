@@ -36,7 +36,7 @@ export const useHealthNews = () => {
 
       // Fetch regular health news
       const res = await axiosInstance.get(`/articles/category/health`, {
-        params: { page, limit: 8 },
+        params: { page, limit: 10 },
       });
 
       if (res.data.success) {
