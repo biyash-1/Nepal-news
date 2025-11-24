@@ -1,56 +1,96 @@
+"use client";
 
+import { pradeshData } from '@/lib/PradeshData';
+import { notFound, useParams } from 'next/navigation';
+import { usePradeshNews } from '@/app/hooks/usePradeshNews';
 
-import { pradeshData, pradeshNewsData, trendingProvinceNews } from '@/lib/PradeshData';
-import { notFound } from 'next/navigation';
-
-interface PageProps {
-  params: {
-    pradeshId: string;
-  };
-}
-
-// Fallback news data for when there aren't enough news items
+// Fallback news data
 const fallbackNews = {
   id: "fallback",
   title: "यस प्रदेशका थप समाचारहरू चाँडै नै उपलब्ध हुनेछन्",
-  excerpt: "हामी यस प्रदेशका नयाँ समाचारहरू संकलन गर्दैछौं।",
-  content: "यस प्रदेशका नयाँ समाचारहरू चाँडै नै उपलब्ध हुनेछन्।",
+  content: "हामी यस प्रदेशका नयाँ समाचारहरू संकलन गर्दैछौं। यस प्रदेशका ताजा समाचारहरू चाँडै नै उपलब्ध हुनेछन्।",
   image: "https://images.unsplash.com/photo-1584824486539-53bb4646bdbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
-  category: "सामान्य",
-  date: "२०८२ मंसिर २७",
-  author: "समाचार टिम",
-  tags: ["प्रदेश", "समाचार"],
-  views: 0,
-  isBreaking: false
+  categories: ["प्रदेश", "सामान्य"],
+  author: {
+    id: "system",
+    username: "समाचार टिम"
+  },
+  createdAt: new Date().toISOString()
 };
 
-export default async function PradeshNewsPage({ params }: PageProps) {
-  const { pradeshId } = await params;
-  const pradesh = pradeshData[pradeshId];
-  const news = pradeshNewsData[pradeshId] || [];
+const getImageUrl = (article: any) => {
+  return article?.image || "https://images.unsplash.com/photo-1584824486539-53bb4646bdbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80";
+};
 
+const getExcerpt = (content: string, maxLength: number = 150) => {
+  if (content.length <= maxLength) return content;
+  return content.substring(0, maxLength) + "...";
+};
+
+export default function PradeshNewsPage() {
+  const params = useParams();
+  const pradeshId = params?.pradeshId as string;
+  
+  const pradesh = pradeshData[pradeshId];
+  
   if (!pradesh) {
     notFound();
   }
 
-  // Ensure we have at least one main news
-  const mainNews = news[0] || fallbackNews;
-  
-  // Ensure we have at least 2 featured news (fill with fallback if needed)
-  const featuredNews = [
-    ...news.slice(1, 3),
-    ...Array(Math.max(0, 2 - news.slice(1, 3).length)).fill(fallbackNews)
-  ].slice(0, 2);
+  const { mainNews, featuredNews, headlineNews, regularNews, loading, error } = usePradeshNews(pradesh.name);
 
-  // Regular news (skip first 3, but don't show if we don't have enough)
-  const regularNews = news.length > 3 ? news.slice(3) : [];
+  // Prepare data with fallbacks
+  const displayMainNews = mainNews || fallbackNews;
+  const displayFeaturedNews = [
+    ...(featuredNews || []),
+    ...Array(Math.max(0, 2 - (featuredNews?.length || 0))).fill(fallbackNews)
+  ].slice(0, 2);
+  const displayHeadlineNews = headlineNews || [];
+  const displayRegularNews = regularNews || [];
+  
+  const allNews = [mainNews, ...featuredNews, ...headlineNews, ...regularNews].filter(Boolean);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="bg-white border-b border-gray-200">
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold text-gray-900 text-center">{pradesh.name} समाचार</h1>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-20">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+            <p className="mt-4 text-gray-600">समाचार लोड हुँदैछ...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="bg-white border-b border-gray-200">
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold text-gray-900 text-center">{pradesh.name} समाचार</h1>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-20">
+          <div className="text-center">
+            <p className="text-red-600 text-lg">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 text-center">{mainNews.title} समाचार</h1>
+          <h1 className="text-3xl font-bold text-gray-900 text-center">{pradesh.name} समाचार</h1>
         </div>
       </div>
 
@@ -59,80 +99,75 @@ export default async function PradeshNewsPage({ params }: PageProps) {
         <div className="mb-8">
           <div className="relative h-[400px] md:h-[500px] overflow-hidden rounded-lg mb-4">
             <img 
-              src={mainNews.image} 
-              alt={mainNews.title}
+              src={getImageUrl(displayMainNews)} 
+              alt={displayMainNews.title}
               className="w-full h-full object-cover"
-              
             />
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-            
-              <p className="text-gray-200 text-sm md:text-base">{mainNews.excerpt}</p>
+              <p className="text-gray-200 text-sm md:text-base">{getExcerpt(displayMainNews.content)}</p>
             </div>
           </div>
         </div>
 
-        {/* Featured News Grid - Responsive layout */}
-        {featuredNews.length > 0 && (
+        {/* Featured News Grid */}
+        {displayFeaturedNews.length > 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-            {/* Main Featured News - Show only if we have at least one featured news */}
-            {featuredNews[0] && (
+            {/* Main Featured News */}
+            {displayFeaturedNews[0] && (
               <div className="lg:col-span-2">
                 <div className="border border-gray-200 rounded-lg overflow-hidden h-full">
                   <img 
-                    src={featuredNews[0].image} 
-                    alt={featuredNews[0].title}
+                    src={getImageUrl(displayFeaturedNews[0])} 
+                    alt={displayFeaturedNews[0].title}
                     className="w-full h-64 object-cover"
-                   
                   />
                   <div className="p-4">
                     <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium mb-2">
-                      {featuredNews[0].category}
+                      {displayFeaturedNews[0].categories[0]}
                     </span>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{featuredNews[0].title}</h3>
-                    <p className="text-gray-600 text-sm">{featuredNews[0].excerpt}</p>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{displayFeaturedNews[0].title}</h3>
+                    <p className="text-gray-600 text-sm">{getExcerpt(displayFeaturedNews[0].content)}</p>
                     <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-                      <span>{featuredNews[0].date}</span>
-                      <span>{featuredNews[0].views} पटक</span>
+                      <span>{new Date(displayFeaturedNews[0].createdAt).toLocaleDateString('ne-NP')}</span>
+                      <span>{displayFeaturedNews[0].author.username}</span>
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Side Featured News - Show only if we have second featured news */}
-            {featuredNews[1] && (
+            {/* Side Featured News */}
+            {displayFeaturedNews[1] && (
               <div className="space-y-4">
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <img 
-                    src={featuredNews[1].image} 
-                    alt={featuredNews[1].title}
+                    src={getImageUrl(displayFeaturedNews[1])} 
+                    alt={displayFeaturedNews[1].title}
                     className="w-full h-32 object-cover"
-                  
                   />
                   <div className="p-3">
                     <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium mb-2">
-                      {featuredNews[1].category}
+                      {displayFeaturedNews[1].categories[0]}
                     </span>
-                    <h4 className="font-bold text-gray-900 text-sm leading-tight">{featuredNews[1].title}</h4>
+                    <h4 className="font-bold text-gray-900 text-sm leading-tight">{displayFeaturedNews[1].title}</h4>
                     <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-                      <span>{featuredNews[1].date}</span>
+                      <span>{new Date(displayFeaturedNews[1].createdAt).toLocaleDateString('ne-NP')}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Optional third small news if available */}
-                {news[3] && (
+                {/* Optional third small news */}
+                {displayHeadlineNews[0] && (
                   <div className="border border-gray-200 rounded-lg overflow-hidden">
                     <img 
-                      src={news[3].image} 
-                      alt={news[3].title}
+                      src={getImageUrl(displayHeadlineNews[0])} 
+                      alt={displayHeadlineNews[0].title}
                       className="w-full h-32 object-cover"
-                     
                     />
                     <div className="p-3">
-                      <h4 className="font-bold text-gray-900 text-sm leading-tight">{news[3].title}</h4>
+                      <h4 className="font-bold text-gray-900 text-sm leading-tight">{displayHeadlineNews[0].title}</h4>
                       <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-                        <span>{news[3].date}</span>
+                        <span>{new Date(displayHeadlineNews[0].createdAt).toLocaleDateString('ne-NP')}</span>
                       </div>
                     </div>
                   </div>
@@ -142,46 +177,48 @@ export default async function PradeshNewsPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Pradesh Headlines Section - Only show if we have enough news */}
-        {news.length >= 3 && (
+        {/* Pradesh Headlines Section */}
+        {allNews.length >= 3 && (
           <div className="bg-yellow-50 border rounded-lg p-6 mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 ">प्रदेशका हेडलाइन</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">प्रदेशका हेडलाइन</h3>
             
-            {/* Top Row - Show available news (up to 3) */}
+            {/* Top Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              {news.slice(0, 3).map((item) => (
-                <div key={item.id} className="  rounded-lg  p-4 hover:shadow-md transition-shadow">
+              {[mainNews, ...featuredNews].filter(Boolean).slice(0, 3).map((item: any) => (
+                <div key={item.id} className="rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center space-x-3">
                     <img 
-                      src={item.image} 
+                      src={getImageUrl(item)} 
                       alt={item.title}
-                      className="w-20 h-20 object-cover rounded "
-                    
+                      className="w-20 h-20 object-cover rounded"
                     />
                     <div>
                       <h4 className="font-bold text-gray-900 text-sm leading-tight">{item.title}</h4>
-                      <span className="text-xs text-gray-500 mt-1 block">{item.date}</span>
+                      <span className="text-xs text-gray-500 mt-1 block">
+                        {new Date(item.createdAt).toLocaleDateString('ne-NP')}
+                      </span>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Bottom Row - Show additional news if available */}
-            {news.length >= 6 && (
+            {/* Bottom Row */}
+            {displayHeadlineNews.length >= 3 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {news.slice(3, 6).map((item) => (
-                  <div key={item.id} className=" rounded-lg   p-4 hover:shadow-md transition-shadow">
+                {displayHeadlineNews.slice(0, 3).map((item: any) => (
+                  <div key={item.id} className="rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-start space-x-3">
                       <img 
-                        src={item.image} 
+                        src={getImageUrl(item)} 
                         alt={item.title}
                         className="w-20 h-20 object-cover rounded flex-shrink-0"
-                       
                       />
                       <div>
                         <h4 className="font-bold text-gray-900 text-sm leading-tight">{item.title}</h4>
-                        <span className="text-xs text-gray-500 mt-1 block">{item.date}</span>
+                        <span className="text-xs text-gray-500 mt-1 block">
+                          {new Date(item.createdAt).toLocaleDateString('ne-NP')}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -191,28 +228,27 @@ export default async function PradeshNewsPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Regular News Grid - Only show if we have regular news */}
-        {regularNews.length > 0 && (
+        {/* Regular News Grid */}
+        {displayRegularNews.length > 0 && (
           <div className="mb-12">
             <h3 className="text-2xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-2">अन्य समाचार</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {regularNews.map((item) => (
+              {displayRegularNews.map((item: any) => (
                 <div key={item.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                   <img 
-                    src={item.image} 
+                    src={getImageUrl(item)} 
                     alt={item.title}
                     className="w-full h-48 object-cover"
-                   
                   />
                   <div className="p-4">
                     <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium mb-2">
-                      {item.category}
+                      {item.categories[0]}
                     </span>
                     <h4 className="font-bold text-gray-900 mb-2 leading-tight">{item.title}</h4>
-                    <p className="text-gray-600 text-sm mb-3">{item.excerpt}</p>
+                    <p className="text-gray-600 text-sm mb-3">{getExcerpt(item.content, 100)}</p>
                     <div className="flex justify-between items-center text-xs text-gray-500">
-                      <span>{item.date}</span>
-                      <span>{item.views} पटक</span>
+                      <span>{new Date(item.createdAt).toLocaleDateString('ne-NP')}</span>
+                      <span>{item.author.username}</span>
                     </div>
                   </div>
                 </div>
@@ -221,8 +257,8 @@ export default async function PradeshNewsPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* No News Message - Show when there are very few news */}
-        {news.length <= 1 && (
+        {/* No News Message */}
+        {allNews.length <= 1 && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center mb-8">
             <h3 className="text-xl font-bold text-blue-900 mb-2">यस प्रदेशका नयाँ समाचारहरू चाँडै नै उपलब्ध हुनेछन्</h3>
             <p className="text-blue-700">हामी यस प्रदेशका ताजा समाचारहरू संकलन गर्दैछौं। कृपया केही समय पछि पुनः जाँच्नुहोस्।</p>
@@ -259,15 +295,4 @@ export default async function PradeshNewsPage({ params }: PageProps) {
       </div>
     </div>
   );
-}
-
-export async function generateMetadata({ params }: PageProps) {
-  const { pradeshId } = params;
-  const pradesh = pradeshData[pradeshId];
-  const news = pradeshNewsData[pradeshId];
-  
-  return {
-    title: `${pradesh?.name || 'प्रदेश'} - ताजा समाचार | नेपाल समाचार`,
-    description: news?.[0]?.excerpt || pradesh?.geography
-  };
 }

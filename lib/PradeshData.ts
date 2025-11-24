@@ -36,7 +36,7 @@ export interface PradeshNews {
 export const pradeshData: { [key: string]: PradeshData } = {
   "1": {
     id: "1",
-    name: "कोशी प्रदेश",
+    name: "कोशी",
     number: "प्रदेश नं १",
     capital: "बिराटनगर",
     area: "25,905 km²",
@@ -55,7 +55,7 @@ export const pradeshData: { [key: string]: PradeshData } = {
   },
   "2": {
     id: "2",
-    name: "मधेश प्रदेश",
+    name: "मधेश",
     number: "प्रदेश नं २",
     capital: "जनकपुरधाम",
     area: "9,661 km²",
@@ -74,7 +74,7 @@ export const pradeshData: { [key: string]: PradeshData } = {
   },
   "3": {
     id: "3",
-    name: "बागमती प्रदेश",
+    name: "बागमती",
     number: "प्रदेश नं ३",
     capital: "हेटौंडा",
     area: "20,300 km²",
@@ -93,7 +93,7 @@ export const pradeshData: { [key: string]: PradeshData } = {
   },
   "4": {
     id: "4",
-    name: "गण्डकी प्रदेश",
+    name: "गण्डकी",
     number: "प्रदेश नं ४",
     capital: "पोखरा",
     area: "21,504 km²",
@@ -112,7 +112,7 @@ export const pradeshData: { [key: string]: PradeshData } = {
   },
   "5": {
     id: "5",
-    name: "लुम्बिनी प्रदेश",
+    name: "लुम्बिनी",
     number: "प्रदेश नं ५",
     capital: "देवदह",
     area: "22,288 km²",
@@ -131,7 +131,7 @@ export const pradeshData: { [key: string]: PradeshData } = {
   },
   "6": {
     id: "6",
-    name: "कर्णाली प्रदेश",
+    name: "कर्णाली",
     number: "प्रदेश नं ६",
     capital: "वीरेन्द्रनगर",
     area: "27,984 km²",
@@ -150,7 +150,7 @@ export const pradeshData: { [key: string]: PradeshData } = {
   },
   "7": {
     id: "7",
-    name: "सुदूरपश्चिम प्रदेश",
+    name: "सुदूरपश्चिम",
     number: "प्रदेश नं ७",
     capital: "गोडावरी",
     area: "19,539 km²",

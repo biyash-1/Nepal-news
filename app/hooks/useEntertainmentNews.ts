@@ -6,11 +6,11 @@ import axiosInstance from "@/lib/axios";
 interface Article {
   id: string;
   title: string;
-  featuredImage?: string;
-  image?: string;
-  category: string;
+  content: string;
+  categories: string[];
+  author: string; // <-- match backend
   createdAt: string;
-  // Add other article fields as needed
+  image: string;
 }
 
 interface HeadlineNews {

@@ -107,10 +107,20 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
     // Read all articles
     let articles = await readNewsData();
 
-    // Filter articles to ensure they include all categories in categoryArray
-    articles = articles.filter(article =>
-      categoryArray.every(cat => article.categories?.includes(cat))
-    );
+    // Filter articles:
+    // If categories contain only ["बलिउड", "हलिउड"], use OR logic
+    const isBollywoodRequest = categoryArray.length === 2 && categoryArray.includes("बलिउड") && categoryArray.includes("हलिउड");
+
+    if (isBollywoodRequest) {
+      articles = articles.filter(article =>
+        article.categories?.some(cat => categoryArray.includes(cat))
+      );
+    } else {
+      // Normal AND logic: article must include all categories
+      articles = articles.filter(article =>
+        categoryArray.every(cat => article.categories?.includes(cat))
+      );
+    }
 
     // Sort newest first
     articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -127,6 +137,7 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
     });
   }
 };
+
 
 
 
