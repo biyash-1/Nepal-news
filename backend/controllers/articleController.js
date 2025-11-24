@@ -147,7 +147,6 @@ exports.getArticlesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
     const { page = 1, limit = 10, exclude } = req.query;
-
     let articles = await readNewsData();
 
     // Filter by category
@@ -164,9 +163,12 @@ exports.getArticlesByCategory = async (req, res) => {
     articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     // Pagination
-    const start = (page - 1) * parseInt(limit);
+    let start = (page - 1) * parseInt(limit);
+    if (page>1){
+      start+=1;
+    }
     const paginated = articles.slice(start, start + parseInt(limit));
-
+   
     res.json({
       success: true,
       articles: paginated,
