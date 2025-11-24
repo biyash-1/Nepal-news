@@ -8,6 +8,7 @@ import AuthModal from "./AuthModel";
 import UserProfileDropdown from "./UserProfileDropdown";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import SearchBar from "./SearchBar";
 type NavItem = {
   label: string;
   href?: string;
@@ -155,14 +156,10 @@ export default function Header() {
         <div className= " w-[80%] mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
           <Link href="/" className="text-2xl font-bold text-red-600 hover:text-red-700">नेपाल समाचार</Link>
 
-          <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-1/3">
-            <input type="text" placeholder="समाचार खोज्नुहोस्..." className="bg-transparent w-full focus:outline-none text-sm" />
-            <button className="text-gray-500" aria-label="search">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </div>
+       <div className="hidden md:block w-[60%]">
+  <SearchBar />
+</div>
+
 
           <div className="flex items-center space-x-4">
             {isLoading ? (
