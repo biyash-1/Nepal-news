@@ -64,55 +64,28 @@ export default function TechNews() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {techNews.map((tech) => (
-            <div key={tech.id} className="group">
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform group-hover:scale-105 transition-all duration-300 h-full flex flex-col">
-                {/* Image Section */}
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={tech.image} 
-                    alt={tech.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className={`absolute top-4 left-4 bg-gradient-to-r ${tech.color} text-white px-3 py-1 rounded-full text-sm font-bold flex items-center space-x-2`}>
-                    <span>{tech.icon}</span>
-                    <span>{tech.category}</span>
-                  </div>
-                  <div className={`absolute top-4 right-4 text-xs px-2 py-1 rounded-full ${
-                    tech.trend === 'up' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {tech.trend === 'up' ? '↑ बढ्दो' : '↓ चुनौती'}
-                  </div>
-                </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  {techNews.map((tech) => (
+    <div key={tech.id} className="group">
 
-                {/* Content Section */}
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="font-bold text-lg text-gray-900 mb-3 leading-tight">
-                    {tech.title}
-                  </h3>
-                  
-                  <p className="text-gray-600 text-sm mb-4 leading-relaxed flex-1">
-                    {tech.description}
-                  </p>
+      {/* Image */}
+      <div className="relative h-48">
+        <img
+          src={tech.image}
+          alt={tech.title}
+          className="w-full h-full object-cover rounded-lg transition-transform duration-300"
+        />
+      </div>
 
-                  <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
-                    <div className="flex items-center space-x-4">
-                      <span>{tech.time}</span>
-                      <span>👁️ {tech.reads}</span>
-                    </div>
-                    <button className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center space-x-1">
-                      <span>पढ्नुहोस्</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Title */}
+      <h3 className="mt-3 font-semibold text-gray-900 text-lg transition-colors duration-300 group-hover:text-red-600">
+        {tech.title}
+      </h3>
+
+    </div>
+  ))}
+</div>
+
 
         {/* Featured Tech Story */}
         <div className="mt-12 bg-white rounded-2xl shadow-lg overflow-hidden">

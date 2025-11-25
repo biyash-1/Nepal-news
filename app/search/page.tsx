@@ -103,31 +103,24 @@ export default function SearchPage() {
               <Link
                 key={result.id}
                 href={`/news/${result.slug}`}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                className="rounded-lg  overflow-hidden  transition-shadow duration-300"
               >
                 <div className="relative h-48 bg-gray-200">
                   <div className="w-full h-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
                     <span className="text-red-300 text-lg">📷</span>
                   </div>
                   <div className="absolute top-4 left-4">
-                    <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                      {result.category}
-                    </span>
+                   
                   </div>
                 </div>
                 
                 <div className="p-4">
-                  <h3 className="font-bold text-lg text-gray-800 mb-2 line-clamp-2">
+                
+                  
+              
+                  <h3 className="font-bold text-lg text-gray-800 ">
                     {result.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-3">
-                    {result.excerpt}
-                  </p>
-                  
-                  <div className="flex justify-between items-center text-xs text-gray-500">
-                    <span>{result.author}</span>
-                    <span>{result.publishedAt}</span>
-                  </div>
                 </div>
               </Link>
             ))}

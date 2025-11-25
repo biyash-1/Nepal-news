@@ -45,31 +45,28 @@ export default function PortfolioSection() {
           {newsItems.map((item, index) => (
             <div 
               key={index} 
-              className="flex flex-col md:flex-row bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              className="group flex flex-col md:flex-row  rounded-xl overflow-hidden hover:text-red-600 transition-shadow duration-300"
             >
               {/* Image */}
               <div className="md:w-1/3 h-64 md:h-auto relative flex-shrink-0">
                 <img 
                   src={item.img} 
                   alt={item.title} 
-                  className="w-full h-full object-cover"
+                  className=" object-contain"
                 />
               </div>
 
           
-              <div className="md:w-2/3 p-6 flex flex-col justify-between">
-                <div>
-                  <span className="text-sm font-semibold text-blue-600 uppercase">{item.category}</span>
-                  <h3 className="mt-2 text-2xl font-bold text-gray-900">{item.title}</h3>
-                  <p className="mt-4 text-gray-700 text-base leading-relaxed">
+              <div className="md:w-2/3 p-4 flex flex-col justify-between">
+                <div className="">
+               
+                  <h3 className="mt-2 text-2xl font-bold text-gray-900 group-hover:text-red-500">{item.title}</h3>
+                  <p className="mt-4 text-gray-700 text-base leading-relaxed group-hover:text-red-500">
                     {item.description}
                   </p>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between text-sm text-gray-500">
-                  <span>{item.time}</span>
-                  <span>{item.reads}</span>
-                </div>
+             
               </div>
             </div>
           ))}

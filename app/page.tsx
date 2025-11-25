@@ -15,7 +15,7 @@ export default function Home() {
       <BreakingNews />
         <FeaturedNews />
         <LatestNews />
-        <GlobalNews />
+      
         <SportsNews/>
         <PortfolioSection/>
         <TechNews/>

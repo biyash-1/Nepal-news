@@ -115,18 +115,17 @@ export default function PradeshNewsPage() {
             {/* Main Featured News */}
             {displayFeaturedNews[0] && (
               <div className="lg:col-span-2">
-                <div className="border border-gray-200 rounded-lg overflow-hidden h-full">
+                <div className=" rounded-lg overflow-hidden h-full">
                   <img 
-                    src={getImageUrl(displayFeaturedNews[0])} 
+                  
+                    src={getImageUrl(displayFeaturedNews[0])}
                     alt={displayFeaturedNews[0].title}
                     className="w-full h-64 object-cover"
                   />
                   <div className="p-4">
-                    <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium mb-2">
-                      {displayFeaturedNews[0].categories[0]}
-                    </span>
+                   
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{displayFeaturedNews[0].title}</h3>
-                    <p className="text-gray-600 text-sm">{getExcerpt(displayFeaturedNews[0].content)}</p>
+                 
                     <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
                       <span>{new Date(displayFeaturedNews[0].createdAt).toLocaleDateString('ne-NP')}</span>
                       <span>{displayFeaturedNews[0].author.username}</span>
@@ -139,16 +138,14 @@ export default function PradeshNewsPage() {
             {/* Side Featured News */}
             {displayFeaturedNews[1] && (
               <div className="space-y-4">
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="  rounded-lg overflow-hidden">
                   <img 
                     src={getImageUrl(displayFeaturedNews[1])} 
                     alt={displayFeaturedNews[1].title}
                     className="w-full h-32 object-cover"
                   />
                   <div className="p-3">
-                    <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium mb-2">
-                      {displayFeaturedNews[1].categories[0]}
-                    </span>
+                    
                     <h4 className="font-bold text-gray-900 text-sm leading-tight">{displayFeaturedNews[1].title}</h4>
                     <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
                       <span>{new Date(displayFeaturedNews[1].createdAt).toLocaleDateString('ne-NP')}</span>
@@ -158,7 +155,7 @@ export default function PradeshNewsPage() {
 
                 {/* Optional third small news */}
                 {displayHeadlineNews[0] && (
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="rounded-lg overflow-hidden">
                     <img 
                       src={getImageUrl(displayHeadlineNews[0])} 
                       alt={displayHeadlineNews[0].title}
@@ -167,7 +164,7 @@ export default function PradeshNewsPage() {
                     <div className="p-3">
                       <h4 className="font-bold text-gray-900 text-sm leading-tight">{displayHeadlineNews[0].title}</h4>
                       <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-                        <span>{new Date(displayHeadlineNews[0].createdAt).toLocaleDateString('ne-NP')}</span>
+                     
                       </div>
                     </div>
                   </div>
@@ -194,9 +191,7 @@ export default function PradeshNewsPage() {
                     />
                     <div>
                       <h4 className="font-bold text-gray-900 text-sm leading-tight">{item.title}</h4>
-                      <span className="text-xs text-gray-500 mt-1 block">
-                        {new Date(item.createdAt).toLocaleDateString('ne-NP')}
-                      </span>
+                    
                     </div>
                   </div>
                 </div>
@@ -208,7 +203,7 @@ export default function PradeshNewsPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {displayHeadlineNews.slice(0, 3).map((item: any) => (
                   <div key={item.id} className="rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start space-x-3">
+                    <div className="flex items-center space-x-3">
                       <img 
                         src={getImageUrl(item)} 
                         alt={item.title}
@@ -216,9 +211,7 @@ export default function PradeshNewsPage() {
                       />
                       <div>
                         <h4 className="font-bold text-gray-900 text-sm leading-tight">{item.title}</h4>
-                        <span className="text-xs text-gray-500 mt-1 block">
-                          {new Date(item.createdAt).toLocaleDateString('ne-NP')}
-                        </span>
+                       
                       </div>
                     </div>
                   </div>
@@ -231,23 +224,21 @@ export default function PradeshNewsPage() {
         {/* Regular News Grid */}
         {displayRegularNews.length > 0 && (
           <div className="mb-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-2">अन्य समाचार</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6  pb-2">अन्य समाचार</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayRegularNews.map((item: any) => (
-                <div key={item.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                <div key={item.id} className=" rounded-lg overflow-hidden  transition-shadow">
                   <img 
                     src={getImageUrl(item)} 
                     alt={item.title}
                     className="w-full h-48 object-cover"
                   />
                   <div className="p-4">
-                    <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium mb-2">
-                      {item.categories[0]}
-                    </span>
+                 
                     <h4 className="font-bold text-gray-900 mb-2 leading-tight">{item.title}</h4>
-                    <p className="text-gray-600 text-sm mb-3">{getExcerpt(item.content, 100)}</p>
+                  
                     <div className="flex justify-between items-center text-xs text-gray-500">
-                      <span>{new Date(item.createdAt).toLocaleDateString('ne-NP')}</span>
+                    
                       <span>{item.author.username}</span>
                     </div>
                   </div>

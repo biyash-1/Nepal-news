@@ -38,29 +38,27 @@ export default function LatestNews() {
         </a>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {newsItems.map((item, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden news-card">
-            <img src={item.img} alt={item.title} className="w-full h-48 object-cover" />
-            <div className="p-4">
-              <span className={`category-tag ${
-                item.category === 'शिक्षा' ? 'bg-yellow-100 text-yellow-600' :
-                item.category === 'प्रविधि' ? 'bg-indigo-100 text-indigo-600' :
-                'bg-pink-100 text-pink-600'
-              }`}>
-                {item.category}
-              </span>
-              <h3 className="font-bold mt-2 mb-2">{item.title}</h3>
-              <p className="text-gray-600 text-sm mb-3">{item.description}</p>
-              <div className="flex items-center text-xs text-gray-500">
-                <span>{item.time}</span>
-                <span className="mx-2">•</span>
-                <span>{item.reads}</span>
-              </div>
-            </div>
-          </div>
-        ))}
+     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {newsItems.map((item, index) => (
+    <div 
+      key={index} 
+      className="rounded-lg overflow-hidden news-card cursor-pointer group"
+    >
+      <img 
+        src={item.img} 
+        alt={item.title} 
+        className="w-full h-48 object-cover"
+      />
+
+      <div className="p-4">
+        <h3 className="font-bold mt-2 mb-2 text-gray-800 transition-colors duration-300 group-hover:text-red-600">
+          {item.title}
+        </h3>
       </div>
+    </div>
+  ))}
+</div>
+
     </section>
   )
 }
