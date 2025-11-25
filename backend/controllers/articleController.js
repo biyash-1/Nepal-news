@@ -185,6 +185,119 @@ exports.getArticlesByCategory = async (req, res) => {
   }
 };
 
+// Add this to your controllers/articleController.js
+
+exports.searchArticles = async (req, res) => {
+  try {
+    const { q: query, page = 1, limit = 10 } = req.query;
+
+    // Validate query
+    if (!query || query.trim() === "") {
+      return res.json({
+        success: true,
+        results: [],
+        totalPages: 0,
+        currentPage: Number(page),
+        total: 0,
+        message: "खोज शब्द आवश्यक छ"
+      });
+    }
+
+    // Read all articles
+    let articles = await readNewsData();
+
+    // Normalize and split query into keywords
+    const keywords = query
+      .toLowerCase()
+      .trim()
+      .split(/\s+/)
+      .filter(k => k.length > 0);
+
+    // Score and filter articles
+    const scoredArticles = articles
+      .map(article => {
+        const titleLower = (article.title || "").toLowerCase();
+        const contentLower = (article.content || "").toLowerCase();
+        const fullQuery = keywords.join(" ");
+
+        let score = 0;
+
+        // 1. Exact phrase match (highest priority)
+        if (titleLower.includes(fullQuery)) {
+          score += 100 * 2; // Title match with 2x multiplier
+        }
+        if (contentLower.includes(fullQuery)) {
+          score += 100; // Content match
+        }
+
+        // 2. Individual keyword matching
+        let titleMatches = 0;
+        let contentMatches = 0;
+
+        keywords.forEach(keyword => {
+          if (titleLower.includes(keyword)) {
+            titleMatches++;
+          }
+          if (contentLower.includes(keyword)) {
+            contentMatches++;
+          }
+        });
+
+        // Calculate keyword match percentage
+        const matchPercentage = Math.max(titleMatches, contentMatches) / keywords.length;
+
+        // All keywords present
+        if (matchPercentage === 1) {
+          score += 80 * (titleMatches > 0 ? 2 : 1); // 160 for title, 80 for content
+        }
+        // Partial match (>50% keywords)
+        else if (matchPercentage > 0.5) {
+          score += 60 * matchPercentage * (titleMatches > 0 ? 2 : 1);
+        }
+        // Some match
+        else if (matchPercentage > 0) {
+          score += 40 * matchPercentage * (titleMatches > 0 ? 2 : 1);
+        }
+
+        return {
+          ...article,
+          searchScore: Math.round(score)
+        };
+      })
+      .filter(article => article.searchScore >= 40) // Minimum threshold
+      .sort((a, b) => {
+        // Sort by score (highest first), then by date (newest first)
+        if (b.searchScore !== a.searchScore) {
+          return b.searchScore - a.searchScore;
+        }
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+    // Pagination
+    const start = (page - 1) * parseInt(limit);
+    const paginated = scoredArticles.slice(start, start + parseInt(limit));
+
+    // Remove searchScore from response (optional, for cleaner output)
+    const results = paginated.map(({ searchScore, ...article }) => article);
+
+    res.json({
+      success: true,
+      results: results,
+      totalPages: Math.ceil(scoredArticles.length / limit),
+      currentPage: Number(page),
+      total: scoredArticles.length,
+      query: query
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "खोजीमा समस्या भयो",
+      error: err.message
+    });
+  }
+};
+
 
 // CREATE ARTICLE
 exports.createArticle = async (req, res) => {

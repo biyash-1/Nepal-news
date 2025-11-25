@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import axiosInstance from "@/lib/axios";
 
 interface SearchResult {
   id: string;
@@ -35,15 +36,12 @@ export default function SearchPage() {
     setError("");
     
     try {
-    
-      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+      const response = await axiosInstance.get(`/articles/search`, {
+        params: { q: searchQuery }
+      });
       
-      if (!response.ok) {
-        throw new Error("Search failed");
-      }
-      
-      const data = await response.json();
-      setResults(data.results || []);
+      // Axios automatically parses JSON, data is in response.data
+      setResults(response.data.results || []);
     } catch (err) {
       setError("खोजीमा समस्या भयो। पुनः प्रयास गर्नुहोस्।");
       console.error("Search error:", err);
@@ -51,43 +49,6 @@ export default function SearchPage() {
       setLoading(false);
     }
   };
-
- 
-  const mockResults: SearchResult[] = [
-    {
-      id: "1",
-      title: "नेपालले अन्तर्राष्ट्रिय क्रिकेट प्रतियोगिता जित्यो",
-      excerpt: "नेपाली क्रिकेट टिमले ऐतिहासिक जित हासिल गर्दै अन्तर्राष्ट्रिय प्रतियोगिताको उपाधि जितेको छ।",
-      image: "/images/cricket-win.jpg",
-      category: "खेलकुद",
-      publishedAt: "२०२४-०१-१५",
-      author: "सports संवाददाता",
-      slug: "nepal-cricket-win"
-    },
-    {
-      id: "2",
-      title: "नयाँ आर्थिक नीतिमा व्यापारीहरूको प्रतिक्रिया",
-      excerpt: "सरकारको नयाँ आर्थिक नीतिले व्यापारी समुदायमा मिश्रित प्रतिक्रिया उत्पन्न गरेको छ।",
-      image: "/images/economy-policy.jpg",
-      category: "अर्थतन्त्र",
-      publishedAt: "२०२४-०१-१४",
-      author: "आर्थिक संवाददाता",
-      slug: "new-economic-policy"
-    }
-  ];
-
-
-  useEffect(() => {
-    if (query && !loading) {
-      setTimeout(() => {
-        setResults(mockResults.filter(item => 
-          item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.excerpt.toLowerCase().includes(query.toLowerCase()) ||
-          item.category.toLowerCase().includes(query.toLowerCase())
-        ));
-      }, 1000);
-    }
-  }, [query]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -102,14 +63,14 @@ export default function SearchPage() {
           </p>
         </div>
 
-   
+        {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
           </div>
         )}
 
-      
+        {/* Error State */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <p className="text-red-600">{error}</p>
@@ -145,7 +106,6 @@ export default function SearchPage() {
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
               >
                 <div className="relative h-48 bg-gray-200">
-                  {/* Replace with actual Image component when you have real images */}
                   <div className="w-full h-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
                     <span className="text-red-300 text-lg">📷</span>
                   </div>
@@ -174,7 +134,7 @@ export default function SearchPage() {
           </div>
         )}
 
-       
+        {/* Empty State */}
         {!query && (
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">🔍</div>
