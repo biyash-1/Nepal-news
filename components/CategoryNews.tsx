@@ -95,7 +95,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
           <div className="lg:col-span-3">
             {featuredNews && (
               <div className="mb-10 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                <Link href={`/news/${featuredNews.id}`}>
+                <Link href={`/news/${featuredNews._id}`}>
                   <div className="relative cursor-pointer group">
                     <img
                       src={featuredNews.featuredImage || featuredNews.image}
@@ -120,8 +120,8 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {otherNews.map((article, index) => (
                 <Link
-                  href={`/news/${article.id}`}
-                  key={article.id}
+                  href={`/news/${article._id}`}
+                  key={article._id}
                   className="group cursor-pointer border-gray-100 pb-6 hover:border-gray-300 transition-all duration-300"
                 >
                   <div className="relative mb-4 overflow-hidden">
@@ -204,8 +204,8 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
               <div className="p-6 space-y-6">
                 {popularNews.map((article, index) => (
                   <Link 
-                    href={`/news/${article.id}`}
-                    key={article.id} 
+                    href={`/news/${article._id}`}
+                    key={article._id} 
                     className="group cursor-pointer p-1 pb-4 last:border-0 last:pb-0"
                   >
                     <div className="flex space-x-4">

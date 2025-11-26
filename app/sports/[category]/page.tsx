@@ -22,8 +22,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     notFound()
   }
 
-  const news = sportsNewsData[category] || []
-  const matches = upcomingMatchesData[category] || []
+  const key = category as keyof typeof sportsNewsData
+  const news = sportsNewsData[key] || []
+
+  const matchKey = category as keyof typeof upcomingMatchesData
+  const matches = upcomingMatchesData[matchKey] || []
+
 
   return (
     <div className="min-h-screen bg-gray-50">

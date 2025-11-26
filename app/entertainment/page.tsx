@@ -71,7 +71,7 @@ export default function EntertainmentPage() {
           <div className="mb-16">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <Link href={`/news/${headlineNews.main.id}`}>
+                <Link href={`/news/${headlineNews.main._id}`}>
                   <div className="relative h-[500px] overflow-hidden rounded-2xl group cursor-pointer">
                     <img 
                       src={getImageUrl(headlineNews.main)} 
@@ -90,8 +90,8 @@ export default function EntertainmentPage() {
 
               <div className="space-y-6">
                 {headlineNews.side.map((news: any) => (
-                  <div key={news.id} className="relative h-59 overflow-hidden rounded-2xl group cursor-pointer">
-                    <Link href={`/news/${news.id}`}>
+                  <div key={news._id} className="relative h-59 overflow-hidden rounded-2xl group cursor-pointer">
+                    <Link href={`/news/${news._id}`}>
                       <img 
                         src={getImageUrl(news)} 
                         alt={news.title}
@@ -128,8 +128,8 @@ export default function EntertainmentPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   {gossipNews.map((news: any, i: number) => (
-                    <Link href={`/news/${news.id}`}
-                      key={news.id}
+                    <Link href={`/news/${news._id}`}
+                      key={news._id}
                       className={`group cursor-pointer rounded-lg overflow-hidden ${
                         i % 5 === 0 ? "md:col-span-2 md:row-span-2" : ""
                       }`}
@@ -172,7 +172,7 @@ export default function EntertainmentPage() {
                   </Link>
                 </div>
 
-                <Link className="group cursor-pointer mb-6" href={`/news/${bollywoodHollywoodNews[0].id}`}>
+                <Link className="group cursor-pointer mb-6" href={`/news/${bollywoodHollywoodNews[0]._id}`}>
                   <div className="relative h-96 overflow-hidden rounded-lg">
                     <img
                       src={getImageUrl(bollywoodHollywoodNews[0])}
@@ -190,7 +190,7 @@ export default function EntertainmentPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {bollywoodHollywoodNews.slice(1).map((news: any) => (
-                    <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer">
+                    <Link href={`/news/${news._id}`} key={news._id} className="group cursor-pointer">
                       <div className="relative h-64 overflow-hidden rounded-lg">
                         <img
                           src={getImageUrl(news)}
@@ -224,7 +224,7 @@ export default function EntertainmentPage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {musicNews.map((news: any) => (
-                    <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer rounded-lg overflow-hidden">
+                    <Link href={`/news/${news._id}`} key={news._id} className="group cursor-pointer rounded-lg overflow-hidden">
                       <div className="relative h-72 overflow-hidden">
                         <img 
                           src={getImageUrl(news)} 
@@ -252,7 +252,7 @@ export default function EntertainmentPage() {
               <h4 className="text-2xl font-bold text-gray-900 mb-6">🔥 ट्रेन्डिङ</h4>
               <div className="space-y-4">
                 {[headlineNews.main, ...headlineNews.side].filter(Boolean).slice(0, 5).map((trend: any, index: number) => (
-                  <Link href={`/news/${trend.id}`} key={trend.id} className="flex items-center space-x-4 p-3 bg-white rounded-xl hover:shadow-md cursor-pointer transition-all">
+                  <Link href={`/news/${trend._id}`} key={trend._id} className="flex items-center space-x-4 p-3 bg-white rounded-xl hover:shadow-md cursor-pointer transition-all">
                     <span className="font-bold text-red-600 text-xl w-8">{index + 1}</span>
                     <img src={getImageUrl(trend)} alt={trend.title} className="w-16 h-16 object-cover rounded-lg" />
                     <span className="text-gray-800 text-sm font-medium flex-1">{trend.title}</span>
@@ -364,7 +364,7 @@ export default function EntertainmentPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {featuredNews.map((news: any) => (
-                <Link href={`/news/${news.id}`} key={news.id} className="group cursor-pointer">
+                <Link href={`/news/${news._id}`} key={news._id} className="group cursor-pointer">
                   <div className="relative h-90 overflow-hidden rounded-lg">
                     <img 
                       src={getImageUrl(news)} 
@@ -393,7 +393,7 @@ export default function EntertainmentPage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {[...gossipNews, ...musicNews].slice(0, 6).map((news: any, index: number) => (
-              <Link href={`/news/${news.id}`} key={news.id} className="aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all group cursor-pointer">
+              <Link href={`/news/${news._id}`} key={news._id} className="aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all group cursor-pointer">
                 <img 
                   src={getImageUrl(news)} 
                   alt={news.title}

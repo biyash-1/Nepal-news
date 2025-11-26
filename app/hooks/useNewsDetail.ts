@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 
 interface Author {
-  id: string;
+  _id: string;
   username: string;
   avatar?: string;
 }
 
 interface NewsArticle {
-  id: string;
+  _id: string;
   title: string;
   content: string;
   image: string;
@@ -20,7 +20,7 @@ interface NewsArticle {
 }
 
 interface RelatedNews {
-  id: string;
+  _id: string;
   title: string;
   image: string;
   createdAt: string;

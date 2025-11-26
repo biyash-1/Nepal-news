@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 
 export interface Article {
-  id: string; // matches your backend JSON
+  _id: string; // matches your backend JSON
   title: string;
   content: string;
   excerpt?: string;

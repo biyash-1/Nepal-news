@@ -182,7 +182,7 @@ export default function PradeshNewsPage() {
             {/* Top Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               {[mainNews, ...featuredNews].filter(Boolean).slice(0, 3).map((item: any) => (
-                <div key={item.id} className="rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div key={item._id} className="rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center space-x-3">
                     <img 
                       src={getImageUrl(item)} 
@@ -202,7 +202,7 @@ export default function PradeshNewsPage() {
             {displayHeadlineNews.length >= 3 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {displayHeadlineNews.slice(0, 3).map((item: any) => (
-                  <div key={item.id} className="rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div key={item._id} className="rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-center space-x-3">
                       <img 
                         src={getImageUrl(item)} 
@@ -227,7 +227,7 @@ export default function PradeshNewsPage() {
             <h3 className="text-2xl font-bold text-gray-900 mb-6  pb-2">अन्य समाचार</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayRegularNews.map((item: any) => (
-                <div key={item.id} className=" rounded-lg overflow-hidden  transition-shadow">
+                <div key={item._id} className=" rounded-lg overflow-hidden  transition-shadow">
                   <img 
                     src={getImageUrl(item)} 
                     alt={item.title}

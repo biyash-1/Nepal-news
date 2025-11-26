@@ -7,7 +7,7 @@ import Image from "next/image";
 import axiosInstance from "@/lib/axios";
 
 interface SearchResult {
-  id: string;
+  _id: string;
   title: string;
   excerpt: string;
   image: string;
@@ -101,7 +101,7 @@ export default function SearchPage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {results.map((result) => (
               <Link
-                key={result.id}
+                key={result._id}
                 href={`/news/${result.slug}`}
                 className="rounded-lg  overflow-hidden  transition-shadow duration-300"
               >

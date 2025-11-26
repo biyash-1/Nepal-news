@@ -1,54 +1,27 @@
-const fs = require("fs").promises;
-const path = require("path");
-
-// Path to the JSON file
-const NEWS_JSON_PATH = path.join(__dirname, "../data/news.json");
-
-// Read JSON
-const readNewsData = async () => {
-  try {
-    const raw = await fs.readFile(NEWS_JSON_PATH, "utf-8");
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error("Error reading news.json:", err);
-    return [];
-  }
-};
-
-// Write JSON
-const writeNewsData = async (data) => {
-  try {
-    await fs.writeFile(NEWS_JSON_PATH, JSON.stringify(data, null, 2), "utf-8");
-    return true;
-  } catch (err) {
-    console.error("Error writing news.json:", err);
-    return false;
-  }
-};
+// controllers/articleController.js
+const Article = require('../models/Article');
 
 // GET ALL ARTICLES (with pagination + category filter)
 exports.getAllArticles = async (req, res) => {
   try {
     const { page = 1, limit = 10, category } = req.query;
 
-    let articles = await readNewsData();
+    const query = category ? { categories: category } : {};
 
-    if (category) {
-      articles = articles.filter((a) => a.categories?.includes(category));
-    }
+    const articles = await Article.find(query)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip((page - 1) * parseInt(limit))
+      .lean();
 
-    // Sort newest first
-    articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    const start = (page - 1) * parseInt(limit);
-    const paginated = articles.slice(start, start + parseInt(limit));
+    const total = await Article.countDocuments(query);
 
     res.json({
       success: true,
-      articles: paginated,
-      totalPages: Math.ceil(articles.length / limit),
+      articles,
+      totalPages: Math.ceil(total / limit),
       currentPage: Number(page),
-      total: articles.length,
+      total,
     });
   } catch (err) {
     res.status(500).json({
@@ -62,8 +35,7 @@ exports.getAllArticles = async (req, res) => {
 // GET SINGLE ARTICLE BY ID
 exports.getArticleById = async (req, res) => {
   try {
-    const articles = await readNewsData();
-    const article = articles.find((a) => a.id === req.params.id);
+    const article = await Article.findById(req.params.id).lean();
 
     if (!article) {
       return res.status(404).json({
@@ -71,6 +43,9 @@ exports.getArticleById = async (req, res) => {
         message: "Article not found",
       });
     }
+
+    // Optionally increment views
+    await Article.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
 
     res.json({ success: true, article });
   } catch (err) {
@@ -82,6 +57,7 @@ exports.getArticleById = async (req, res) => {
   }
 };
 
+// GET ARTICLES BY MULTIPLE CATEGORIES
 exports.getArticlesByMultipleCategories = async (req, res) => {
   try {
     let { categories, limit = 10 } = req.query;
@@ -104,29 +80,25 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
       });
     }
 
-    // Read all articles
-    let articles = await readNewsData();
-
-    // Filter articles:
     // If categories contain only ["बलिउड", "हलिउड"], use OR logic
-    const isBollywoodRequest = categoryArray.length === 2 && categoryArray.includes("बलिउड") && categoryArray.includes("हलिउड");
+    const isBollywoodRequest = 
+      categoryArray.length === 2 && 
+      categoryArray.includes("बलिउड") && 
+      categoryArray.includes("हलिउड");
 
+    let query;
     if (isBollywoodRequest) {
-      articles = articles.filter(article =>
-        article.categories?.some(cat => categoryArray.includes(cat))
-      );
+      // OR logic: article must include at least one category
+      query = { categories: { $in: categoryArray } };
     } else {
-      // Normal AND logic: article must include all categories
-      articles = articles.filter(article =>
-        categoryArray.every(cat => article.categories?.includes(cat))
-      );
+      // AND logic: article must include all categories
+      query = { categories: { $all: categoryArray } };
     }
 
-    // Sort newest first
-    articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    // Apply limit
-    articles = articles.slice(0, parseInt(limit));
+    const articles = await Article.find(query)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .lean();
 
     res.json({ success: true, articles });
   } catch (err) {
@@ -138,43 +110,41 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
   }
 };
 
-
-
-
-
 // GET ARTICLES BY CATEGORY
 exports.getArticlesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
     const { page = 1, limit = 10, exclude } = req.query;
-    let articles = await readNewsData();
 
-    // Filter by category
-    articles = articles.filter((a) => a.categories?.includes(category));
+    const query = {
+      categories: category,
+      tags: { $ne: "लोकप्रिय" }, // Exclude articles with tag "लोकप्रिय"
+    };
 
     if (exclude) {
-      articles = articles.filter((a) => a.id !== exclude);
+      query._id = { $ne: exclude };
     }
 
-    // Exclude articles with the tag "लोकप्रिय"
-    articles = articles.filter((a) => !a.tags?.includes("लोकप्रिय"));
-
-    // Sort by newest first
-    articles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    // Pagination
-    let start = (page - 1) * parseInt(limit);
-    if (page>1){
-      start+=1;
+    // Calculate skip value with special logic for page > 1
+    let skip = (page - 1) * parseInt(limit);
+    if (page > 1) {
+      skip += 1;
     }
-    const paginated = articles.slice(start, start + parseInt(limit));
-   
+
+    const articles = await Article.find(query)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip(skip)
+      .lean();
+
+    const total = await Article.countDocuments(query);
+
     res.json({
       success: true,
-      articles: paginated,
-      totalPages: Math.ceil(articles.length / limit),
+      articles,
+      totalPages: Math.ceil(total / limit),
       currentPage: Number(page),
-      total: articles.length,
+      total,
     });
   } catch (err) {
     res.status(500).json({
@@ -185,8 +155,7 @@ exports.getArticlesByCategory = async (req, res) => {
   }
 };
 
-// Add this to your controllers/articleController.js
-
+// SEARCH ARTICLES
 exports.searchArticles = async (req, res) => {
   try {
     const { q: query, page = 1, limit = 10 } = req.query;
@@ -203,9 +172,6 @@ exports.searchArticles = async (req, res) => {
       });
     }
 
-    // Read all articles
-    let articles = await readNewsData();
-
     // Normalize and split query into keywords
     const keywords = query
       .toLowerCase()
@@ -213,12 +179,16 @@ exports.searchArticles = async (req, res) => {
       .split(/\s+/)
       .filter(k => k.length > 0);
 
+    const fullQuery = keywords.join(" ");
+
+    // Find all articles
+    const allArticles = await Article.find({}).lean();
+
     // Score and filter articles
-    const scoredArticles = articles
+    const scoredArticles = allArticles
       .map(article => {
         const titleLower = (article.title || "").toLowerCase();
         const contentLower = (article.content || "").toLowerCase();
-        const fullQuery = keywords.join(" ");
 
         let score = 0;
 
@@ -277,16 +247,16 @@ exports.searchArticles = async (req, res) => {
     const start = (page - 1) * parseInt(limit);
     const paginated = scoredArticles.slice(start, start + parseInt(limit));
 
-    // Remove searchScore from response (optional, for cleaner output)
+    // Remove searchScore from response
     const results = paginated.map(({ searchScore, ...article }) => article);
 
     res.json({
       success: true,
-      results: results,
+      results,
       totalPages: Math.ceil(scoredArticles.length / limit),
       currentPage: Number(page),
       total: scoredArticles.length,
-      query: query
+      query
     });
 
   } catch (err) {
@@ -298,37 +268,25 @@ exports.searchArticles = async (req, res) => {
   }
 };
 
-
 // CREATE ARTICLE
 exports.createArticle = async (req, res) => {
   try {
-    const { title, content, image, categories } = req.body;
+    const { title, content, image, categories, tags } = req.body;
 
-    let articles = await readNewsData();
-
-    // Generate ID
-    const newId =
-      articles.length > 0
-        ? (Math.max(...articles.map((a) => Number(a.id))) + 1).toString()
-        : "1";
-
-    const newArticle = {
-      id: newId,
+    const newArticle = new Article({
       title,
       content,
       image,
       categories: categories || [],
+      tags: tags || [],
       author: {
         userId: req.user?.userId || "anonymous",
         username: req.user?.username || "Anonymous",
         avatar: req.user?.avatar || null,
       },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
-    articles.push(newArticle);
-    await writeNewsData(articles);
+    await newArticle.save();
 
     res.status(201).json({
       success: true,
@@ -347,39 +305,38 @@ exports.createArticle = async (req, res) => {
 // UPDATE ARTICLE
 exports.updateArticle = async (req, res) => {
   try {
-    const { title, content, image, categories } = req.body;
+    const { title, content, image, categories, tags } = req.body;
 
-    let articles = await readNewsData();
-    const index = articles.findIndex((a) => a.id === req.params.id);
+    const article = await Article.findById(req.params.id);
 
-    if (index === -1) {
-      return res.status(404).json({ success: false, message: "Not found" });
+    if (!article) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Article not found" 
+      });
     }
 
-    const old = articles[index];
-
-    if (req.user && old.author?.userId !== req.user.userId) {
+    // Check authorization
+    if (req.user && article.author?.userId !== req.user.userId) {
       return res.status(403).json({
         success: false,
         message: "Not authorized",
       });
     }
 
-    articles[index] = {
-      ...old,
-      title: title ?? old.title,
-      content: content ?? old.content,
-      image: image ?? old.image,
-      categories: categories ?? old.categories,
-      updatedAt: new Date().toISOString(),
-    };
+    // Update fields
+    if (title !== undefined) article.title = title;
+    if (content !== undefined) article.content = content;
+    if (image !== undefined) article.image = image;
+    if (categories !== undefined) article.categories = categories;
+    if (tags !== undefined) article.tags = tags;
 
-    await writeNewsData(articles);
+    await article.save();
 
     res.json({
       success: true,
       message: "Article updated",
-      article: articles[index],
+      article,
     });
   } catch (err) {
     res.status(500).json({
@@ -393,15 +350,16 @@ exports.updateArticle = async (req, res) => {
 // DELETE ARTICLE
 exports.deleteArticle = async (req, res) => {
   try {
-    let articles = await readNewsData();
-    const index = articles.findIndex((a) => a.id === req.params.id);
+    const article = await Article.findById(req.params.id);
 
-    if (index === -1) {
-      return res.status(404).json({ success: false, message: "Not found" });
+    if (!article) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Article not found" 
+      });
     }
 
-    const article = articles[index];
-
+    // Check authorization
     if (req.user && article.author?.userId !== req.user.userId) {
       return res.status(403).json({
         success: false,
@@ -409,10 +367,12 @@ exports.deleteArticle = async (req, res) => {
       });
     }
 
-    articles.splice(index, 1);
-    await writeNewsData(articles);
+    await Article.findByIdAndDelete(req.params.id);
 
-    res.json({ success: true, message: "Article deleted" });
+    res.json({ 
+      success: true, 
+      message: "Article deleted" 
+    });
   } catch (err) {
     res.status(500).json({
       success: false,

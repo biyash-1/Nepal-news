@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 
 interface Author {
-  id: string;
+  _id: string;
   username: string;
 }
 
 interface Article {
-  id: string;
+  _id: string;
   title: string;
   content: string;
   categories: string[];
