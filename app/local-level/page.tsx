@@ -84,11 +84,12 @@ export default function LocalLevelPage() {
               {featuredArticles.map((news) => (
                 <Link
                   key={news._id}
-                  href={`/local-level/article/${news._id}`}  // ✅ Simplified URL
+                  href={`/news/${news._id}`} 
                   className="group block"
                 >
                   <div className="bg-white rounded-lg overflow-hidden">
                     <div className="h-56 overflow-hidden">
+                   
                       <img
                         src={news.image}
                         alt={news.title}
@@ -128,7 +129,7 @@ export default function LocalLevelPage() {
                 {articles.slice(6).map((news) => (
                   <Link
                     key={news._id}
-                    href={`/local-level/article/${news._id}`}  // ✅ Simplified URL
+                    href={`/news/${news._id}`}  
                     className="group block"
                   >
                     <div className="flex flex-col gap-4 h-full">
