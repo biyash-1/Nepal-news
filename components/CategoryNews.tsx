@@ -32,6 +32,11 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
       return `${Math.floor(diffInHours / 24)} दिन अघि`;
     }
   };
+const getImageSrc = (img?: string) => {
+  return img && img.trim() !== ""
+    ? img
+    : "https://images.unsplash.com/photo-1546422904-90eab23c3d7e?auto=format&fit=crop&w=800&q=80";
+};
 
   const getCategoryColor = () => {
     const colors = {
@@ -98,7 +103,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 <Link href={`/news/${featuredNews._id}`}>
                   <div className="relative cursor-pointer group">
                     <img
-                      src={featuredNews.featuredImage || featuredNews.image}
+                      src={getImageSrc(featuredNews.featuredImage || featuredNews.image)}
                       alt={featuredNews.title}
                       className="w-full h-96 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -126,7 +131,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 >
                   <div className="relative mb-4 overflow-hidden">
                     <img
-                      src={article.featuredImage || article.image}
+                      src={getImageSrc(article.featuredImage || article.image)}
                       alt={article.title}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                     />

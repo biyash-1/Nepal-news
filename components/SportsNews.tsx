@@ -64,12 +64,12 @@ export default function SportsNews({ articles }: SportsNewsProps) {
             {/* Main Sports News */}
             <div className="lg:col-span-2">
               <Link href={`/news/${articles[0]._id}`}>
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer">
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer h-full">
                   <div className="relative">
                     <img 
                       src={getImageUrl(articles[0])} 
                       alt={articles[0].title}
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-83 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-4 left-4">
                       <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
@@ -84,7 +84,7 @@ export default function SportsNews({ articles }: SportsNewsProps) {
                   </div>
                   <div className="p-6">
                     <p className="text-gray-600 mb-4 line-clamp-2">
-                      {articles[0].content.substring(0, 150)}...
+                      {articles[0].content.substring(0, 200)}...
                     </p>
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <span>🏆 खेलकुद</span>

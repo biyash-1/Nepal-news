@@ -110,54 +110,7 @@ export default function LocalLevelPage() {
               ))}
             </div>
           )}
-        </div>
-
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-16">
-          {/* Main News Content */}
-          <div className="lg:col-span-3">
-            <h3 className="text-2xl font-bold text-gray-900 mb-8 pb-4 border-b">
-              अन्य स्थानीय समाचार
-            </h3>
-
-            {articles.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-500">कुनै थप समाचार उपलब्ध छैन</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {articles.slice(6).map((news) => (
-                  <Link
-                    key={news._id}
-                    href={`/news/${news._id}`}  
-                    className="group block"
-                  >
-                    <div className="flex flex-col gap-4 h-full">
-                      <div className="w-full flex-shrink-0">
-                        <img
-                          src={news.image}
-                          alt={news.title}
-                          className="w-full h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-xl text-gray-900 group-hover:text-green-600 transition-colors leading-tight mb-3 line-clamp-2">
-                          {news.title}
-                        </h4>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span>{news.time}</span>
-                          <span>•</span>
-                          <span>{news.location}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar */}
+              {/* Sidebar */}
           <div className="space-y-8">
             <div className="bg-gray-50 rounded-lg p-6">
               <h4 className="text-xl font-bold text-gray-900 mb-6 pb-3 border-b">
@@ -203,6 +156,54 @@ export default function LocalLevelPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+          {/* Main News Content */}
+          <div className="lg:col-span-3">
+            <h3 className="text-2xl font-bold text-gray-900 mb-8 pb-4 border-b">
+              अन्य स्थानीय समाचार
+            </h3>
+
+            {articles.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500">कुनै थप समाचार उपलब्ध छैन</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {articles.slice(6).map((news) => (
+                  <Link
+                    key={news._id}
+                    href={`/news/${news._id}`}  
+                    className="group block"
+                  >
+                    <div className="flex flex-col gap-4 h-full">
+                      <div className="w-full flex-shrink-0">
+                        <img
+                          src={news.image}
+                          alt={news.title}
+                          className="w-full h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-xl text-gray-900 group-hover:text-green-600 transition-colors leading-tight mb-3 line-clamp-2">
+                          {news.title}
+                        </h4>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <span>{news.time}</span>
+                          <span>•</span>
+                          <span>{news.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+      
         </div>
 
         {/* Newsletter */}

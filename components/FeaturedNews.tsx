@@ -31,22 +31,20 @@ const FeaturedNews = ({ articles }: FeaturedNewsProps) => {
           <h2 className="text-3xl font-bold text-gray-900 mb-2">विशेष समाचार</h2>
           <p className="text-gray-600">आजका महत्वपूर्ण समाचारहरू</p>
         </div>
-        <Link 
-          href="/category/विशेष" 
-          className="text-red-600 font-medium flex items-center hover:text-red-700 transition-colors"
-        >
-          सबै हेर्नुहोस्
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
+    <Link
+  href={`/category/${encodeURIComponent("विशेष")}`}
+  className="text-red-600 font-medium flex items-center hover:text-red-700 transition-colors"
+>
+  सबै हेर्नुहोस्
+</Link>
+
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Featured Article */}
         <div className="lg:col-span-2">
           <Link href={`/news/${articles[0]._id}`}>
-            <div className="relative h-[500px] rounded-2xl overflow-hidden group cursor-pointer shadow-lg">
+            <div className="relative h-[530px] rounded-2xl overflow-hidden group cursor-pointer shadow-lg">
               <img 
                 src={getImageUrl(articles[0])} 
                 alt={articles[0].title}
