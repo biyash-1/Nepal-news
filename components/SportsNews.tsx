@@ -1,35 +1,41 @@
-export default function SportsNews() {
-  const sportsNews = [
-    {
-      id: 1,
-      title: "नेपालले जित्यो T20 सिरिज",
-      team1: "नेपाल",
-      team2: "स्कटल्याण्ड",
-      score1: "165/4",
-      score2: "158/7",
-      result: "नेपाल ७ रनले विजयी",
-      highlight: "सोमपाल कार्कीको अर्धशतक",
-      image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      trending: true
-    },
-    {
-      id: 2,
-      title: "राष्ट्रिय फुटबल लिग सुरु",
-      teams: "म्याच सुरु हुँदै",
-      time: "शनिबार, २:०० PM",
-      venue: "दशरथ रंगशाला",
-      image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
-    },
-    {
-      id: 3,
-      title: "बास्केटबल प्रिमियर लिग",
-      stage: "सेमिफाइनल",
-      teams: "टिम A vs टिम B",
-      time: "आज, ४:०० PM",
-      image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
-    }
-  ]
+"use client";
 
+import Link from "next/link";
+
+interface Article {
+  _id: string;
+  title: string;
+  content: string;
+  image?: string;
+  createdAt: string;
+}
+
+interface SportsNewsProps {
+  articles: Article[];
+}
+
+const getImageUrl = (article: Article) => {
+  return article.image || "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80";
+};
+
+const getTimeAgo = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays > 0) {
+    return `${diffDays} दिन अघि`;
+  } else if (diffHours > 0) {
+    return `${diffHours} घण्टा अघि`;
+  } else {
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    return `${diffMins} मिनेट अघि`;
+  }
+};
+
+export default function SportsNews({ articles }: SportsNewsProps) {
   return (
     <section className="py-12 bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,113 +51,107 @@ export default function SportsNews() {
               <p className="text-blue-600 font-medium">ताजा खेल समाचार र अपडेट</p>
             </div>
           </div>
-          <button className="hidden md:flex items-center space-x-2 bg-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <Link href="/category/खेलकुद" className="hidden md:flex items-center space-x-2 bg-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-shadow">
             <span>सबै खेल समाचार</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </button>
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Sports News */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <div className="relative">
-                <img 
-                  src={sportsNews[0].image} 
-                  alt={sportsNews[0].title}
-                  className="w-full h-64 object-cover"
-                />
-                {sportsNews[0].trending && (
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                      लाइभ अपडेट
-                    </span>
-                  </div>
-                )}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
-                  <h3 className="text-white text-xl font-bold mb-2">{sportsNews[0].title}</h3>
-                  <div className="flex items-center justify-between text-white">
-                    <div className="text-center">
-                      <div className="font-bold">{sportsNews[0].team1}</div>
-                      <div className="text-lg font-bold text-yellow-300">{sportsNews[0].score1}</div>
-                    </div>
-                    <div className="text-gray-300">VS</div>
-                    <div className="text-center">
-                      <div className="font-bold">{sportsNews[0].team2}</div>
-                      <div className="text-lg font-bold">{sportsNews[0].score2}</div>
-                    </div>
-                  </div>
-                  <div className="text-green-300 font-bold text-center mt-2">{sportsNews[0].result}</div>
-                </div>
-              </div>
-              <div className="p-6">
-                <p className="text-gray-600 mb-4">✨ {sportsNews[0].highlight}</p>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>🏏 क्रिकेट</span>
-                  <span>⏱️ ३० मिनेट अघि</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Side Sports News */}
-          <div className="space-y-6">
-            {sportsNews.slice(1).map((sport) => (
-              <div key={sport.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="flex">
-                  <div className="w-1/3">
+        {articles.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Sports News */}
+            <div className="lg:col-span-2">
+              <Link href={`/news/${articles[0]._id}`}>
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer">
+                  <div className="relative">
                     <img 
-                      src={sport.image} 
-                      alt={sport.title}
-                      className="w-full h-32 object-cover"
+                      src={getImageUrl(articles[0])} 
+                      alt={articles[0].title}
+                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
+                    <div className="absolute top-4 left-4">
+                      <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        मुख्य समाचार
+                      </span>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
+                      <h3 className="text-white text-xl font-bold mb-2 group-hover:text-red-300 transition-colors">
+                        {articles[0].title}
+                      </h3>
+                    </div>
                   </div>
-                  <div className="w-2/3 p-4">
-                    <h4 className="font-bold text-gray-900 mb-2">{sport.title}</h4>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                        {sport.teams}
-                      </div>
-                      <div className="flex items-center">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                        {sport.time}
-                      </div>
-                      {sport.venue && (
-                        <div className="flex items-center">
-                          <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                          {sport.venue}
-                        </div>
-                      )}
+                  <div className="p-6">
+                    <p className="text-gray-600 mb-4 line-clamp-2">
+                      {articles[0].content.substring(0, 150)}...
+                    </p>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>🏆 खेलकुद</span>
+                      <span>⏱️ {getTimeAgo(articles[0].createdAt)}</span>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              </Link>
+            </div>
 
-  
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
-              <h5 className="font-bold text-lg mb-4">आजको खेलकुद</h5>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold">३</div>
-                  <div className="text-xs">खेलहरू</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">२</div>
-                  <div className="text-xs">लाइभ</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">५+</div>
-                  <div className="text-xs">अपडेट</div>
+            {/* Side Sports News */}
+            <div className="space-y-6">
+              {articles.slice(1, 3).map((article) => (
+                <Link 
+                  href={`/news/${article._id}`}
+                  key={article._id}
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer block"
+                >
+                  <div className="flex">
+                    <div className="w-1/3">
+                      <img 
+                        src={getImageUrl(article)} 
+                        alt={article.title}
+                        className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="w-2/3 p-4">
+                      <h4 className="font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+                        {article.title}
+                      </h4>
+                      <div className="text-sm text-gray-600">
+                        <div className="flex items-center">
+                          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                          {getTimeAgo(article.createdAt)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+
+              {/* Stats Card */}
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
+                <h5 className="font-bold text-lg mb-4">आजको खेलकुद</h5>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold">{articles.length}</div>
+                    <div className="text-xs">समाचार</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">🔥</div>
+                    <div className="text-xs">ट्रेन्डिङ</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">📰</div>
+                    <div className="text-xs">अपडेट</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-white rounded-2xl p-12 text-center">
+            <p className="text-gray-500 text-lg">खेलकुद समाचार उपलब्ध छैन</p>
+          </div>
+        )}
       </div>
     </section>
-  )
+  );
 }
