@@ -85,7 +85,7 @@ export default function LocationPage() {
                 ब्रेकिङ
               </span>
               <Link
-                href={`/local-level/${locationKey}/${mainFeatured._id}`}
+                href={`/news/${mainFeatured._id}`}
                 className="text-base font-semibold text-gray-900 hover:text-red-600 transition-colors line-clamp-1"
               >
                 {mainFeatured.title}
@@ -102,7 +102,7 @@ export default function LocationPage() {
             {mainFeatured && (
               <div className="mb-8">
                 <Link
-                  href={`/local-level/${locationKey}/${mainFeatured._id}`}
+                  href={`/news/${mainFeatured._id}`}
                   className="group"
                 >
                   <div className="relative overflow-hidden rounded-xl mb-4">
@@ -141,7 +141,7 @@ export default function LocationPage() {
                 {secondaryFeatured.map((item) => (
                   <Link
                     key={item._id}
-                    href={`/local-level/${locationKey}/${item._id}`}
+                    href={`/news/${item._id}`}
                     className="group border-l-4 border-green-500 pl-4"
                   >
                     <div className="space-y-3">

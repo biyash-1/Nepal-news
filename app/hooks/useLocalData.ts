@@ -27,6 +27,7 @@ export interface LocalArticle {
 
 // --- Existing hook for multiple articles ---
 export const useLocalData = (location?: string) => {
+   console.log("useLocalData location param:", location);
   const [articles, setArticles] = useState<LocalArticle[]>([]);
   const [featuredArticles, setFeaturedArticles] = useState<LocalArticle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +53,13 @@ export const useLocalData = (location?: string) => {
       const res = await axiosInstance.get("/articles/multiple-categories", {
         params: { categories: JSON.stringify(categories), limit: 30 },
       });
+      console.log(
+  "FINAL categories array:",
+  categories,
+  "JSON:",
+  JSON.stringify(categories)
+);
+
 
       
 
@@ -93,7 +101,7 @@ export const useLocalData = (location?: string) => {
   return { articles, featuredArticles, loading, error, refreshData };
 };
 
-// --- New hook for single article ---
+
 export const useArticle = (id: string) => {
   const [article, setArticle] = useState<LocalArticle | null>(null);
   const [loading, setLoading] = useState(true);

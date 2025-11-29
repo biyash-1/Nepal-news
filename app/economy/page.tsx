@@ -84,7 +84,7 @@ export default function EconomyPage() {
               {featuredArticles.map((news) => (
                 <Link
                   key={news._id}
-                  href={`/economy/article/${news._id}`}
+                  href={`/news/${news._id}`}
                   className="group block"
                 >
                   <div className="bg-white rounded-lg overflow-hidden">
@@ -128,7 +128,7 @@ export default function EconomyPage() {
                 {articles.slice(6).map((news) => (
                   <Link
                     key={news._id}
-                    href={`/economy/article/${news._id}`}
+                    href={`/news/${news._id}`}
                     className="group block"
                   >
                     <div className="flex flex-col md:flex-row gap-6">
