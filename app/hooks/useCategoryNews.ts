@@ -29,7 +29,7 @@ export const useCategoryNews = (category: string) => {
           } else {
             setNews(prev => {
               const combined = [...prev, ...res.data.articles];
-              const unique = Array.from(new Map(combined.map(a => [a.id, a])).values());
+              const unique = Array.from(new Map(combined.map(a => [a._id, a])).values());
               return unique;
             });
 }

@@ -1,5 +1,14 @@
 // controllers/articleController.js
 const Article = require('../models/Article');
+const ViewLog = require('../models/ViewLog');
+const crypto = require('crypto');
+const { getTrendingConfig } = require('../config/trendingConfig');
+
+// Helper function to create unique identifier from IP + User Agent
+const createIdentifier = (ip, userAgent) => {
+  const data = `${ip}-${userAgent}`;
+  return crypto.createHash('sha256').update(data).digest('hex');
+};
 
 // GET ALL ARTICLES (with pagination + category filter)
 exports.getAllArticles = async (req, res) => {
@@ -44,14 +53,191 @@ exports.getArticleById = async (req, res) => {
       });
     }
 
-    // Optionally increment views
-    await Article.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
-
+    // Return article without incrementing view
+    // View will be incremented by separate endpoint
     res.json({ success: true, article });
   } catch (err) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch article",
+      error: err.message,
+    });
+  }
+};
+
+// INCREMENT VIEW COUNT (with backend tracking)
+exports.incrementView = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get client IP and user agent
+    const clientIp = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'];
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    
+    // Create unique identifier
+    const identifier = createIdentifier(clientIp, userAgent);
+    
+    // Check if this identifier has viewed this article in last 24 hours
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const existingView = await ViewLog.findOne({
+      article: id,
+      identifier: identifier,
+      viewedAt: { $gte: twentyFourHoursAgo }
+    });
+    
+    if (existingView) {
+      // Already viewed recently - don't count again
+      const article = await Article.findById(id).lean();
+      return res.json({ 
+        success: true, 
+        views: article.views || 0,
+        isTrending: article.isTrending || false,
+        alreadyCounted: true,
+        message: 'View already counted in last 24 hours'
+      });
+    }
+    
+    // Find article
+    const article = await Article.findById(id);
+    
+    if (!article) {
+      return res.status(404).json({
+        success: false,
+        message: "Article not found",
+      });
+    }
+
+    // Log the view
+    await ViewLog.create({
+      article: id,
+      identifier: identifier,
+      viewedAt: new Date(),
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+    });
+
+    // Increment view count
+    await article.incrementView();
+    
+    // Check if we should update trending status
+    const config = getTrendingConfig();
+    const timeSinceLastCheck = Date.now() - article.lastTrendingCheck.getTime();
+    const checkInterval = config.checkIntervalMinutes * 60 * 1000;
+    
+    if (timeSinceLastCheck > checkInterval) {
+      await article.updateTrendingStatus(config);
+    }
+
+    res.json({ 
+      success: true, 
+      views: article.views,
+      isTrending: article.isTrending,
+      alreadyCounted: false,
+      message: 'View counted successfully'
+    });
+  } catch (err) {
+    console.error('View increment error:', err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to increment view",
+      error: err.message,
+    });
+  }
+};
+
+// GET TRENDING ARTICLES
+exports.getTrendingArticles = async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+
+    const articles = await Article.find({ isTrending: true })
+      .sort({ views: -1 })
+      .limit(parseInt(limit))
+      .lean();
+
+    res.json({
+      success: true,
+      articles,
+      total: articles.length
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch trending articles",
+      error: err.message,
+    });
+  }
+};
+
+// ADMIN: Update trending config
+exports.updateTrendingConfig = async (req, res) => {
+  try {
+    const { minRecentViews, timeWindowHours, minTotalViews, checkIntervalMinutes, viewCountDelay } = req.body;
+    
+    const updates = {};
+    if (minRecentViews !== undefined) updates.minRecentViews = minRecentViews;
+    if (timeWindowHours !== undefined) updates.timeWindowHours = timeWindowHours;
+    if (minTotalViews !== undefined) updates.minTotalViews = minTotalViews;
+    if (checkIntervalMinutes !== undefined) updates.checkIntervalMinutes = checkIntervalMinutes;
+    if (viewCountDelay !== undefined) updates.viewCountDelay = viewCountDelay;
+    
+    const { updateTrendingConfig } = require('../config/trendingConfig');
+    updateTrendingConfig(updates);
+    
+    res.json({
+      success: true,
+      message: "Trending config updated",
+      config: require('../config/trendingConfig').trendingConfig
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update config",
+      error: err.message,
+    });
+  }
+};
+
+// ADMIN: Get current trending config
+exports.getTrendingConfigEndpoint = async (req, res) => {
+  try {
+    const config = getTrendingConfig();
+    res.json({
+      success: true,
+      config
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to get config",
+      error: err.message,
+    });
+  }
+};
+
+// ADMIN: Manually recalculate trending for all articles
+exports.recalculateTrending = async (req, res) => {
+  try {
+    const config = getTrendingConfig();
+    const articles = await Article.find({});
+    
+    let updated = 0;
+    for (const article of articles) {
+      const wasTrending = article.isTrending;
+      await article.updateTrendingStatus(config);
+      if (wasTrending !== article.isTrending) {
+        updated++;
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: `Recalculated trending status for ${articles.length} articles`,
+      updated
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to recalculate trending",
       error: err.message,
     });
   }
@@ -80,7 +266,6 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
       });
     }
 
-    // If categories contain only ["बलिउड", "हलिउड"], use OR logic
     const isBollywoodRequest = 
       categoryArray.length === 2 && 
       categoryArray.includes("बलिउड") && 
@@ -88,10 +273,8 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
 
     let query;
     if (isBollywoodRequest) {
-      // OR logic: article must include at least one category
       query = { categories: { $in: categoryArray } };
     } else {
-      // AND logic: article must include all categories
       query = { categories: { $all: categoryArray } };
     }
 
@@ -118,14 +301,13 @@ exports.getArticlesByCategory = async (req, res) => {
 
     const query = {
       categories: category,
-      tags: { $ne: "लोकप्रिय" }, // Exclude articles with tag "लोकप्रिय"
+      tags: { $ne: "लोकप्रिय" },
     };
 
     if (exclude) {
       query._id = { $ne: exclude };
     }
 
-    // Calculate skip value with special logic for page > 1
     let skip = (page - 1) * parseInt(limit);
     if (page > 1) {
       skip += 1;
@@ -160,7 +342,6 @@ exports.searchArticles = async (req, res) => {
   try {
     const { q: query, page = 1, limit = 10 } = req.query;
 
-    // Validate query
     if (!query || query.trim() === "") {
       return res.json({
         success: true,
@@ -172,7 +353,6 @@ exports.searchArticles = async (req, res) => {
       });
     }
 
-    // Normalize and split query into keywords
     const keywords = query
       .toLowerCase()
       .trim()
@@ -180,11 +360,8 @@ exports.searchArticles = async (req, res) => {
       .filter(k => k.length > 0);
 
     const fullQuery = keywords.join(" ");
-
-    // Find all articles
     const allArticles = await Article.find({}).lean();
 
-    // Score and filter articles
     const scoredArticles = allArticles
       .map(article => {
         const titleLower = (article.title || "").toLowerCase();
@@ -192,15 +369,13 @@ exports.searchArticles = async (req, res) => {
 
         let score = 0;
 
-        // 1. Exact phrase match (highest priority)
         if (titleLower.includes(fullQuery)) {
-          score += 100 * 2; // Title match with 2x multiplier
+          score += 100 * 2;
         }
         if (contentLower.includes(fullQuery)) {
-          score += 100; // Content match
+          score += 100;
         }
 
-        // 2. Individual keyword matching
         let titleMatches = 0;
         let contentMatches = 0;
 
@@ -213,18 +388,14 @@ exports.searchArticles = async (req, res) => {
           }
         });
 
-        // Calculate keyword match percentage
         const matchPercentage = Math.max(titleMatches, contentMatches) / keywords.length;
 
-        // All keywords present
         if (matchPercentage === 1) {
-          score += 80 * (titleMatches > 0 ? 2 : 1); // 160 for title, 80 for content
+          score += 80 * (titleMatches > 0 ? 2 : 1);
         }
-        // Partial match (>50% keywords)
         else if (matchPercentage > 0.5) {
           score += 60 * matchPercentage * (titleMatches > 0 ? 2 : 1);
         }
-        // Some match
         else if (matchPercentage > 0) {
           score += 40 * matchPercentage * (titleMatches > 0 ? 2 : 1);
         }
@@ -234,20 +405,16 @@ exports.searchArticles = async (req, res) => {
           searchScore: Math.round(score)
         };
       })
-      .filter(article => article.searchScore >= 40) // Minimum threshold
+      .filter(article => article.searchScore >= 40)
       .sort((a, b) => {
-        // Sort by score (highest first), then by date (newest first)
         if (b.searchScore !== a.searchScore) {
           return b.searchScore - a.searchScore;
         }
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
 
-    // Pagination
     const start = (page - 1) * parseInt(limit);
     const paginated = scoredArticles.slice(start, start + parseInt(limit));
-
-    // Remove searchScore from response
     const results = paginated.map(({ searchScore, ...article }) => article);
 
     res.json({
@@ -316,7 +483,6 @@ exports.updateArticle = async (req, res) => {
       });
     }
 
-    // Check authorization
     if (req.user && article.author?.userId !== req.user.userId) {
       return res.status(403).json({
         success: false,
@@ -324,7 +490,6 @@ exports.updateArticle = async (req, res) => {
       });
     }
 
-    // Update fields
     if (title !== undefined) article.title = title;
     if (content !== undefined) article.content = content;
     if (image !== undefined) article.image = image;
@@ -359,7 +524,6 @@ exports.deleteArticle = async (req, res) => {
       });
     }
 
-    // Check authorization
     if (req.user && article.author?.userId !== req.user.userId) {
       return res.status(403).json({
         success: false,

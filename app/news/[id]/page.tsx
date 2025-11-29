@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useNewsDetail } from '@/app/hooks/useNewsDetail';
 import { useComments } from '@/app/hooks/useComments';
 import { useAuthStore } from '@/app/store/useAuthStore';
+import { useViewTracker } from '@/app/hooks/useViewTracker';
 import AuthModal from '@/components/AuthModel';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -13,6 +14,9 @@ export default function NewsDetailPage() {
   const id = params?.id as string;
   const { article, relatedNews, loading, error } = useNewsDetail(id);
   const { user, isAuthenticated } = useAuthStore();
+  
+  // View tracking hook
+  const { viewCounted, isTrending } = useViewTracker(id, article);
   
   const {
     comments,
@@ -140,7 +144,7 @@ export default function NewsDetailPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">समाचार फेला परेन</h2>
           <Link href="/" className="text-red-600 hover:text-red-700 font-medium">
-            गृहपृष्ठमा फर्कनुहोस् →
+            गृहपृष्ठ मा फर्कनुहोस् →
           </Link>
         </div>
       </div>
@@ -149,6 +153,9 @@ export default function NewsDetailPage() {
 
   const charCount = commentText.length;
   const maxChars = 1000;
+
+  // Check if article has trending tag
+  const hasTrendingTag = article.tags?.includes('ट्रेन्डिङ') || isTrending;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -174,12 +181,21 @@ export default function NewsDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            {/* Article Content - Same as before */}
+            {/* Article Content */}
             <article className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
               <div className="px-8 pt-8">
-                <span className="inline-block bg-red-600 text-white px-4 py-1 rounded-full text-sm font-medium capitalize">
-                  {article.categories[0]}
-                </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="inline-block bg-red-600 text-white px-4 py-1 rounded-full text-sm font-medium capitalize">
+                    {article.categories[0]}
+                  </span>
+                  
+                  {/* Trending Badge */}
+                  {hasTrendingTag && (
+                    <span className="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-full text-sm font-bold animate-pulse">
+                      🔥 ट्रेन्डिङ
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="px-8 pt-4">
@@ -200,6 +216,13 @@ export default function NewsDetailPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>{formatDate(article.createdAt)}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span>{article.views || 0} दृश्य</span>
                 </div>
               </div>
 
@@ -459,7 +482,7 @@ export default function NewsDetailPage() {
             </div>
           </div>
 
-          {/* Sidebar - Same as before */}
+          {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <div className="bg-gradient-to-r from-red-600 to-pink-600 px-6 py-4">

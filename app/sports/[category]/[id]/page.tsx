@@ -18,9 +18,7 @@ interface ArticlePageProps {
 
 export default function ArticlePage({ params }: ArticlePageProps) {
   const category = params.category
-  console.log("category is", category)
   const id = parseInt(params.id)
-  console.log("id is",id)
 
    if (!category || !(category in categories) || isNaN(id)) {
     notFound()

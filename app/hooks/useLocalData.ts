@@ -53,7 +53,7 @@ export const useLocalData = (location?: string) => {
         params: { categories: JSON.stringify(categories), limit: 30 },
       });
 
-      console.log("Fetched articles:", res.data.articles);
+      
 
       if (res.data.success) {
         const processedArticles: LocalArticle[] = res.data.articles.map((article: any) => ({

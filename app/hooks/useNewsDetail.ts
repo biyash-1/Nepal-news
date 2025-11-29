@@ -10,14 +10,23 @@ interface Author {
 }
 
 interface NewsArticle {
-  _id: string;
+  _id: string;              // use _id instead of id
   title: string;
   content: string;
-  image: string;
+  image?: string;
   categories: string[];
-  author: Author;
+  tags?: string[];  
+  views?: number;
+  likes?: number;
+  recentViews?: { timestamp: string }[];
+  isTrending?: boolean;
+  lastTrendingCheck?: string;
   createdAt: string;
+  updatedAt?: string;
+  author: Author;
 }
+
+
 
 interface RelatedNews {
   _id: string;
