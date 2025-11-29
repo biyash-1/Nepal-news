@@ -3,10 +3,11 @@
 import { pradeshData } from '@/lib/PradeshData';
 import { notFound, useParams } from 'next/navigation';
 import { usePradeshNews } from '@/app/hooks/usePradeshNews';
+import Link from 'next/link';
 
 // Fallback news data
 const fallbackNews = {
-  id: "fallback",
+  _id: "fallback",
   title: "यस प्रदेशका थप समाचारहरू चाँडै नै उपलब्ध हुनेछन्",
   content: "हामी यस प्रदेशका नयाँ समाचारहरू संकलन गर्दैछौं। यस प्रदेशका ताजा समाचारहरू चाँडै नै उपलब्ध हुनेछन्।",
   image: "https://images.unsplash.com/photo-1584824486539-53bb4646bdbc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80",
@@ -97,16 +98,20 @@ export default function PradeshNewsPage() {
       <div className="container mx-auto px-4 py-6">
         {/* Main News Section with Large Image */}
         <div className="mb-8">
-          <div className="relative h-[400px] md:h-[500px] overflow-hidden rounded-lg mb-4">
-            <img 
-              src={getImageUrl(displayMainNews)} 
-              alt={displayMainNews.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-              <p className="text-gray-200 text-sm md:text-base">{getExcerpt(displayMainNews.content)}</p>
+          <Link href={displayMainNews._id ? `/news/${displayMainNews._id}` : '#'}>
+            <div className="relative h-[400px] md:h-[500px] overflow-hidden rounded-lg mb-4 group cursor-pointer">
+              <img 
+                src={getImageUrl(displayMainNews)} 
+                alt={displayMainNews.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                <p className="text-gray-200 text-sm md:text-base group-hover:text-white transition-colors">
+                  {getExcerpt(displayMainNews.content)}
+                </p>
+              </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Featured News Grid */}
@@ -115,59 +120,66 @@ export default function PradeshNewsPage() {
             {/* Main Featured News */}
             {displayFeaturedNews[0] && (
               <div className="lg:col-span-2">
-                <div className=" rounded-lg overflow-hidden h-full">
-                  <img 
-                  
-                    src={getImageUrl(displayFeaturedNews[0])}
-                    alt={displayFeaturedNews[0].title}
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className="p-4">
-                   
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{displayFeaturedNews[0].title}</h3>
-                 
-                    <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-                      <span>{new Date(displayFeaturedNews[0].createdAt).toLocaleDateString('ne-NP')}</span>
-                      <span>{displayFeaturedNews[0].author.username}</span>
+                <Link href={displayFeaturedNews[0]._id ? `/news/${displayFeaturedNews[0]._id}` : '#'}>
+                  <div className="rounded-lg overflow-hidden h-full group cursor-pointer">
+                    <img 
+                      src={getImageUrl(displayFeaturedNews[0])}
+                      alt={displayFeaturedNews[0].title}
+                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                        {displayFeaturedNews[0].title}
+                      </h3>
+                      <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
+                        <span>{new Date(displayFeaturedNews[0].createdAt).toLocaleDateString('ne-NP')}</span>
+                        <span>{displayFeaturedNews[0].author.username}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               </div>
             )}
 
             {/* Side Featured News */}
             {displayFeaturedNews[1] && (
               <div className="space-y-4">
-                <div className="  rounded-lg overflow-hidden">
-                  <img 
-                    src={getImageUrl(displayFeaturedNews[1])} 
-                    alt={displayFeaturedNews[1].title}
-                    className="w-full h-32 object-cover"
-                  />
-                  <div className="p-3">
-                    
-                    <h4 className="font-bold text-gray-900 text-sm leading-tight">{displayFeaturedNews[1].title}</h4>
-                    <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-                      <span>{new Date(displayFeaturedNews[1].createdAt).toLocaleDateString('ne-NP')}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Optional third small news */}
-                {displayHeadlineNews[0] && (
-                  <div className="rounded-lg overflow-hidden">
+                <Link href={displayFeaturedNews[1]._id ? `/news/${displayFeaturedNews[1]._id}` : '#'}>
+                  <div className="rounded-lg overflow-hidden group cursor-pointer">
                     <img 
-                      src={getImageUrl(displayHeadlineNews[0])} 
-                      alt={displayHeadlineNews[0].title}
-                      className="w-full h-32 object-cover"
+                      src={getImageUrl(displayFeaturedNews[1])} 
+                      alt={displayFeaturedNews[1].title}
+                      className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="p-3">
-                      <h4 className="font-bold text-gray-900 text-sm leading-tight">{displayHeadlineNews[0].title}</h4>
+                      <h4 className="font-bold text-gray-900 text-sm leading-tight group-hover:text-red-600 transition-colors">
+                        {displayFeaturedNews[1].title}
+                      </h4>
                       <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-                     
+                        <span>{new Date(displayFeaturedNews[1].createdAt).toLocaleDateString('ne-NP')}</span>
                       </div>
                     </div>
                   </div>
+                </Link>
+
+                {/* Optional third small news */}
+                {displayHeadlineNews[0] && (
+                  <Link href={displayHeadlineNews[0]._id ? `/news/${displayHeadlineNews[0]._id}` : '#'}>
+                    <div className="rounded-lg overflow-hidden group cursor-pointer">
+                      <img 
+                        src={getImageUrl(displayHeadlineNews[0])} 
+                        alt={displayHeadlineNews[0].title}
+                        className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="p-3">
+                        <h4 className="font-bold text-gray-900 text-sm leading-tight group-hover:text-red-600 transition-colors">
+                          {displayHeadlineNews[0].title}
+                        </h4>
+                        <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
                 )}
               </div>
             )}
@@ -182,19 +194,22 @@ export default function PradeshNewsPage() {
             {/* Top Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               {[mainNews, ...featuredNews].filter(Boolean).slice(0, 3).map((item: any) => (
-                <div key={item._id} className="rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center space-x-3">
-                    <img 
-                      src={getImageUrl(item)} 
-                      alt={item.title}
-                      className="w-20 h-20 object-cover rounded"
-                    />
-                    <div>
-                      <h4 className="font-bold text-gray-900 text-sm leading-tight">{item.title}</h4>
-                    
+                <Link key={item._id} href={`/news/${item._id}`}>
+                  <div className="rounded-lg p-4 hover:shadow-md transition-shadow group cursor-pointer">
+                    <div className="flex items-center space-x-3">
+                      <img 
+                        src={getImageUrl(item)} 
+                        alt={item.title}
+                        className="w-20 h-20 object-cover rounded group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div>
+                        <h4 className="font-bold text-gray-900 text-sm leading-tight group-hover:text-red-600 transition-colors">
+                          {item.title}
+                        </h4>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 
@@ -202,19 +217,22 @@ export default function PradeshNewsPage() {
             {displayHeadlineNews.length >= 3 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {displayHeadlineNews.slice(0, 3).map((item: any) => (
-                  <div key={item._id} className="rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-center space-x-3">
-                      <img 
-                        src={getImageUrl(item)} 
-                        alt={item.title}
-                        className="w-20 h-20 object-cover rounded flex-shrink-0"
-                      />
-                      <div>
-                        <h4 className="font-bold text-gray-900 text-sm leading-tight">{item.title}</h4>
-                       
+                  <Link key={item._id} href={`/news/${item._id}`}>
+                    <div className="rounded-lg p-4 hover:shadow-md transition-shadow group cursor-pointer">
+                      <div className="flex items-center space-x-3">
+                        <img 
+                          src={getImageUrl(item)} 
+                          alt={item.title}
+                          className="w-20 h-20 object-cover rounded flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-sm leading-tight group-hover:text-red-600 transition-colors">
+                            {item.title}
+                          </h4>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -224,25 +242,26 @@ export default function PradeshNewsPage() {
         {/* Regular News Grid */}
         {displayRegularNews.length > 0 && (
           <div className="mb-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6  pb-2">अन्य समाचार</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 pb-2">अन्य समाचार</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayRegularNews.map((item: any) => (
-                <div key={item._id} className=" rounded-lg overflow-hidden  transition-shadow">
-                  <img 
-                    src={getImageUrl(item)} 
-                    alt={item.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                 
-                    <h4 className="font-bold text-gray-900 mb-2 leading-tight">{item.title}</h4>
-                  
-                    <div className="flex justify-between items-center text-xs text-gray-500">
-                    
-                      <span>{item.author.username}</span>
+                <Link key={item._id} href={`/news/${item._id}`}>
+                  <div className="rounded-lg overflow-hidden transition-shadow group cursor-pointer">
+                    <img 
+                      src={getImageUrl(item)} 
+                      alt={item.title}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="p-4">
+                      <h4 className="font-bold text-gray-900 mb-2 leading-tight group-hover:text-red-600 transition-colors">
+                        {item.title}
+                      </h4>
+                      <div className="flex justify-between items-center text-xs text-gray-500">
+                        <span>{item.author.username}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
