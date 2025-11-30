@@ -1,5 +1,5 @@
 // jobs/trendingCronJob.js
-const cron = require('node-cron');
+  const cron = require('node-cron');
 const Article = require('../models/Article');
 const { getTrendingConfig } = require('../config/trendingConfig');
 

@@ -182,7 +182,7 @@ export default function Header() {
             {navItems.map((item, idx) => (
               <NavDropdown key={idx} item={item} />
             ))}
-            <FaCalendarAlt className="text-gray-600" />
+           
           </div>
         </nav>
       </header>
