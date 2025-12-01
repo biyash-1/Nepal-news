@@ -1,13 +1,13 @@
 "use client";
 
-import BreakingNews from '@/components/BreakingNews';
-import FeaturedNews from '@/components/FeaturedNews';
-import LatestNews from '@/components/LatestNews';
-import PoliticsSection from '@/components/PoliticsSection';
-import Footer from '@/components/Footer';
-import SportsNews from '@/components/SportsNews';
-import TechNews from '@/components/TechNews';
-import PortfolioSection from '@/components/Portfolio';
+import BreakingNews from "@/components/BreakingNews";
+import FeaturedNews from "@/components/FeaturedNews";
+import LatestNews from "@/components/LatestNews";
+import PoliticsSection from "@/components/PoliticsSection";
+import Footer from "@/components/Footer";
+import SportsNews from "@/components/SportsNews";
+import TechNews from "@/components/TechNews";
+import PortfolioSection from "@/components/Portfolio";
 import { useHomeNews } from "@/app/hooks/useHomeNews";
 
 export default function Home() {
@@ -20,7 +20,7 @@ export default function Home() {
     politicsNews,
     portfolioNews,
     loading,
-    error
+    error,
   } = useHomeNews();
 
   if (loading) {
@@ -39,8 +39,8 @@ export default function Home() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 text-lg">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700"
           >
             पुनः प्रयास गर्नुहोस्
@@ -61,7 +61,6 @@ export default function Home() {
         <TechNews articles={techNews} />
         <PoliticsSection articles={politicsNews} />
       </div>
-      <Footer />
     </>
   );
 }

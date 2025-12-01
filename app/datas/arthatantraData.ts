@@ -1,5 +1,5 @@
 export const arthatantraCategories = [
-  { key: "all", label: "सबै" },
+ 
   { key: "banking", label: "बैङ्किङ्ग" },
   { key: "market", label: "बजार" },
   { key: "jobs", label: "रोजगारी" },

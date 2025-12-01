@@ -1,6 +1,6 @@
 // datas/localCategories.ts
 export const localCategories = [
-  { key: "all", label: "सबै" },
+
   { key: "kathmandu", label: "काठमाडौं" },
   { key: "lalitpur", label: "ललितपुर" },
   { key: "bhaktapur", label: "भक्तपुर" },

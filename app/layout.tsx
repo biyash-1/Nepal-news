@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import "react-datepicker/dist/react-datepicker.css";
 import {Toaster} from "react-hot-toast";
+import Footer from "@/components/Footer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,9 +27,10 @@ export default function RootLayout({
       <body className={`antialiased ${poppins.className}`}>
       <Toaster />
         <Header />
-        <main className="min-h-screen bg-gray-50 mx-auto w-[90%] px-4 sm:px-6 lg:px-8 py-8">
+        <main className="min-h-screen bg-gray-50 mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
           {children}
         </main>
+          <Footer/>
       </body>
     </html>
   );
