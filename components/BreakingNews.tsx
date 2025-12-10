@@ -44,7 +44,7 @@ export default function BreakingNews({ main, marquee }: BreakingNewsProps) {
         </div>
       </div>
 
-      <section className="max-w-7xl mx-auto py-2">
+      <section className="w-full mx-auto py-2">
         <h2 className="text-xl font-bold text-red-600 mb-4 border-b-4 border-red-600 inline-block pb-1">
           आजको मुख्य समाचार
         </h2>

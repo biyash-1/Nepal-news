@@ -8,6 +8,7 @@ import { useViewTracker } from '@/app/hooks/useViewTracker';
 import AuthModal from '@/components/AuthModel';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { FaFacebookF, FaTwitter, FaWhatsapp, FaLinkedinIn } from 'react-icons/fa';
 
 export default function NewsDetailPage() {
   const params = useParams();
@@ -16,8 +17,15 @@ export default function NewsDetailPage() {
   const { user, isAuthenticated } = useAuthStore();
   
   // View tracking hook
-  const { viewCounted, isTrending } = useViewTracker(id, article);
+  const { viewCounted, isTrending, debugInfo } = useViewTracker(id, article);
   
+  const socialPlatforms = [
+  { name: 'facebook', color: '#1877F2', icon: FaFacebookF },
+  { name: 'twitter', color: '#1DA1F2', icon: FaTwitter },
+  { name: 'whatsapp', color: '#25D366', icon: FaWhatsapp },
+  { name: 'linkedin', color: '#0077B5', icon: FaLinkedinIn },
+];
+
   const {
     comments,
     loading: commentsLoading,
@@ -224,22 +232,26 @@ export default function NewsDetailPage() {
                   </svg>
                   <span>{article.views || 0} दृश्य</span>
                 </div>
+                
               </div>
 
               <div className="px-8 py-6 bg-gray-50 border-b">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-700 font-medium">सेयर गर्नुहोस्:</span>
                   <div className="flex space-x-3">
-                    {['facebook', 'twitter', 'whatsapp', 'linkedin'].map((platform) => (
-                      <button
-                        key={platform}
-                        onClick={() => shareOnSocial(platform)}
-                        className="w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors"
-                      >
-                        {/* Add respective icons */}
-                      </button>
-                    ))}
-                  </div>
+  {socialPlatforms.map(({ name, color, icon: Icon }) => (
+    <button
+      key={name}
+      onClick={() => shareOnSocial(name)}
+      className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+      style={{ backgroundColor: color }}
+      onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
+      onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+    >
+      <Icon className="text-white" />
+    </button>
+  ))}
+</div>
                 </div>
               </div>
 

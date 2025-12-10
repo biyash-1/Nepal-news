@@ -74,7 +74,8 @@ ArticleSchema.methods.incrementView = async function() {
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   this.recentViews = this.recentViews.filter(v => v.timestamp > sevenDaysAgo);
   
-  await this.save();
+  // Use validateBeforeSave: false to bypass validation
+  await this.save({ validateBeforeSave: false });
 };
 
 // Method to check and update trending status
@@ -107,7 +108,8 @@ ArticleSchema.methods.updateTrendingStatus = async function(config) {
     }
     
     this.lastTrendingCheck = now;
-    await this.save();
+    // Use validateBeforeSave: false to bypass validation
+    await this.save({ validateBeforeSave: false });
   }
   
   return this.isTrending;

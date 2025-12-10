@@ -71,7 +71,7 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
           <div className="lg:col-span-2">
             <Link href={`/news/${articles[0]._id}`}>
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer">
-                <div className="relative h-80">
+                <div className="relative h-90">
                   <img 
                     src={getImageUrl(articles[0])} 
                     alt={articles[0].title}

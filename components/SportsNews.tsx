@@ -59,7 +59,7 @@ export default function SportsNews({ articles }: SportsNewsProps) {
           </Link>
         </div>
 
-        {articles.length > 0 ? (
+        {articles && articles.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Sports News */}
             <div className="lg:col-span-2">
@@ -97,7 +97,7 @@ export default function SportsNews({ articles }: SportsNewsProps) {
 
             {/* Side Sports News */}
             <div className="space-y-6">
-              {articles.slice(1, 3).map((article) => (
+              {articles.slice(1, 4).map((article) => (
                 <Link 
                   href={`/news/${article._id}`}
                   key={article._id}
@@ -126,24 +126,8 @@ export default function SportsNews({ articles }: SportsNewsProps) {
                 </Link>
               ))}
 
-              {/* Stats Card */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
-                <h5 className="font-bold text-lg mb-4">आजको खेलकुद</h5>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold">{articles.length}</div>
-                    <div className="text-xs">समाचार</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">🔥</div>
-                    <div className="text-xs">ट्रेन्डिङ</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">📰</div>
-                    <div className="text-xs">अपडेट</div>
-                  </div>
-                </div>
-              </div>
+          
+              
             </div>
           </div>
         ) : (

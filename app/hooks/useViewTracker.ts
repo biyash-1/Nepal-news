@@ -16,47 +16,27 @@ export const useViewTracker = (articleId: string, article: Article | null) => {
   const [isTrending, setIsTrending] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>('');
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const hasAttemptedRef = useRef(false);
+  const isTrackingRef = useRef(false);
 
   useEffect(() => {
-    console.log('🔵 useViewTracker effect running...', {
-      articleId,
-      hasArticle: !!article,
-      hasAttempted: hasAttemptedRef.current
-    });
-
-    // Only run once per article
-    if (!articleId) {
-      console.log('❌ No articleId, exiting');
-      return;
-    }
-
-    if (hasAttemptedRef.current) {
-      console.log('⏭️ Already attempted, skipping');
-      return;
-    }
-
-    // Don't start tracking if article hasn't loaded yet
-    if (!article) {
-      console.log('⏳ Article not loaded yet, waiting...');
+    // Only run if we have both articleId and article, and aren't already tracking
+    if (!articleId || !article || isTrackingRef.current) {
       return;
     }
 
     console.log('✅ Starting view tracking for article:', articleId);
-    hasAttemptedRef.current = true;
+    isTrackingRef.current = true;
 
     const trackView = async () => {
       try {
         console.log('📡 Fetching trending config...');
         
-        // Fetch config to get delay
         const configResponse = await axiosInstance.get('/articles/trending-config');
         const delay = configResponse.data?.config?.viewCountDelay || 20;
         
         console.log(`⏱️ View will be counted after ${delay} seconds...`);
         setDebugInfo(`Waiting ${delay} seconds...`);
         
-        // Set timer to count view after delay
         timerRef.current = setTimeout(async () => {
           try {
             console.log('📊 Attempting to count view...');
@@ -84,36 +64,36 @@ export const useViewTracker = (articleId: string, article: Article | null) => {
             }
           } catch (error: any) {
             console.error('❌ Failed to count view:', error);
-            console.error('Error details:', error.response?.data || error.message);
             setDebugInfo(`Error: ${error.message}`);
           }
         }, delay * 1000);
         
       } catch (error: any) {
         console.error('❌ Failed to fetch config:', error);
-        console.error('Config error details:', error.response?.data || error.message);
         setDebugInfo(`Config error: ${error.message}`);
       }
     };
 
     trackView();
 
-    // Cleanup function
+    // Cleanup only runs when component unmounts
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
-        console.log('🛑 View tracking cancelled (cleanup)');
+        console.log('🛑 View tracking cancelled (component unmounted)');
       }
+      // Reset tracking flag on cleanup
+      isTrackingRef.current = false;
     };
-  }, [articleId, article]); // Include article back to trigger when it loads
+  }, [articleId, article?._id]);
 
-  // Update trending status from article
+  // Separate effect to update trending status
   useEffect(() => {
     if (article) {
       const hasTrendingTag = article.tags?.includes('ट्रेन्डिङ') || article.isTrending || false;
       setIsTrending(hasTrendingTag);
     }
-  }, [article]);
+  }, [article?.isTrending, article?.tags]);
 
   return { 
     viewCounted, 

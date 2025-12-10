@@ -72,7 +72,7 @@ export const useHomeNews = () => {
 
         // Fetch sports news (खेलकुद category)
         const sportsRes = await axiosInstance.get('/articles/category/खेलकुद', {
-          params: { limit: 3 }
+          params: { limit: 4 }
         });
         if (sportsRes.data.success) {
           setSportsNews(sportsRes.data.articles);
@@ -88,7 +88,7 @@ export const useHomeNews = () => {
 
         // Fetch politics news (राजनीति category)
         const politicsRes = await axiosInstance.get('/articles/category/राजनीति', {
-          params: { limit: 6 }
+          params: { limit: 7 }
         });
         if (politicsRes.data.success) {
           setPoliticsNews(politicsRes.data.articles);
