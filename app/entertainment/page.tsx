@@ -16,7 +16,7 @@ const celebrities = [
 ];
 
 export default function EntertainmentPage() {
-  const { headlineNews, gossipNews, bollywoodHollywoodNews, musicNews, featuredNews, loading, error } = useEntertainmentNews();
+  const { headlineNews, gossipNews, bollywoodHollywoodNews, musicNews, featuredNews, trendingNews, loading, error } = useEntertainmentNews();
 
   if (loading) {
     return (
@@ -251,13 +251,19 @@ export default function EntertainmentPage() {
             <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-6 shadow-sm">
               <h4 className="text-2xl font-bold text-gray-900 mb-6">🔥 ट्रेन्डिङ</h4>
               <div className="space-y-4">
-                {[headlineNews.main, ...headlineNews.side].filter(Boolean).slice(0, 5).map((trend: any, index: number) => (
-                  <Link href={`/news/${trend._id}`} key={trend._id} className="flex items-center space-x-4 p-3 bg-white rounded-xl hover:shadow-md cursor-pointer transition-all">
-                    <span className="font-bold text-red-600 text-xl w-8">{index + 1}</span>
-                    <img src={getImageUrl(trend)} alt={trend.title} className="w-16 h-16 object-cover rounded-lg" />
-                    <span className="text-gray-800 text-sm font-medium flex-1">{trend.title}</span>
-                  </Link>
-                ))}
+                {trendingNews.length > 0 ? (
+                  trendingNews.map((trend: any, index: number) => (
+                    <Link href={`/news/${trend._id}`} key={trend._id} className="flex items-center space-x-4 p-3 bg-white rounded-xl hover:shadow-md cursor-pointer transition-all">
+                      <span className="font-bold text-red-600 text-xl w-8">{index + 1}</span>
+                      <img src={getImageUrl(trend)} alt={trend.title} className="w-16 h-16 object-cover rounded-lg" />
+                      <span className="text-gray-800 text-sm font-medium flex-1">{trend.title}</span>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    कुनै ट्रेन्डिङ समाचार छैन
+                  </div>
+                )}
               </div>
             </div>
 
@@ -380,7 +386,6 @@ export default function EntertainmentPage() {
             </div>
           </section>
         )}
-
 
         {/* Section Divider */}
         <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-16"></div>

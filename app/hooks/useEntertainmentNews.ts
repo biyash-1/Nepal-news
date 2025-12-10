@@ -8,9 +8,12 @@ interface Article {
   title: string;
   content: string;
   categories: string[];
-  author: string; // <-- match backend
+  author: string;
   createdAt: string;
   image: string;
+  featuredImage?: string;
+  isTrending?: boolean;
+  trendingScore?: number;
 }
 
 interface HeadlineNews {
@@ -24,6 +27,7 @@ export const useEntertainmentNews = () => {
   const [bollywoodHollywoodNews, setBollywoodHollywoodNews] = useState<Article[]>([]);
   const [musicNews, setMusicNews] = useState<Article[]>([]);
   const [featuredNews, setFeaturedNews] = useState<Article[]>([]);
+  const [trendingNews, setTrendingNews] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,6 +87,17 @@ export const useEntertainmentNews = () => {
           setFeaturedNews(featuredRes.data.articles);
         }
 
+        // Fetch trending news (मनोरञ्जन category)
+        const trendingRes = await axiosInstance.get('/articles/news/trending', {
+          params: { 
+            category: "मनोरञ्जन",
+            limit: 5 
+          }
+        });
+        if (trendingRes.data.success) {
+          setTrendingNews(trendingRes.data.articles);
+        }
+
       } catch (err: any) {
         setError(err.response?.data?.message || "समाचार ल्याउन समस्या भयो");
         console.error("Error fetching entertainment news:", err);
@@ -99,7 +114,8 @@ export const useEntertainmentNews = () => {
     gossipNews, 
     bollywoodHollywoodNews, 
     musicNews, 
-    featuredNews, 
+    featuredNews,
+    trendingNews,
     loading,
     error 
   };
