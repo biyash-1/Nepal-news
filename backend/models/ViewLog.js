@@ -1,3 +1,4 @@
+// models/ViewLog.js
 const mongoose = require('mongoose');
 
 const ViewLogSchema = new mongoose.Schema({
@@ -19,12 +20,15 @@ const ViewLogSchema = new mongoose.Schema({
   },
   expiresAt: {
     type: Date,
-    default: () => new Date(Date.now() + 24 * 60 * 60 * 1000),
+    // Extended to 7 days to support popular news calculation
+    default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     index: true
   }
 });
 
+// Compound indexes for efficient queries
 ViewLogSchema.index({ article: 1, identifier: 1, viewedAt: -1 });
-ViewLogSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+ViewLogSchema.index({ article: 1, viewedAt: -1 }); // For aggregation queries
+ViewLogSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); // TTL index
 
 module.exports = mongoose.model('ViewLog', ViewLogSchema);

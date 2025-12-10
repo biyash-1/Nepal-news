@@ -10,19 +10,29 @@ interface Author {
 }
 
 interface NewsArticle {
-  _id: string;              // use _id instead of id
+  _id: string;               // MongoDB ObjectId as string
   title: string;
   content: string;
   image?: string;
   categories: string[];
-  tags?: string[];  
-  views?: number;
+  tags?: string[];
+  
+  // Views and engagement
+  views?: number;            // total views
+  viewsLast24h?: number;     // rolling 24h views
+  viewsLast7d?: number;      // rolling 7-day views
   likes?: number;
-  recentViews?: { timestamp: string }[];
-  isTrending?: boolean;
-  lastTrendingCheck?: string;
-  createdAt: string;
-  updatedAt?: string;
+
+  // Computed scores
+  trendingScore?: number;
+  popularScore?: number;
+  lastScoreUpdate?: string;  // ISO string
+
+  // Timestamps
+  createdAt: string;         // ISO string
+  updatedAt?: string;        // ISO string
+
+  // Author info
   author: Author;
 }
 

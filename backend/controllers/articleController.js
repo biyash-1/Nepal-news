@@ -2,7 +2,6 @@
 const Article = require('../models/Article');
 const ViewLog = require('../models/ViewLog');
 const crypto = require('crypto');
-const { getTrendingConfig } = require('../config/trendingConfig');
 
 // Helper function to create unique identifier from IP + User Agent
 const createIdentifier = (ip, userAgent) => {
@@ -10,7 +9,24 @@ const createIdentifier = (ip, userAgent) => {
   return crypto.createHash('sha256').update(data).digest('hex');
 };
 
+const parseCategories = (catParam) => {
+  if (!catParam) return undefined;
+
+  // Special case: Bollywood
+  if (catParam === "बलिउड") return ["बलिउड", "हलिउड"];
+
+  // Try parsing as JSON array
+  try {
+    const arr = JSON.parse(catParam);
+    return Array.isArray(arr) ? arr : [arr];
+  } catch {
+    return [catParam]; // Single string
+  }
+};
+
+// ============================
 // GET ALL ARTICLES (with pagination + category filter)
+// ============================
 exports.getAllArticles = async (req, res) => {
   try {
     const { page = 1, limit = 10, category } = req.query;
@@ -41,7 +57,9 @@ exports.getAllArticles = async (req, res) => {
   }
 };
 
+// ============================
 // GET SINGLE ARTICLE BY ID
+// ============================
 exports.getArticleById = async (req, res) => {
   try {
     const article = await Article.findById(req.params.id).lean();
@@ -53,8 +71,6 @@ exports.getArticleById = async (req, res) => {
       });
     }
 
-    // Return article without incrementing view
-    // View will be incremented by separate endpoint
     res.json({ success: true, article });
   } catch (err) {
     res.status(500).json({
@@ -65,7 +81,9 @@ exports.getArticleById = async (req, res) => {
   }
 };
 
-// INCREMENT VIEW COUNT (with backend tracking)
+// ============================
+// INCREMENT VIEW COUNT
+// ============================
 exports.incrementView = async (req, res) => {
   try {
     const { id } = req.params;
@@ -91,7 +109,8 @@ exports.incrementView = async (req, res) => {
       return res.json({ 
         success: true, 
         views: article.views || 0,
-        isTrending: article.isTrending || false,
+        viewsLast24h: article.viewsLast24h || 0,
+        trendingScore: article.trendingScore || 0,
         alreadyCounted: true,
         message: 'View already counted in last 24 hours'
       });
@@ -107,30 +126,22 @@ exports.incrementView = async (req, res) => {
       });
     }
 
-    // Log the view
+    // Log the view with 7-day expiration
     await ViewLog.create({
       article: id,
       identifier: identifier,
       viewedAt: new Date(),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     });
 
-    // Increment view count
+    // Increment view count (includes rolling window updates)
     await article.incrementView();
-    
-    // Check if we should update trending status
-    const config = getTrendingConfig();
-    const timeSinceLastCheck = Date.now() - article.lastTrendingCheck.getTime();
-    const checkInterval = config.checkIntervalMinutes * 60 * 1000;
-    
-    if (timeSinceLastCheck > checkInterval) {
-      await article.updateTrendingStatus(config);
-    }
 
     res.json({ 
       success: true, 
       views: article.views,
-      isTrending: article.isTrending,
+      viewsLast24h: article.viewsLast24h,
+      trendingScore: article.trendingScore,
       alreadyCounted: false,
       message: 'View counted successfully'
     });
@@ -144,106 +155,169 @@ exports.incrementView = async (req, res) => {
   }
 };
 
-// GET TRENDING ARTICLES
-exports.getTrendingArticles = async (req, res) => {
+// ============================
+// GET /news/headlines
+// Latest 3 articles
+// ============================
+exports.getHeadlines = async (req, res) => {
   try {
-    const { limit = 10 } = req.query;
+    const { limit = 3, categories, category } = req.query;
 
-    const articles = await Article.find({ isTrending: true })
-      .sort({ views: -1 })
+    const catParam = categories || category;
+
+    let query = {};
+    if (catParam) {
+      let categoryArray;
+      try {
+        categoryArray = JSON.parse(catParam);
+        if (!Array.isArray(categoryArray)) categoryArray = [categoryArray];
+      } catch {
+        categoryArray = [catParam];
+      }
+
+      query.categories = { $in: categoryArray };
+    }
+
+    const articles = await Article.find(query)
+      .sort({ createdAt: -1 })
       .limit(parseInt(limit))
       .lean();
 
-    res.json({
-      success: true,
-      articles,
-      total: articles.length
-    });
+    res.json({ success: true, articles });
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "Failed to fetch trending articles",
+      message: "Failed to fetch headlines",
       error: err.message,
     });
   }
 };
 
-// ADMIN: Update trending config
-exports.updateTrendingConfig = async (req, res) => {
+// ============================
+// GET /news/other
+// ============================
+exports.getOtherNews = async (req, res) => {
   try {
-    const { minRecentViews, timeWindowHours, minTotalViews, checkIntervalMinutes, viewCountDelay } = req.body;
-    
-    const updates = {};
-    if (minRecentViews !== undefined) updates.minRecentViews = minRecentViews;
-    if (timeWindowHours !== undefined) updates.timeWindowHours = timeWindowHours;
-    if (minTotalViews !== undefined) updates.minTotalViews = minTotalViews;
-    if (checkIntervalMinutes !== undefined) updates.checkIntervalMinutes = checkIntervalMinutes;
-    if (viewCountDelay !== undefined) updates.viewCountDelay = viewCountDelay;
-    
-    const { updateTrendingConfig } = require('../config/trendingConfig');
-    updateTrendingConfig(updates);
-    
-    res.json({
-      success: true,
-      message: "Trending config updated",
-      config: require('../config/trendingConfig').trendingConfig
-    });
+    const { exclude = "", limit = 20, categories, category } = req.query;
+
+    const excludedIds = exclude
+      ? exclude.split(",").map(id => id.trim()).filter(Boolean)
+      : [];
+
+    const catParam = categories || category;
+    const categoryArray = parseCategories(catParam);
+
+    const query = {
+      ...(excludedIds.length && { _id: { $nin: excludedIds } }),
+      ...(categoryArray && { categories: { $in: categoryArray } }), // Match any
+    };
+
+    const articles = await Article.find(query)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .lean();
+
+    res.json({ success: true, articles });
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "Failed to update config",
+      message: "Failed to fetch other news",
       error: err.message,
     });
   }
 };
 
-// ADMIN: Get current trending config
-exports.getTrendingConfigEndpoint = async (req, res) => {
+// ============================
+// GET /news/trending
+// ============================
+exports.getTrendingNews = async (req, res) => {
   try {
-    const config = getTrendingConfig();
-    res.json({
-      success: true,
-      config
-    });
+    const { limit = 10, categories, category } = req.query;
+    const categoryArray = parseCategories(categories || category);
+
+    const query = categoryArray ? { categories: { $in: categoryArray } } : {};
+
+    const articles = await Article.find(query)
+      .sort({ trendingScore: -1, createdAt: -1 })
+      .limit(parseInt(limit))
+      .lean();
+
+    const filtered = articles.filter(a => a.trendingScore > 0);
+
+    res.json({ success: true, articles: filtered, total: filtered.length });
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "Failed to get config",
+      message: "Failed to fetch trending news",
       error: err.message,
     });
   }
 };
 
-// ADMIN: Manually recalculate trending for all articles
-exports.recalculateTrending = async (req, res) => {
+// ============================
+// GET /news/popular
+// ============================
+exports.getPopularNews = async (req, res) => {
   try {
-    const config = getTrendingConfig();
-    const articles = await Article.find({});
+    const { limit = 10, categories, category } = req.query;
+    const categoryArray = parseCategories(categories || category);
+
+    const query = categoryArray ? { categories: { $in: categoryArray } } : {};
+
+    const articles = await Article.find(query)
+      .sort({ popularScore: -1, createdAt: -1 })
+      .limit(parseInt(limit))
+      .lean();
+
+    const filtered = articles.filter(a => a.popularScore > 0);
+
+    res.json({ success: true, articles: filtered, total: filtered.length });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch popular news",
+      error: err.message,
+    });
+  }
+};
+
+
+// ============================
+// ADMIN: Manually trigger score recalculation
+// ============================
+exports.recalculateScores = async (req, res) => {
+  try {
+    const { timeWindow = 'both' } = req.body;
     
-    let updated = 0;
-    for (const article of articles) {
-      const wasTrending = article.isTrending;
-      await article.updateTrendingStatus(config);
-      if (wasTrending !== article.isTrending) {
-        updated++;
-      }
+    const results = {};
+    
+    if (timeWindow === '24h' || timeWindow === 'both') {
+      const result24h = await Article.bulkUpdateScores('24h');
+      results.trending = result24h;
+    }
+    
+    if (timeWindow === '7d' || timeWindow === 'both') {
+      const result7d = await Article.bulkUpdateScores('7d');
+      results.popular = result7d;
     }
     
     res.json({
       success: true,
-      message: `Recalculated trending status for ${articles.length} articles`,
-      updated
+      message: 'Scores recalculated successfully',
+      results
     });
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "Failed to recalculate trending",
+      message: "Failed to recalculate scores",
       error: err.message,
     });
   }
 };
 
+// ============================
 // GET ARTICLES BY MULTIPLE CATEGORIES
+// ============================
 exports.getArticlesByMultipleCategories = async (req, res) => {
   try {
     let { categories, limit = 10 } = req.query;
@@ -293,7 +367,9 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
   }
 };
 
+// ============================
 // GET ARTICLES BY CATEGORY
+// ============================
 exports.getArticlesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
@@ -337,7 +413,9 @@ exports.getArticlesByCategory = async (req, res) => {
   }
 };
 
+// ============================
 // SEARCH ARTICLES
+// ============================
 exports.searchArticles = async (req, res) => {
   try {
     const { q: query, page = 1, limit = 10 } = req.query;
@@ -435,7 +513,9 @@ exports.searchArticles = async (req, res) => {
   }
 };
 
+// ============================
 // CREATE ARTICLE
+// ============================
 exports.createArticle = async (req, res) => {
   try {
     const { title, content, image, categories, tags } = req.body;
@@ -469,7 +549,9 @@ exports.createArticle = async (req, res) => {
   }
 };
 
+// ============================
 // UPDATE ARTICLE
+// ============================
 exports.updateArticle = async (req, res) => {
   try {
     const { title, content, image, categories, tags } = req.body;
@@ -512,7 +594,9 @@ exports.updateArticle = async (req, res) => {
   }
 };
 
+// ============================
 // DELETE ARTICLE
+// ============================
 exports.deleteArticle = async (req, res) => {
   try {
     const article = await Article.findById(req.params.id);

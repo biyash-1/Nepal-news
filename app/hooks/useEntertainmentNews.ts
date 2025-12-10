@@ -34,7 +34,7 @@ export const useEntertainmentNews = () => {
         setError(null);
 
         // Fetch headline news (मनोरञ्जन + मुख्य categories)
-        const headlineRes = await axiosInstance.get('/articles/multiple-categories', {
+        const headlineRes = await axiosInstance.get('/articles/categories/multiple', {
           params: { 
             categories: JSON.stringify(["मनोरञ्जन", "मुख्य"]),
             limit: 3 
@@ -57,7 +57,7 @@ export const useEntertainmentNews = () => {
         }
 
         // Fetch Bollywood/Hollywood news
-        const bollywoodRes = await axiosInstance.get('/articles/multiple-categories', {
+        const bollywoodRes = await axiosInstance.get('/articles/categories/multiple', {
           params: { 
             categories: JSON.stringify(["बलिउड", "हलिउड"]),
             limit: 5 

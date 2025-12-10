@@ -33,7 +33,7 @@ export const usePradeshNews = (pradeshName: string) => {
       const categoryArray = JSON.stringify(["प्रदेश", pradeshName]);
 
       // Fetch all articles at once
-      const res = await axiosInstance.get("/articles/multiple-categories", {
+      const res = await axiosInstance.get("/articles/categories/multiple", {
         params: { categories: categoryArray, limit: 30 } // fetch enough for all sections
       });
 

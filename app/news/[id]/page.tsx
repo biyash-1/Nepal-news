@@ -16,15 +16,15 @@ export default function NewsDetailPage() {
   const { article, relatedNews, loading, error } = useNewsDetail(id);
   const { user, isAuthenticated } = useAuthStore();
   
-  // View tracking hook
-  const { viewCounted, isTrending, debugInfo } = useViewTracker(id, article);
+  // View tracking hook - now uses dynamic trending system
+  const { viewCounted, isTrending, currentViews, trendingScore, debugInfo } = useViewTracker(id, article);
   
   const socialPlatforms = [
-  { name: 'facebook', color: '#1877F2', icon: FaFacebookF },
-  { name: 'twitter', color: '#1DA1F2', icon: FaTwitter },
-  { name: 'whatsapp', color: '#25D366', icon: FaWhatsapp },
-  { name: 'linkedin', color: '#0077B5', icon: FaLinkedinIn },
-];
+    { name: 'facebook', color: '#1877F2', icon: FaFacebookF },
+    { name: 'twitter', color: '#1DA1F2', icon: FaTwitter },
+    { name: 'whatsapp', color: '#25D366', icon: FaWhatsapp },
+    { name: 'linkedin', color: '#0077B5', icon: FaLinkedinIn },
+  ];
 
   const {
     comments,
@@ -162,8 +162,8 @@ export default function NewsDetailPage() {
   const charCount = commentText.length;
   const maxChars = 1000;
 
-  // Check if article has trending tag
-  const hasTrendingTag = article.tags?.includes('ट्रेन्डिङ') || isTrending;
+  // Use current views from hook (updates in real-time)
+  const displayViews = viewCounted ? currentViews : (article.views || 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -197,10 +197,17 @@ export default function NewsDetailPage() {
                     {article.categories[0]}
                   </span>
                   
-                  {/* Trending Badge */}
-                  {hasTrendingTag && (
+                  {/* Dynamic Trending Badge - now based on trendingScore */}
+                  {isTrending && (
                     <span className="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-full text-sm font-bold animate-pulse">
                       🔥 ट्रेन्डिङ
+                    </span>
+                  )}
+                  
+                  {/* Optional: Show trending score for debugging (remove in production) */}
+                  {process.env.NODE_ENV === 'development' && trendingScore > 0 && (
+                    <span className="inline-block bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-mono">
+                      Score: {trendingScore}
                     </span>
                   )}
                 </div>
@@ -230,28 +237,34 @@ export default function NewsDetailPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
-                  <span>{article.views || 0} दृश्य</span>
+                  <span>{displayViews} दृश्य</span>
                 </div>
                 
+                {/* Optional: Show 24h views for debugging */}
+                {process.env.NODE_ENV === 'development' && article.viewsLast24h !== undefined && (
+                  <div className="flex items-center space-x-2 text-orange-600">
+                    <span className="text-xs font-mono">24h: {article.viewsLast24h}</span>
+                  </div>
+                )}
               </div>
 
               <div className="px-8 py-6 bg-gray-50 border-b">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-700 font-medium">सेयर गर्नुहोस्:</span>
                   <div className="flex space-x-3">
-  {socialPlatforms.map(({ name, color, icon: Icon }) => (
-    <button
-      key={name}
-      onClick={() => shareOnSocial(name)}
-      className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-      style={{ backgroundColor: color }}
-      onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
-      onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-    >
-      <Icon className="text-white" />
-    </button>
-  ))}
-</div>
+                    {socialPlatforms.map(({ name, color, icon: Icon }) => (
+                      <button
+                        key={name}
+                        onClick={() => shareOnSocial(name)}
+                        className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                        style={{ backgroundColor: color }}
+                        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
+                        onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                      >
+                        <Icon className="text-white" />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 

@@ -121,7 +121,7 @@ export default function EntertainmentPage() {
               <section>
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-3xl font-bold text-gray-900">💬 गपशप</h3>
-                  <Link href="/category/गपशप" className="text-red-600 hover:text-red-700 font-medium">
+                  <Link href="/category/gossip" className="text-red-600 hover:text-red-700 font-medium">
                     सबै हेर्नुहोस् →
                   </Link>
                 </div>
@@ -167,7 +167,7 @@ export default function EntertainmentPage() {
               <section>
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-3xl font-bold text-gray-900">🎬 बलिउड / हलिउड</h3>
-                  <Link href="/category/बलिउड" className="text-red-600 hover:text-red-700 font-medium">
+                  <Link href="/category/bollywood" className="text-red-600 hover:text-red-700 font-medium">
                     सबै हेर्नुहोस् →
                   </Link>
                 </div>
@@ -218,7 +218,7 @@ export default function EntertainmentPage() {
               <section>
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-3xl font-bold text-gray-900">🎵 संगीत</h3>
-                  <Link href="/category/संगीत" className="text-red-600 hover:text-red-700 font-medium">
+                  <Link href="/category/music" className="text-red-600 hover:text-red-700 font-medium">
                     सबै हेर्नुहोस् →
                   </Link>
                 </div>
@@ -357,7 +357,7 @@ export default function EntertainmentPage() {
           <section className="mt-16">
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-3xl font-bold text-gray-900">⭐ विशेष</h3>
-              <Link href="/category/विशेष" className="text-red-600 hover:text-red-700 font-medium">
+              <Link href="/category/special" className="text-red-600 hover:text-red-700 font-medium">
                 सबै हेर्नुहोस् →
               </Link>
             </div>

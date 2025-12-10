@@ -10,10 +10,9 @@ interface Props {
 }
 
 const CategoryNewsPage = ({ category, title, gradient }: Props) => {
-  const { news, popularNews, loading, error, loadMore, totalPages, currentPage } =
+  const { news, popularNews, trendingNews, loading, error, loadMore, totalPages, currentPage } =
     useCategoryNews(category);
   const [email, setEmail] = useState("");
-  const [activeTab, setActiveTab] = useState("latest");
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -126,13 +125,11 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-white">{title}</h1>
                 <p className="text-white/80 mt-1">ताजा समाचार र अपडेटहरू</p>
               </div>
             </div>
-           
           </div>
         </div>
       </div>
@@ -158,16 +155,13 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                       <div className="absolute bottom-0 left-0 right-0 p-8">
                         <div className="max-w-3xl">
-                          <div className="flex items-center gap-4 mb-4">
-                           
-                          </div>
                           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 group-hover:text-gray-200 transition-colors">
                             {featuredNews.title}
                           </h2>
-                        
                           <div className="flex items-center gap-4 mt-6">
-                           
-                         
+                            <span className="text-white/80 text-sm">
+                              {formatDate(featuredNews.createdAt)}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -188,7 +182,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {latestNews.map((article, index) => (
+                {latestNews.map((article) => (
                   <Link
                     href={`/news/${article._id}`}
                     key={article._id}
@@ -200,14 +194,12 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                         alt={article.title}
                         className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <div className="absolute top-4 left-4">
-                       
-                      </div>
-                    
                     </div>
                     <div className="p-5">
                       <div className="flex items-center justify-between mb-3">
-                       
+                        <span className={`text-xs font-semibold ${text} px-2 py-1 rounded ${light}`}>
+                          {category}
+                        </span>
                         <span className="text-xs text-gray-500">
                           {formatDate(article.createdAt)}
                         </span>
@@ -215,10 +207,6 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                       <h4 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 mb-4">
                         {article.title}
                       </h4>
-                      <div className="flex items-center justify-between">
-                       
-                      
-                      </div>
                     </div>
                   </Link>
                 ))}
@@ -235,7 +223,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                     {/* Left Column - More News (2/3 width) */}
                     <div className="lg:col-span-2">
                       <div className="space-y-6">
-                        {moreNews.slice(0, 4).map((article, index) => (
+                        {moreNews.slice(0, 6).map((article) => (
                           <Link
                             href={`/news/${article._id}`}
                             key={article._id}
@@ -277,59 +265,37 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                       </div>
                     </div>
 
-                    {/* Right Column - Additional Content (1/3 width) */}
+                    {/* Right Column - Trending Topics */}
                     <div className="space-y-6">
-                      {/* Trending Topics */}
                       <div className={`${light} border ${border} rounded-xl p-5`}>
                         <div className="flex items-center gap-2 mb-4">
                           <svg className={`w-5 h-5 ${text}`} fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
                           </svg>
-                          <h5 className="font-bold text-gray-900">हालै ट्रेन्डिङ</h5>
+                          <h5 className="font-bold text-gray-900">हाल ट्रेन्डिङ</h5>
                         </div>
                         <div className="space-y-3">
-                          {['ताजा समाचार', 'नेपाली बजार', 'स्वास्थ्य टिप्स', 'शैक्षिक अपडेट', 'प्रविधि नयाँ'].map((topic, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-2 hover:bg-white rounded-lg cursor-pointer group">
-                              <div className="flex items-center gap-3">
-                                <span className="text-gray-400 text-sm font-bold">#{idx + 1}</span>
-                                <span className="text-sm text-gray-700 group-hover:text-blue-600">{topic}</span>
-                              </div>
-                              <span className="text-xs text-gray-500">{Math.floor(Math.random() * 1000) + 100}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Top Contributors */}
-                      <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                        <div className="flex items-center gap-2 mb-4">
-                          <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-                          </svg>
-                          <h5 className="font-bold text-gray-900">शीर्ष योगदानकर्ताहरू</h5>
-                        </div>
-                        <div className="space-y-4">
-                          {['राम श्रेष्ठ', 'सीता कोइराला', 'हरि गुरुङ', 'गीता थापा'].map((author, idx) => (
-                            <div key={idx} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
-                              <div className="relative">
-                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                                  {author.charAt(0)}
+                          {trendingNews.length > 0 ? (
+                            trendingNews.map((article, idx) => (
+                              <Link
+                                key={article._id}
+                                href={`/news/${article._id}`}
+                                className="flex items-center justify-between p-2 hover:bg-white rounded-lg cursor-pointer group"
+                              >
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                  <span className="text-gray-400 text-sm font-bold flex-shrink-0">#{idx + 1}</span>
+                                  <span className="text-sm text-gray-700 group-hover:text-blue-600 line-clamp-2">
+                                    {article.title}
+                                  </span>
                                 </div>
-                                {idx < 2 && (
-                                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-xs text-white">
-                                    {idx + 1}
-                                  </div>
+                                {article.isTrending && (
+                                  <span className="text-xs ml-2 flex-shrink-0">🔥</span>
                                 )}
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-sm text-gray-900">{author}</p>
-                                <p className="text-xs text-gray-500">{Math.floor(Math.random() * 50) + 10} लेखहरू</p>
-                              </div>
-                              <span className={`text-xs font-bold ${text}`}>
-                                {Math.floor(Math.random() * 1000) + 100} पाठक
-                              </span>
-                            </div>
-                          ))}
+                              </Link>
+                            ))
+                          ) : (
+                            <p className="text-sm text-gray-500 text-center py-4">कुनै ट्रेन्डिङ समाचार छैन</p>
+                          )}
                         </div>
                       </div>
 
@@ -376,7 +342,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                     </>
                   ) : (
                     <>
-                      थप {Math.min(6, totalPages - currentPage)} समाचार हेर्नुहोस्
+                      थप समाचार हेर्नुहोस्
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
@@ -417,36 +383,42 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                   </h4>
                 </div>
                 <div className="divide-y divide-gray-100">
-                  {popularNews.map((article, index) => (
-                    <Link
-                      href={`/news/${article._id}`}
-                      key={article._id}
-                      className="group block p-4 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="relative">
-                          <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 text-sm font-bold text-gray-700">
-                            {index + 1}
+                  {popularNews.length > 0 ? (
+                    popularNews.map((article, index) => (
+                      <Link
+                        href={`/news/${article._id}`}
+                        key={article._id}
+                        className="group block p-4 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="relative">
+                            <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 text-sm font-bold text-gray-700">
+                              {index + 1}
+                            </div>
+                            <div className={`absolute inset-0 ${primary} rounded-lg opacity-0 group-hover:opacity-10 transition-opacity`}></div>
                           </div>
-                          <div className={`absolute inset-0 ${primary} rounded-lg opacity-0 group-hover:opacity-10 transition-opacity`}></div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h5 className="font-semibold text-gray-900 text-sm leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
-                            {article.title}
-                          </h5>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-gray-500">
-                              {formatDate(article.createdAt)}
-                            </span>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-blue-600 font-medium">
-                              {Math.floor(Math.random() * 1000) + 100} पटक हेरियो
-                            </span>
+                          <div className="flex-1 min-w-0">
+                            <h5 className="font-semibold text-gray-900 text-sm leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+                              {article.title}
+                            </h5>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-gray-500">
+                                {formatDate(article.createdAt)}
+                              </span>
+                              <span className="text-xs text-gray-400">•</span>
+                              <span className="text-xs text-blue-600 font-medium">
+                                {article.views || Math.floor(Math.random() * 1000) + 100} पटक हेरियो
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  ))}
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-gray-500 text-sm">
+                      कुनै लोकप्रिय समाचार छैन
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -487,33 +459,6 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                   कुनै स्प्याम छैन • कुनै पनि समयमा रद्द गर्न सकिन्छ
                 </p>
               </div>
-
-              {/* Quick Links */}
-              <div className="bg-white border border-gray-200 rounded-xl p-5 mt-8">
-                <h5 className="font-bold text-gray-900 mb-4">द्रुत लिंकहरू</h5>
-                <div className="space-y-3">
-                  {[
-                    { label: 'सबै समाचार', icon: '📰' },
-                    { label: 'विशेषज्ञहरू', icon: '👨‍💼' },
-                    { label: 'वेबिनारहरू', icon: '🎥' },
-                    { label: 'मार्गदर्शन', icon: '📖' },
-                    { label: 'सम्पर्क', icon: '📞' }
-                  ].map((link) => (
-                    <button
-                      key={link.label}
-                      className="w-full text-left text-gray-700 hover:text-blue-600 transition-all duration-300 flex items-center justify-between group py-2.5 px-3 hover:bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-lg">{link.icon}</span>
-                        <span className="font-medium">{link.label}</span>
-                      </div>
-                      <svg className="w-4 h-4 text-gray-400 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -531,7 +476,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-3 rounded-full font-semibold transition-colors inline-flex items-center justify-center gap-2">
-                <span>सुरू गर्नुहोस्</span>
+                <span>सुरु गर्नुहोस्</span>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>

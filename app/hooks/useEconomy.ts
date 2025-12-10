@@ -41,7 +41,7 @@ export const useEconomy = (category?: string) => {
 
       console.log("Fetching economy articles for categories:", categories);
 
-      const res = await axiosInstance.get("/articles/multiple-categories", {
+      const res = await axiosInstance.get("/articles/categories/multiple", {
         params: { categories: JSON.stringify(categories), limit: 30 },
       });
 

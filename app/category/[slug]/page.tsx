@@ -8,13 +8,20 @@ export default async function Page({
   const { slug } = await params;
 
   const decodedSlug = decodeURIComponent(slug);
+  const dict: Record<string, string> = {
+    bollywood: "बलिउड",
+    gossip: "गपशप",
+    music: "सङ्गीत",
+    special: "विशेष",
+  };
 
-  console.log("category is:", decodedSlug);
+  const nepaliWord = dict[decodedSlug]
+
 
   return (
     <CategoryNewsPage
-      category={decodedSlug}
-      title={`${decodedSlug} समाचार`}
+      category={nepaliWord}
+      title={`${nepaliWord} समाचार`}
       gradient="from-green-50 to-blue-50"
     />
   );

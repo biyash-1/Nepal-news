@@ -1,27 +1,64 @@
 const express = require('express');
 const router = express.Router();
 const articleController = require('../controllers/articleController');
-const { authenticate } = require('../middleware/auth');
+const { authenticate} = require('../middleware/auth');
 
-// Public routes
+// ============================
+// PUBLIC ROUTES
+// ============================
 
+// Get all articles (with pagination & filters)
 router.get('/', articleController.getAllArticles);
-router.get('/search', articleController.searchArticles);
-router.get('/trending', articleController.getTrendingArticles);
-router.get('/trending-config', articleController.getTrendingConfigEndpoint);
-router.get('/multiple-categories', articleController.getArticlesByMultipleCategories);
-router.get('/category/:category', articleController.getArticlesByCategory);
+
+// Get single article by ID
 router.get('/:id', articleController.getArticleById);
 
-// View tracking (no auth required, but could be rate-limited)
+// Increment view count for an article
 router.post('/:id/view', articleController.incrementView);
-// Protected routes (require authentication)
+
+// Search articles
+router.get('/search', articleController.searchArticles);
+
+// Get articles by category
+router.get('/category/:category', articleController.getArticlesByCategory);
+
+// Get articles by multiple categories
+router.get('/categories/multiple', articleController.getArticlesByMultipleCategories);
+
+// ============================
+// NEWS SECTIONS
+// ============================
+
+// Get latest headlines (limit 3)
+router.get('/news/headlines', articleController.getHeadlines);
+
+// Get other news (exclude specific IDs)
+router.get('/news/other', articleController.getOtherNews);
+
+// Get trending news (based on trendingScore, last 24 hours)
+router.get('/news/trending', articleController.getTrendingNews);
+
+// Get popular news (based on views, last 7 days)
+router.get('/news/popular', articleController.getPopularNews);
+
+// ============================
+// PROTECTED ROUTES
+// ============================
+
+// Create article
 router.post('/', authenticate, articleController.createArticle);
+
+// Update article
 router.put('/:id', authenticate, articleController.updateArticle);
+
+// Delete article
 router.delete('/:id', authenticate, articleController.deleteArticle);
 
-// Admin routes
-router.put('/admin/trending-config', authenticate, articleController.updateTrendingConfig);
-router.post('/admin/recalculate-trending', authenticate, articleController.recalculateTrending);
+// ============================
+// ADMIN ROUTES
+// ============================
+
+// Manually trigger score recalculation
+router.post('/admin/recalculate-scores', authenticate, articleController.recalculateScores);
 
 module.exports = router;

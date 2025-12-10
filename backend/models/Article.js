@@ -32,25 +32,38 @@ const ArticleSchema = new mongoose.Schema({
       type: String 
     }
   },
+  // View tracking with rolling windows
   views: {
     type: Number,
     default: 0
   },
-  // Track recent views for trending calculation
-  recentViews: [{
-    timestamp: { type: Date, default: Date.now },
-    // We'll clean up old entries periodically
-  }],
+  viewsLast24h: {
+    type: Number,
+    default: 0,
+    index: true
+  },
+  viewsLast7d: {
+    type: Number,
+    default: 0,
+    index: true
+  },
+  // Precomputed scores for fast queries
+  trendingScore: {
+    type: Number,
+    default: 0,
+    index: true
+  },
+  popularScore: {
+    type: Number,
+    default: 0,
+    index: true
+  },
   likes: {
     type: Number,
     default: 0
   },
-  // Auto-managed trending status
-  isTrending: {
-    type: Boolean,
-    default: false
-  },
-  lastTrendingCheck: {
+  // Metadata for score calculation
+  lastScoreUpdate: {
     type: Date,
     default: Date.now
   }
@@ -58,61 +71,159 @@ const ArticleSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Add indexes for better query performance
+// Indexes for better query performance
 ArticleSchema.index({ categories: 1 });
 ArticleSchema.index({ createdAt: -1 });
 ArticleSchema.index({ 'author.userId': 1 });
 ArticleSchema.index({ title: 'text', content: 'text' });
-ArticleSchema.index({ isTrending: -1, views: -1 }); // For trending queries
+ArticleSchema.index({ trendingScore: -1, createdAt: -1 }); // For trending queries
+ArticleSchema.index({ popularScore: -1, createdAt: -1 }); // For popular queries
+ArticleSchema.index({ views: -1 }); // For all-time popular
 
-// Method to increment view count
+// Method to increment view count (called on each view)
 ArticleSchema.methods.incrementView = async function() {
   this.views += 1;
-  this.recentViews.push({ timestamp: new Date() });
   
-  // Keep only last 7 days of view data to prevent array from growing too large
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  this.recentViews = this.recentViews.filter(v => v.timestamp > sevenDaysAgo);
+  // Immediately increment rolling window counts
+  // These will be periodically recalculated by cron for accuracy
+  this.viewsLast24h += 1;
+  this.viewsLast7d += 1;
   
-  // Use validateBeforeSave: false to bypass validation
   await this.save({ validateBeforeSave: false });
 };
 
-// Method to check and update trending status
-ArticleSchema.methods.updateTrendingStatus = async function(config) {
-  const now = new Date();
+// Method to calculate trending score
+// Formula: weighted combination of recent views, velocity, and recency boost
+ArticleSchema.methods.calculateTrendingScore = function() {
+  const now = Date.now();
+  const articleAge = now - new Date(this.createdAt).getTime();
+  const ageInHours = articleAge / (1000 * 60 * 60);
   
-  // Get views in the configured time window
-  const timeWindowMs = config.timeWindowHours * 60 * 60 * 1000;
-  const windowStart = new Date(now - timeWindowMs);
+  // Base score from 24h views
+  let score = this.viewsLast24h * 100;
   
-  const recentViewCount = this.recentViews.filter(
-    v => v.timestamp > windowStart
-  ).length;
-  
-  // Check if article meets trending criteria
-  const meetsRecentViews = recentViewCount >= config.minRecentViews;
-  const meetsTotalViews = this.views >= config.minTotalViews;
-  
-  // Article is trending if it meets either criteria
-  const shouldBeTrending = meetsRecentViews || meetsTotalViews;
-  
-  if (this.isTrending !== shouldBeTrending) {
-    this.isTrending = shouldBeTrending;
-    
-    // Add or remove trending tag
-    if (shouldBeTrending && !this.tags.includes('ट्रेन्डिङ')) {
-      this.tags.push('ट्रेन्डिङ');
-    } else if (!shouldBeTrending && this.tags.includes('ट्रेन्डिङ')) {
-      this.tags = this.tags.filter(tag => tag !== 'ट्रेन्डिङ');
-    }
-    
-    this.lastTrendingCheck = now;
-    // Use validateBeforeSave: false to bypass validation
-    await this.save({ validateBeforeSave: false });
+  // Velocity bonus: if article is getting views quickly relative to its age
+  if (ageInHours > 0) {
+    const viewsPerHour = this.viewsLast24h / Math.min(ageInHours, 24);
+    score += viewsPerHour * 50;
   }
   
-  return this.isTrending;
+  // Recency boost: newer articles (< 48 hours) get a boost
+  if (ageInHours < 48) {
+    const recencyBoost = (48 - ageInHours) / 48 * 200;
+    score += recencyBoost;
+  }
+  
+  // Small bonus for total engagement
+  score += Math.min(this.views * 0.1, 100);
+  
+  return Math.round(score);
+};
+
+// Method to calculate popular score
+// Formula: weighted combination of 7d views and engagement
+ArticleSchema.methods.calculatePopularScore = function() {
+  const now = Date.now();
+  const articleAge = now - new Date(this.createdAt).getTime();
+  const ageInDays = articleAge / (1000 * 60 * 60 * 24);
+  
+  // Base score from 7-day views
+  let score = this.viewsLast7d * 100;
+  
+  // Consistency bonus: articles with sustained views over the week
+  if (ageInDays >= 7) {
+    const avgViewsPerDay = this.viewsLast7d / 7;
+    score += avgViewsPerDay * 30;
+  } else if (ageInDays > 0) {
+    const avgViewsPerDay = this.viewsLast7d / ageInDays;
+    score += avgViewsPerDay * 30;
+  }
+  
+  // Slight recency factor (newer content preferred over older)
+  if (ageInDays < 14) {
+    const recencyFactor = (14 - ageInDays) / 14;
+    score += recencyFactor * 100;
+  }
+  
+  // Engagement bonus from likes
+  score += this.likes * 20;
+  
+  return Math.round(score);
+};
+
+// Method to update all scores and rolling counts
+ArticleSchema.methods.updateScores = async function(viewCounts24h = null, viewCounts7d = null) {
+  // Update rolling window counts if provided (from cron job aggregation)
+  if (viewCounts24h !== null) {
+    this.viewsLast24h = viewCounts24h;
+  }
+  if (viewCounts7d !== null) {
+    this.viewsLast7d = viewCounts7d;
+  }
+  
+  // Recalculate scores
+  this.trendingScore = this.calculateTrendingScore();
+  this.popularScore = this.calculatePopularScore();
+  this.lastScoreUpdate = new Date();
+  
+  await this.save({ validateBeforeSave: false });
+};
+
+// Static method to bulk update scores (for cron jobs)
+ArticleSchema.statics.bulkUpdateScores = async function(timeWindow = '24h') {
+  const ViewLog = mongoose.model('ViewLog');
+  const now = new Date();
+  
+  let since, viewCountsMap;
+  
+  if (timeWindow === '24h') {
+    // Calculate 24h rolling counts
+    since = new Date(now - 24 * 60 * 60 * 1000);
+    
+    const viewCounts = await ViewLog.aggregate([
+      { $match: { viewedAt: { $gte: since } } },
+      { $group: { _id: '$article', count: { $sum: 1 } } }
+    ]);
+    
+    viewCountsMap = new Map(viewCounts.map(v => [v._id.toString(), v.count]));
+    
+    // Update all articles
+    const articles = await this.find({});
+    
+    for (const article of articles) {
+      const count24h = viewCountsMap.get(article._id.toString()) || 0;
+      article.viewsLast24h = count24h;
+      article.trendingScore = article.calculateTrendingScore();
+      article.lastScoreUpdate = now;
+      await article.save({ validateBeforeSave: false });
+    }
+    
+    return { updated: articles.length, timeWindow: '24h' };
+    
+  } else if (timeWindow === '7d') {
+    // Calculate 7d rolling counts
+    since = new Date(now - 7 * 24 * 60 * 60 * 1000);
+    
+    const viewCounts = await ViewLog.aggregate([
+      { $match: { viewedAt: { $gte: since } } },
+      { $group: { _id: '$article', count: { $sum: 1 } } }
+    ]);
+    
+    viewCountsMap = new Map(viewCounts.map(v => [v._id.toString(), v.count]));
+    
+    // Update all articles
+    const articles = await this.find({});
+    
+    for (const article of articles) {
+      const count7d = viewCountsMap.get(article._id.toString()) || 0;
+      article.viewsLast7d = count7d;
+      article.popularScore = article.calculatePopularScore();
+      article.lastScoreUpdate = now;
+      await article.save({ validateBeforeSave: false });
+    }
+    
+    return { updated: articles.length, timeWindow: '7d' };
+  }
 };
 
 module.exports = mongoose.model('Article', ArticleSchema);

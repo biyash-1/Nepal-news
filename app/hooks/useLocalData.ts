@@ -50,7 +50,7 @@ export const useLocalData = (location?: string) => {
         categories.push(locationMap[specificLocation] || specificLocation);
       }
 
-      const res = await axiosInstance.get("/articles/multiple-categories", {
+      const res = await axiosInstance.get("/articles/categories/multiple", {
         params: { categories: JSON.stringify(categories), limit: 30 },
       });
       console.log(

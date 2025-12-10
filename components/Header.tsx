@@ -44,11 +44,10 @@ const navItems: NavItem[] = [
     label: "मनोरञ्जन",
     href: "/entertainment",
     dropdownItems: [
-      { label: "बलिउड", href: "/entertainment/bollywood" },
-      { label: "हलिउड", href: "/entertainment/hollywood" },
-      { label: "नेपाली चलचित्र", href: "/entertainment/nepali" },
-      { label: "सङ्गीत", href: "/entertainment/music" },
-      { label: "अन्य मनोरञ्जन", href: "/entertainment/others" },
+      { label: "बलिउड", href: "/category/bollywood" },
+      { label: "गपशप", href: "/category/gossip" },
+      { label: "सङ्गीत", href: "/category/music" },
+      { label: " विशेष", href: "/category/special" },
     ],
   },
   {
