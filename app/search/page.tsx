@@ -20,7 +20,7 @@ interface SearchResult {
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
-  
+
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,12 +34,12 @@ export default function SearchPage() {
   const searchNews = async (searchQuery: string) => {
     setLoading(true);
     setError("");
-    
+
     try {
       const response = await axiosInstance.get(`/articles/search`, {
-        params: { q: searchQuery }
+        params: { q: searchQuery },
       });
-      
+
       // Axios automatically parses JSON, data is in response.data
       setResults(response.data.results || []);
     } catch (err) {
@@ -91,7 +91,8 @@ export default function SearchPage() {
               कुनै समाचार फेला परेन
             </h3>
             <p className="text-gray-500">
-              कृपया अर्को शब्दले खोज्नुहोस् वा different कीवर्ड प्रयोग गर्नुहोस्।
+              कृपया अर्को शब्दले खोज्नुहोस् वा different कीवर्ड प्रयोग
+              गर्नुहोस्।
             </p>
           </div>
         )}
@@ -102,22 +103,30 @@ export default function SearchPage() {
             {results.map((result) => (
               <Link
                 key={result._id}
-                href={`/news/${result.slug}`}
+                href={`/news/${result._id}`}
                 className="rounded-lg  overflow-hidden  transition-shadow duration-300"
               >
-                <div className="relative h-48 bg-gray-200">
-                  <div className="w-full h-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
-                    <span className="text-red-300 text-lg">📷</span>
+                <Link
+                  key={result._id}
+                  href={`/news/${result.slug}`}
+                  className="block rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
+                >
+                  <div className="relative h-48">
+                    {result.image ? (
+                      <img
+                        src={result.image}
+                        alt={result.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-400 text-lg">📷</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="absolute top-4 left-4">
-                   
-                  </div>
-                </div>
-                
+                </Link>
+
                 <div className="p-4">
-                
-                  
-              
                   <h3 className="font-bold text-lg text-gray-800 ">
                     {result.title}
                   </h3>

@@ -7,6 +7,7 @@ import AuthModal from "./AuthModel";
 import UserProfileDropdown from "./UserProfileDropdown";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import SearchBar from "./SearchBar";
 
 type NavItem = {
   label: string;
@@ -255,12 +256,8 @@ export default function Header() {
             {/* Desktop Search Bar */}
             <div className="hidden lg:block w-[50%] xl:w-[60%]">
               <div className="relative">
-                <input
-                  type="text"
-                  placeholder="खोज्नुहोस्..."
-                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-full focus:outline-none focus:border-red-500 transition-colors"
-                />
-                <FaSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              
+                <SearchBar/>
               </div>
             </div>
 

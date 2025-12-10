@@ -18,9 +18,7 @@ const {
 
 const app = express();
 
-// ============================
-// MIDDLEWARE
-// ============================
+
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true,
@@ -82,12 +80,6 @@ mongoose.connect(process.env.MONGODB_URI, {
   process.exit(1);
 });
 
-// ============================
-// START SERVER
-// ============================
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🌐 Server running on port ${PORT}`);
-});
+
 
 module.exports = app;

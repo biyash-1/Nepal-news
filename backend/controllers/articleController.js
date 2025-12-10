@@ -24,9 +24,7 @@ const parseCategories = (catParam) => {
   }
 };
 
-// ============================
-// GET ALL ARTICLES (with pagination + category filter)
-// ============================
+
 exports.getAllArticles = async (req, res) => {
   try {
     const { page = 1, limit = 10, category } = req.query;
@@ -57,9 +55,7 @@ exports.getAllArticles = async (req, res) => {
   }
 };
 
-// ============================
-// GET SINGLE ARTICLE BY ID
-// ============================
+
 exports.getArticleById = async (req, res) => {
   try {
     const article = await Article.findById(req.params.id).lean();
