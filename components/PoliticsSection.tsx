@@ -66,12 +66,12 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Politics News */}
           <div className="lg:col-span-2">
             <Link href={`/news/${articles[0]._id}`}>
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer">
-                <div className="relative h-90">
+                <div className="relative h-108">
                   <img 
                     src={getImageUrl(articles[0])} 
                     alt={articles[0].title}
@@ -79,21 +79,10 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <span className="inline-block bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold mb-3">
-                      मुख्य समाचार
-                    </span>
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-red-300 transition-colors">
+                    <h3 className="text-4xl font-bold text-white mb-2 group-hover:text-red-300 transition-colors">
                       {articles[0].title}
                     </h3>
-                    <p className="text-gray-200 text-sm">
-                      {getTimeAgo(articles[0].createdAt)}
-                    </p>
                   </div>
-                </div>
-                <div className="p-6">
-                  <p className="text-gray-700 line-clamp-3">
-                    {articles[0].content.substring(0, 200)}...
-                  </p>
                 </div>
               </div>
             </Link>
@@ -101,32 +90,30 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
 
           {/* Side Politics News */}
           <div className="space-y-6">
-            {articles.slice(1, 4).map((article) => (
-              <Link 
-                href={`/news/${article._id}`}
-                key={article._id}
-                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer block"
-              >
-                <div className="flex">
-                  <div className="w-2/5">
-                    <img 
-                      src={getImageUrl(article)} 
-                      alt={article.title}
-                      className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="w-3/5 p-4">
-                    <h4 className="font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
-                      {article.title}
-                    </h4>
-                    <div className="text-sm text-gray-500">
-                      {getTimeAgo(article.createdAt)}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+  {articles.slice(1, 4).map((article) => (
+    <Link 
+      href={`/news/${article._id}`}
+      key={article._id}
+      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer block"
+    >
+      <div className="flex items-center">
+        <div className="w-3/5 p-4">
+          <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+            {article.title}
+          </h4>
+        </div>
+        <div className="w-2/5 flex justify-end">
+          <img 
+            src={getImageUrl(article)} 
+            alt={article.title}
+            className="w-5/5 h-32 object-cover group-hover:scale-105 transition-transform duration-300 rounded-lg"
+          />
+        </div>
+      </div>
+    </Link>
+  ))}
+</div>
+
         </div>
 
         {/* Additional Politics News */}
@@ -149,39 +136,11 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
                   <h4 className="font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
                     {article.title}
                   </h4>
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                    {article.content.substring(0, 100)}...
-                  </p>
-                  <div className="text-xs text-gray-500">
-                    {getTimeAgo(article.createdAt)}
-                  </div>
                 </div>
               </Link>
             ))}
           </div>
         )}
-
-        {/* Politics Highlights */}
-        <div className="mt-8 bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl p-8 text-white">
-          <h3 className="text-xl font-bold mb-6">राजनीतिक मुद्दाहरू</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <div className="text-3xl mb-2">🏛️</div>
-              <div className="font-semibold">संसद</div>
-              <div className="text-sm text-white/80">नयाँ बिल पारित</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <div className="text-3xl mb-2">📊</div>
-              <div className="font-semibold">सर्वेक्षण</div>
-              <div className="text-sm text-white/80">जनमत संकलन</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <div className="text-3xl mb-2">🗳️</div>
-              <div className="font-semibold">निर्वाचन</div>
-              <div className="text-sm text-white/80">आगामी मतदान</div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

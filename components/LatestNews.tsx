@@ -67,10 +67,9 @@ export default function LatestNews({ articles }: LatestNewsProps) {
                     {article.categories[0]}
                   </span>
                 )}
-                <h3 className="font-bold mt-2 mb-2 text-gray-800 transition-colors duration-300 group-hover:text-red-600">
+                <h3 className="text-2xl font-bold mt-2 mb-2 text-gray-800 transition-colors duration-300 group-hover:text-red-600">
                   {article.title}
                 </h3>
-                <p className="text-sm text-gray-500">{getTimeAgo(article.createdAt)}</p>
               </div>
             </Link>
           ))

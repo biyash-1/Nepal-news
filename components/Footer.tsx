@@ -25,9 +25,9 @@ const Footer = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-red-600">नेपाल समाचार</h2>
+              <h2 className="text-2xl font-bold text-red-600">ललितपुर एक्सप्रेस</h2>
               <p className="text-gray-600 text-sm leading-relaxed">
-                नेपालको प्रमुख समाचार पोर्टल। तपाईंलाई दिनभरको महत्वपूर्ण
+                ललितपुरको प्रमुख समाचार पोर्टल। तपाईंलाई दिनभरको महत्वपूर्ण
                 समाचार, विश्लेषण र अपडेटहरू।
               </p>
             </div>
@@ -44,14 +44,14 @@ const Footer = () => {
                 <div className="flex items-center space-x-3">
                   <FaEnvelope className="text-red-600 flex-shrink-0" />
                   <span className="text-gray-600 text-sm">
-                    info@nepalsamachar.com
+                    expresslalitpur@gmail.com
                   </span>
                 </div>
 
                 {/* Phone (always below email ✅) */}
                 <div className="flex items-center space-x-3">
                   <FaPhone className="text-red-600 flex-shrink-0" />
-                  <span className="text-gray-600 text-sm">+९७७-१-४२३४५६७</span>
+                  <span className="text-gray-600 text-sm">+977 9801048219</span>
                 </div>
               </div>
             </div>
@@ -85,7 +85,7 @@ const Footer = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-2 text-center md:text-left">
             <p className="text-sm md:text-lg">
-              © {currentYear} नेपाल समाचार. सर्वाधिकार सुरक्षित।
+              © {currentYear} ललितपुर एक्सप्रेस. सर्वाधिकार सुरक्षित।
             </p>
 
             <p className="text-xs leading-relaxed">

@@ -13,7 +13,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "नेपाल समाचार - Nepal News Portal",
+  title: "ललितपुर एक्सप्रेस - Nepal News Portal",
   description: "नेपालको प्रमुख समाचार पोर्टल",
 };
 

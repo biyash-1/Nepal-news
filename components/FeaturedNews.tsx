@@ -57,12 +57,9 @@ const FeaturedNews = ({ articles }: FeaturedNewsProps) => {
                     {articles[0].categories[0]}
                   </span>
                 )}
-                <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg hover:text-red-300 transition-colors mb-3">
+                <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg hover:text-red-300 transition-colors mb-3">
                   {articles[0].title}
                 </h2>
-                <p className="text-gray-200 text-lg line-clamp-2">
-                  {articles[0].content.substring(0, 150)}...
-                </p>
               </div>
             </div>
           </Link>

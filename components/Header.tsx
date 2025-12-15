@@ -250,7 +250,7 @@ export default function Header() {
               href="/"
               className="text-xl sm:text-2xl font-bold text-red-600 hover:text-red-700 transition-colors"
             >
-              नेपाल समाचार
+              ललितपुर एक्सप्रेस
             </a>
 
             {/* Desktop Search Bar */}
@@ -346,7 +346,7 @@ export default function Header() {
             className="text-xl font-bold text-red-600"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            नेपाल समाचार
+            ललितपुर एक्सप्रेस
           </a>
           <button
             onClick={() => setIsMobileMenuOpen(false)}

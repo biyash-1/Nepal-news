@@ -49,32 +49,83 @@ export default function BreakingNews({ main, marquee }: BreakingNewsProps) {
           आजको मुख्य समाचार
         </h2>
 
-        <div className="bg-white shadow-lg rounded-2xl overflow-hidden flex flex-col lg:flex-row">
-          <div className="lg:w-1/2">
-            <img
-              src={getImageUrl(main)}
-              alt={main?.title || "मुख्य समाचार"}
-              className="object-cover w-full h-full"
-            />
-          </div>
-          <div className="lg:w-1/2 p-4 flex flex-col justify-center">
-            <h3 className="text-xl font-semibold mb-3 text-gray-800">
-              {main?.title || "प्रधानमन्त्रीले राष्ट्रिय विकास कार्यक्रम घोषणा गर्दै आर्थिक सुधारमा जोड"}
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              {main?.content?.substring(0, 200) || 
-                "प्रधानमन्त्रीले आज संसदमा सम्बोधन गर्दै नयाँ आर्थिक तथा विकास योजना सार्वजनिक गरेका छन्। उनले आगामी वर्षभित्र देशलाई ऊर्जा आत्मनिर्भर बनाउने र शिक्षा, स्वास्थ्य क्षेत्रमा सुधार ल्याउने प्रतिवद्धता व्यक्त गरे।"}
-              ...
-            </p>
-            {main && (
-              <Link href={`/news/${main._id}`}>
-                <button className="mt-5 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg w-fit transition-colors">
-                  थप पढ्नुहोस् →
-                </button>
-              </Link>
-            )}
-          </div>
-        </div>
+        {/* Two Headliners */}
+        <div className="mb-8 space-y-6">
+  <Link
+    href={marquee[0] ? `/news/${marquee[0]._id}` : "#"}
+    className="block group"
+  >
+    <div className="bg-white shadow-lg hover:shadow-xl rounded-2xl p-8 min-h-[140px] transition-all flex items-center justify-center">
+      <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 text-center group-hover:text-red-600 transition-colors leading-snug">
+        {marquee[0]?.title || "प्रधानमन्त्रीको नयाँ कार्यक्रम घोषणा"}
+      </h3>
+    </div>
+  </Link>
+
+  <Link
+    href={marquee[1] ? `/news/${marquee[1]._id}` : "#"}
+    className="block group"
+  >
+    <div className="bg-white shadow-lg hover:shadow-xl rounded-2xl p-8 min-h-[140px] transition-all flex items-center justify-center">
+     <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 text-center group-hover:text-red-600 transition-colors leading-snug">
+        {marquee[1]?.title || "विद्युत आपूर्तिमा सुधार"}
+      </h3>
+    </div>
+  </Link>
+</div>
+
+
+          
+        {main && (
+  <Link href={`/news/${main._id}`} className="group cursor-pointer">
+    <div className="bg-white shadow-lg rounded-2xl overflow-hidden flex flex-col lg:flex-row">
+      <div className="lg:w-1/2">
+        <img
+          src={getImageUrl(main)}
+          alt={main?.title || "मुख्य समाचार"}
+          className="object-cover w-full h-full"
+        />
+      </div>
+      <div className="lg:w-1/2 p-4 flex flex-col justify-center">
+        <h3 className="text-5xl font-bold mb-3 text-gray-800 group-hover:text-red-600 transition-colors">
+          {main.title}
+        </h3>
+        <p className="text-gray-600 leading-relaxed">
+          {main.content?.substring(0, 230)}...
+        </p>
+        <button className="mt-5 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg w-fit transition-colors">
+          थप पढ्नुहोस् →
+        </button>
+      </div>
+    </div>
+  </Link>
+)}
+
+<div className="mb-8 space-y-6 mt-6" >
+<Link
+    href={marquee[0] ? `/news/${marquee[0]._id}` : "#"}
+    className="block group"
+  >
+    <div className="bg-white shadow-lg hover:shadow-xl rounded-2xl p-8 min-h-[140px] transition-all flex items-center justify-center">
+      <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 text-center group-hover:text-red-600 transition-colors leading-snug">
+        {marquee[0]?.title || "प्रधानमन्त्रीको नयाँ कार्यक्रम घोषणा"}
+      </h3>
+    </div>
+  </Link>
+
+  <Link
+    href={marquee[1] ? `/news/${marquee[1]._id}` : "#"}
+    className="block group"
+  >
+    <div className="bg-white shadow-lg hover:shadow-xl rounded-2xl p-8 min-h-[140px] transition-all flex items-center justify-center">
+     <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 text-center group-hover:text-red-600 transition-colors leading-snug">
+        {marquee[1]?.title || "विद्युत आपूर्तिमा सुधार"}
+      </h3>
+    </div>
+  </Link>
+</div>
+
+
       </section>
 
       <style jsx>{`
