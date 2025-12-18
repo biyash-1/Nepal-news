@@ -118,22 +118,22 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
 
         {/* Additional Politics News */}
         {articles.length > 4 && (
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {articles.slice(4).map((article) => (
               <Link 
                 href={`/news/${article._id}`}
                 key={article._id}
-                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer"
+                className="overflow-hidden group cursor-pointer"
               >
                 <div className="relative h-48">
                   <img 
                     src={getImageUrl(article)} 
                     alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full rounded object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-5">
-                  <h4 className="font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
                     {article.title}
                   </h4>
                 </div>

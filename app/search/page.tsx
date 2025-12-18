@@ -99,18 +99,14 @@ export default function SearchPage() {
 
         {/* Search Results */}
         {!loading && results.length > 0 && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {results.map((result) => (
               <Link
                 key={result._id}
                 href={`/news/${result._id}`}
                 className="rounded-lg  overflow-hidden  transition-shadow duration-300"
               >
-                <Link
-                  key={result._id}
-                  href={`/news/${result.slug}`}
-                  className="block rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
-                >
+                
                   <div className="relative h-48">
                     {result.image ? (
                       <img
@@ -124,7 +120,7 @@ export default function SearchPage() {
                       </div>
                     )}
                   </div>
-                </Link>
+                
 
                 <div className="p-4">
                   <h3 className="font-bold text-lg text-gray-800 ">
