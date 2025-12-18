@@ -1,7 +1,7 @@
 "use client";
 import { useCategoryNews } from "@/app/hooks/useCategoryNews";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Props {
   category: string;
@@ -13,6 +13,31 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
   const { news, popularNews, trendingNews, loading, error, loadMore, totalPages, currentPage } =
     useCategoryNews(category);
   const [email, setEmail] = useState("");
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (
+          first.isIntersecting &&
+          !loading &&
+          currentPage < totalPages
+        ) {
+          loadMore();
+        }
+      },
+      {
+        rootMargin: "200px",
+      }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [loading, currentPage, totalPages, loadMore]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -155,6 +180,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
         src={getImageSrc(featuredNews.featuredImage || featuredNews.image)}
         alt={featuredNews.title}
         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        loading="lazy"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
       <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -175,6 +201,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
             src={getImageSrc(newsItem.featuredImage || newsItem.image)}
             alt={newsItem.title}
             className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-700"
+            loading="lazy"
           />
           <h3 className="pl-2 mt-2 text-lg font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
             {newsItem.title}
@@ -196,6 +223,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
           src={getImageSrc(newsItem.featuredImage || newsItem.image)}
           alt={newsItem.title}
           className="w-1/4 h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          loading="lazy"
         />
         {/* Title on the right */}
         <div className="p-4 flex items-center">
@@ -220,29 +248,23 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {moreNews.map((article) => (
+                  {moreNews.slice(0, currentPage * 30).map((article) => (
                     <Link
                       href={`/news/${article._id}`}
                       key={article._id}
-                      className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200"
+                      className="group bg-white rounded transition-all duration-300 overflow-hidden"
                     >
                       <div className="relative overflow-hidden">
                         <img
                           src={getImageSrc(article.featuredImage || article.image)}
                           alt={article.title}
                           className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                          loading="lazy"
                         />
                       </div>
                       <div className="p-5">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className={`text-xs font-semibold ${text} px-2 py-1 rounded ${light}`}>
-                            {category}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {formatDate(article.createdAt)}
-                          </span>
-                        </div>
-                        <h4 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 mb-4">
+                        
+                        <h4 className="font-semibold text-gray-900 text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 mb-4">
                           {article.title}
                         </h4>
                       </div>
@@ -254,31 +276,15 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
 
             
 
-            {/* Load More Button */}
+            {/* Infinite Scroll Sentinel */}
             {currentPage < totalPages && (
-              <div className="text-center py-8 border-t border-gray-200">
-                <button
-                  onClick={loadMore}
-                  disabled={loading}
-                  className={`inline-flex items-center gap-3 ${primary} hover:opacity-90 text-white px-8 py-4 rounded-full font-medium transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                      लोड हुँदैछ...
-                    </>
-                  ) : (
-                    <>
-                      थप समाचार हेर्नुहोस्
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                      </svg>
-                    </>
-                  )}
-                </button>
-                <p className="text-gray-500 text-sm mt-4">
-  पृष्ठ {currentPage} of {totalPages} • {moreNews.length} समाचार देखियो
-</p>
+              <div ref={loadMoreRef} className="flex justify-center py-10">
+                {loading && (
+                  <div className="flex items-center gap-3 text-gray-500">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-transparent"></div>
+                    समाचार लोड हुँदैछ...
+                  </div>
+                )}
               </div>
             )}
 

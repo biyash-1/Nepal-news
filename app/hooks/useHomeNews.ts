@@ -88,7 +88,7 @@ export const useHomeNews = () => {
 
         // Fetch politics news (राजनीति category)
         const politicsRes = await axiosInstance.get('/articles/category/राजनीति', {
-          params: { limit: 7 }
+          params: { limit: 8 }
         });
         if (politicsRes.data.success) {
           setPoliticsNews(politicsRes.data.articles);
