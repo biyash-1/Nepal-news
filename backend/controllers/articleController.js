@@ -13,7 +13,7 @@ const parseCategories = (catParam) => {
   if (!catParam) return undefined;
 
   // Special case: Bollywood
-  if (catParam === "बलिउड") return ["बलिउड", "हलिउड"];
+  if (catParam === "बॉलिउड") return ["बॉलिउड", "हॉलिउड"];
 
   // Try parsing as JSON array
   try {
@@ -190,30 +190,42 @@ exports.getHeadlines = async (req, res) => {
 };
 
 // ============================
-// GET /news/other
+// GET /news/other - NOW WITH PAGINATION
 // ============================
 exports.getOtherNews = async (req, res) => {
   try {
-    const { exclude = "", limit = 20, categories, category } = req.query;
+    const { exclude = "", page = 1, limit = 20, categories, category } = req.query;
 
     const excludedIds = exclude
       ? exclude.split(",").map(id => id.trim()).filter(Boolean)
       : [];
 
-    const catParam = categories || category;
-    const categoryArray = parseCategories(catParam);
+    const categoryArray = parseCategories(categories || category);
 
     const query = {
       ...(excludedIds.length && { _id: { $nin: excludedIds } }),
-      ...(categoryArray && { categories: { $in: categoryArray } }), // Match any
+      ...(categoryArray && { categories: { $in: categoryArray } }),
     };
 
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await Article.countDocuments(query);
+
     const articles = await Article.find(query)
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
+      .sort({ createdAt: -1, _id: 1 }) // deterministic sort
+      .limit(limitNum)
+      .skip(skip)
       .lean();
 
-    res.json({ success: true, articles });
+    res.json({ 
+      success: true, 
+      articles,
+      currentPage: pageNum,
+      totalPages: Math.ceil(total / limitNum),
+      total
+    });
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -223,15 +235,23 @@ exports.getOtherNews = async (req, res) => {
   }
 };
 
+
 // ============================
 // GET /news/trending
 // ============================
 exports.getTrendingNews = async (req, res) => {
   try {
-    const { limit = 10, categories, category } = req.query;
+    const { limit = 10, categories, category, exclude = "" } = req.query;
     const categoryArray = parseCategories(categories || category);
 
-    const query = categoryArray ? { categories: { $in: categoryArray } } : {};
+    const excludedIds = exclude
+      ? exclude.split(",").map(id => id.trim()).filter(Boolean)
+      : [];
+
+    const query = {
+      ...(categoryArray && { categories: { $in: categoryArray } }),
+      ...(excludedIds.length && { _id: { $nin: excludedIds } })
+    };
 
     const articles = await Article.find(query)
       .sort({ trendingScore: -1, createdAt: -1 })
@@ -255,10 +275,17 @@ exports.getTrendingNews = async (req, res) => {
 // ============================
 exports.getPopularNews = async (req, res) => {
   try {
-    const { limit = 10, categories, category } = req.query;
+    const { limit = 10, categories, category, exclude = "" } = req.query;
     const categoryArray = parseCategories(categories || category);
 
-    const query = categoryArray ? { categories: { $in: categoryArray } } : {};
+    const excludedIds = exclude
+      ? exclude.split(",").map(id => id.trim()).filter(Boolean)
+      : [];
+
+    const query = {
+      ...(categoryArray && { categories: { $in: categoryArray } }),
+      ...(excludedIds.length && { _id: { $nin: excludedIds } })
+    };
 
     const articles = await Article.find(query)
       .sort({ popularScore: -1, createdAt: -1 })
@@ -338,8 +365,8 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
 
     const isBollywoodRequest = 
       categoryArray.length === 2 && 
-      categoryArray.includes("बलिउड") && 
-      categoryArray.includes("हलिउड");
+      categoryArray.includes("बॉलिउड") && 
+      categoryArray.includes("हॉलिउड");
 
     let query;
     if (isBollywoodRequest) {
@@ -369,35 +396,35 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
 exports.getArticlesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const { page = 1, limit = 10, exclude } = req.query;
+    const { page = 1, limit = 10, exclude = "" } = req.query;
+
+    const excludedIds = exclude
+      ? exclude.split(",").map(id => id.trim()).filter(Boolean)
+      : [];
 
     const query = {
       categories: category,
       tags: { $ne: "लोकप्रिय" },
+      ...(excludedIds.length && { _id: { $nin: excludedIds } }),
     };
 
-    if (exclude) {
-      query._id = { $ne: exclude };
-    }
-
-    let skip = (page - 1) * parseInt(limit);
-    if (page > 1) {
-      skip += 1;
-    }
-
-    const articles = await Article.find(query)
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
-      .skip(skip)
-      .lean();
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
 
     const total = await Article.countDocuments(query);
+
+    const articles = await Article.find(query)
+      .sort({ createdAt: -1, _id: 1 }) // deterministic sort
+      .limit(limitNum)
+      .skip(skip)
+      .lean();
 
     res.json({
       success: true,
       articles,
-      totalPages: Math.ceil(total / limit),
-      currentPage: Number(page),
+      totalPages: Math.ceil(total / limitNum),
+      currentPage: pageNum,
       total,
     });
   } catch (err) {
@@ -408,6 +435,7 @@ exports.getArticlesByCategory = async (req, res) => {
     });
   }
 };
+
 
 // ============================
 // SEARCH ARTICLES
