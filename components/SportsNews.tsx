@@ -106,12 +106,7 @@ export default function SportsNews({ articles }: SportsNewsProps) {
                       </h3>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <p className="text-gray-600 mb-4 line-clamp-2">
-                      {articles[0].content.substring(0, 200)}...
-                    </p>
-                  
-                  </div>
+                 
                 </div>
               </Link>
             </div>

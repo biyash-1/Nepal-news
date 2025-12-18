@@ -135,88 +135,79 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          
-          {/* Left Column - Main Content (75%) */}
-          <div className="lg:w-3/4">
-            
-            {/* Featured News Section */}
-            {featuredNews && (
-              <div className="mb-12">
-                <Link href={`/news/${featuredNews._id}`} className="group block">
-                  <div className="relative overflow-hidden rounded-2xl shadow-xl">
-                    <div className="aspect-[21/9] relative overflow-hidden">
-                      <img
-                        src={getImageSrc(featuredNews.featuredImage || featuredNews.image)}
-                        alt={featuredNews.title}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                      <div className="absolute bottom-0 left-0 right-0 p-8">
-                        <div className="max-w-3xl">
-                          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 group-hover:text-gray-200 transition-colors">
-                            {featuredNews.title}
-                          </h2>
-                          <div className="flex items-center gap-4 mt-6">
-                            <span className="text-white/80 text-sm">
-                              {formatDate(featuredNews.createdAt)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+    {/* Main Content */}
+<div className="container mx-auto px-4 py-8">
+  <div className="flex flex-col lg:flex-row gap-8">
+    
+    {/* Left Column - Main Content (75%) */}
+    <div className="lg:w-3/4">
+      
+      {/* Featured News Section */}
+      {featuredNews && (
+        <div className="mb-12">
+          <Link href={`/news/${featuredNews._id}`} className="group block">
+            <div className="relative overflow-hidden rounded"> {/* Changed from rounded-2xl shadow-xl */}
+              <div className="aspect-[21/9] relative overflow-hidden">
+                <img
+                  src={getImageSrc(featuredNews.featuredImage || featuredNews.image)}
+                  alt={featuredNews.title}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-8">
+                  <div className="max-w-3xl">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 group-hover:text-gray-200 transition-colors">
+                      {featuredNews.title}
+                    </h2>
                   </div>
-                </Link>
+                </div>
               </div>
-            )}
+            </div>
+          </Link>
+        </div>
+      )}
 
             {/* Latest News Grid */}
             <div className="mb-12">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-2xl font-bold text-gray-900">ताजा समाचार</h3>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-                  <span className="text-sm text-gray-500">लाइभ अपडेट</span>
-                </div>
-              </div>
+  <div className="flex items-center justify-between mb-8">
+    <h3 className="text-2xl font-bold text-gray-900">ताजा समाचार</h3>
+    <div className="flex items-center gap-2">
+      <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+      <span className="text-sm text-gray-500">लाइभ अपडेट</span>
+    </div>
+  </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {latestNews.map((article) => (
-                  <Link
-                    href={`/news/${article._id}`}
-                    key={article._id}
-                    className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200"
-                  >
-                    <div className="relative overflow-hidden">
-                      <img
-                        src={getImageSrc(article.featuredImage || article.image)}
-                        alt={article.title}
-                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    </div>
-                    <div className="p-5">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className={`text-xs font-semibold ${text} px-2 py-1 rounded ${light}`}>
-                          {category}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {formatDate(article.createdAt)}
-                        </span>
-                      </div>
-                      <h4 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 mb-4">
-                        {article.title}
-                      </h4>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {latestNews.map((article) => (
+      <Link
+        href={`/news/${article._id}`}
+        key={article._id}
+        className="group"
+      >
+        {/* Image Container - Reduced height */}
+        <div className="h-64 mb-3 overflow-hidden rounded">
+          <img
+            src={getImageSrc(article.featuredImage || article.image)}
+            alt={article.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        </div>
+        
+        {/* Title */}
+        <h4 className="font-bold text-gray-900 text-lg group-hover:text-green-600 transition-colors line-clamp-2">
+          {article.title}
+        </h4>
+        
+        {/* Date - Optional */}
+       
+      </Link>
+    ))}
+  </div>
+</div>
             {/* More News Section with Right Side Content */}
             {moreNews.length > 0 && (
               <div className="mb-12">
-                <div className="border-t border-gray-200 pt-8">
+                <div className="  pt-8">
                   <h4 className="text-2xl font-bold text-gray-900 mb-6">थप समाचार</h4>
                   
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -227,7 +218,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                           <Link
                             href={`/news/${article._id}`}
                             key={article._id}
-                            className="group flex items-start gap-6 p-4 hover:bg-white rounded-xl transition-all duration-300 border border-gray-100 hover:shadow-md"
+                            className="group flex items-start gap-6 p-4  rounded transition-all duration-300 border  "
                           >
                             <div className="flex-shrink-0 w-32 h-32 overflow-hidden rounded-lg">
                               <img
@@ -238,12 +229,8 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-3 mb-2">
-                                <span className={`text-xs font-semibold ${text} px-2 py-1 rounded ${light}`}>
-                                  {category}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  {formatDate(article.createdAt)}
-                                </span>
+                                
+                             
                               </div>
                               <h5 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 text-lg mb-2">
                                 {article.title}
@@ -251,14 +238,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                               <p className="text-gray-600 text-sm line-clamp-2 mb-3">
                                 {article.description || "समाचार पढ्न जारी राख्नुहोस्..."}
                               </p>
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-gray-500">
-                                  {Math.floor(Math.random() * 8) + 2} मिनेट पढ्न
-                                </span>
-                                <span className="text-blue-600 text-sm font-medium group-hover:translate-x-1 transition-transform">
-                                  विस्तारित →
-                                </span>
-                              </div>
+                           
                             </div>
                           </Link>
                         ))}
@@ -464,30 +444,8 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
         </div>
       </div>
 
-      {/* Footer CTA */}
-      <div className={`mt-12 bg-gradient-to-r ${catGradient} text-white py-12`}>
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-3xl font-bold mb-6">
-              {title} को बारेमा थप जान्न चाहनुहुन्छ?
-            </h3>
-            <p className="text-xl text-white/80 mb-8">
-              हाम्रो नियमित अपडेट, विशेष सामग्री र विशेषज्ञ विश्लेषणहरू प्राप्त गर्न आज नै सदस्यता लिनुहोस्।
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-3 rounded-full font-semibold transition-colors inline-flex items-center justify-center gap-2">
-                <span>सुरु गर्नुहोस्</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </button>
-              <button className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-8 py-3 rounded-full font-semibold transition-colors">
-                थप जानकारी
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+ 
+
     </div>
   );
 };
