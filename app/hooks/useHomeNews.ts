@@ -15,6 +15,7 @@ interface Article {
   };
   createdAt: string;
   image?: string;
+  featuredImage?: string;
   views: number;
   likes: number;
   isTrending: boolean;
@@ -28,12 +29,13 @@ interface BreakingNews {
 
 export const useHomeNews = () => {
   const [breakingNews, setBreakingNews] = useState<BreakingNews>({ main: null, marquee: [] });
-  const [featuredNews, setFeaturedNews] = useState<Article[]>([]);
-  const [latestNews, setLatestNews] = useState<Article[]>([]);
+  const [localLevelNews, setLocalLevelNews] = useState<Article[]>([]);
+  const [healthNews, setLatestNews] = useState<Article[]>([]);
   const [sportsNews, setSportsNews] = useState<Article[]>([]);
   const [techNews, setTechNews] = useState<Article[]>([]);
   const [politicsNews, setPoliticsNews] = useState<Article[]>([]);
   const [portfolioNews, setPortfolioNews] = useState<Article[]>([]);
+  const [entertainmentNews, setEntertainmentNews] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +45,6 @@ export const useHomeNews = () => {
         setLoading(true);
         setError(null);
 
-        // Fetch breaking/main news (मुख्य category)
         const breakingRes = await axiosInstance.get('/articles/category/मुख्य', {
           params: { limit: 5 }
         });
@@ -54,23 +55,20 @@ export const useHomeNews = () => {
           });
         }
 
-        // Fetch featured news (विशेष category)
-        const featuredRes = await axiosInstance.get('/articles/category/विशेष', {
-          params: { limit: 6 }
+        const localLevelRes = await axiosInstance.get('/articles/category/स्थानीय तह', {
+          params: { limit: 9 }
         });
-        if (featuredRes.data.success) {
-          setFeaturedNews(featuredRes.data.articles);
+        if (localLevelRes.data.success) {
+          setLocalLevelNews(localLevelRes.data.articles);
         }
 
-        // Fetch latest news (all recent articles)
-        const latestRes = await axiosInstance.get('/articles', {
-          params: { limit: 6, sort: 'createdAt' }
+        const healthRes = await axiosInstance.get('/articles/category/स्वास्थ्य', {
+          params: { limit: 8, sort: 'createdAt' }
         });
-        if (latestRes.data.success) {
-          setLatestNews(latestRes.data.articles);
+        if (healthRes.data.success) {
+          setLatestNews(healthRes.data.articles);
         }
 
-        // Fetch sports news (खेलकुद category)
         const sportsRes = await axiosInstance.get('/articles/category/खेलकुद', {
           params: { limit: 4 }
         });
@@ -78,7 +76,6 @@ export const useHomeNews = () => {
           setSportsNews(sportsRes.data.articles);
         }
 
-        // Fetch tech news (प्रविधि category)
         const techRes = await axiosInstance.get('/articles/category/प्रविधि', {
           params: { limit: 4 }
         });
@@ -86,7 +83,6 @@ export const useHomeNews = () => {
           setTechNews(techRes.data.articles);
         }
 
-        // Fetch politics news (राजनीति category)
         const politicsRes = await axiosInstance.get('/articles/category/राजनीति', {
           params: { limit: 8 }
         });
@@ -94,12 +90,21 @@ export const useHomeNews = () => {
           setPoliticsNews(politicsRes.data.articles);
         }
 
-        // Fetch portfolio/entertainment news (मनोरञ्जन category)
         const portfolioRes = await axiosInstance.get('/articles/category/मनोरञ्जन', {
           params: { limit: 3 }
         });
         if (portfolioRes.data.success) {
           setPortfolioNews(portfolioRes.data.articles);
+        }
+
+        const entertainmentRes = await axiosInstance.get('/articles/categories/multiple', {
+          params: { 
+            categories: JSON.stringify(["मनोरञ्जन", "मुख्य"]),
+            limit: 3 
+          }
+        });
+        if (entertainmentRes.data.success) {
+          setEntertainmentNews(entertainmentRes.data.articles);
         }
 
       } catch (err: any) {
@@ -115,12 +120,13 @@ export const useHomeNews = () => {
 
   return {
     breakingNews,
-    featuredNews,
-    latestNews,
+    localLevelNews,
+    healthNews,
     sportsNews,
     techNews,
     politicsNews,
     portfolioNews,
+    entertainmentNews,
     loading,
     error
   };

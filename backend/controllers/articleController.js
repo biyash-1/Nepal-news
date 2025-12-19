@@ -365,8 +365,8 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
 
     const isBollywoodRequest = 
       categoryArray.length === 2 && 
-      categoryArray.includes("बॉलिउड") && 
-      categoryArray.includes("हॉलिउड");
+      categoryArray.includes("बलिउड") && 
+      categoryArray.includes("हलिउड");
 
     let query;
     if (isBollywoodRequest) {

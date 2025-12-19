@@ -68,6 +68,8 @@ export const useEntertainmentNews = () => {
           }
         });
         if (bollywoodRes.data.success) {
+          console.log("success")
+          console.log(bollywoodRes.data.articles)
           setBollywoodHollywoodNews(bollywoodRes.data.articles);
         }
 

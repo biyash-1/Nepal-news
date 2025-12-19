@@ -11,7 +11,7 @@ interface Article {
   createdAt: string;
 }
 
-interface FeaturedNewsProps {
+interface LocalLevelNewsProps {
   articles: Article[];
 }
 
@@ -19,7 +19,7 @@ const getImageUrl = (article: Article) =>
   article.image ||
   "https://images.unsplash.com/photo-1546422904-90eab23c3d7e?auto=format&fit=crop&w=800&q=80";
 
-const FeaturedNews = ({ articles }: FeaturedNewsProps) => {
+const LocalLevelNews = ({ articles }: LocalLevelNewsProps) => {
   if (!articles || articles.length === 0) return null;
 
   return (
@@ -27,11 +27,10 @@ const FeaturedNews = ({ articles }: FeaturedNewsProps) => {
       <div className="mb-8">
         <div className="flex items-end justify-between">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-1">विशेष समाचार</h2>
-            <p className="text-gray-600">आजका महत्वपूर्ण समाचारहरू</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-1">स्थानीय तह समाचार</h2>
           </div>
           <Link
-            href={`/category/${encodeURIComponent("विशेष")}`}
+            href={`/local-level`}
             className="text-red-600 font-medium hover:text-red-700 flex items-center gap-1"
           >
             सबै हेर्नुहोस् <span>&gt;</span>
@@ -68,7 +67,7 @@ const FeaturedNews = ({ articles }: FeaturedNewsProps) => {
             >
               <div className="rounded overflow-hidden hover:transition">
                 {/* Square image */}
-                <div className="h-36 w-full">
+                <div className="h-48 w-full">
                   <img
                     src={getImageUrl(article)}
                     alt={article.title}
@@ -76,7 +75,7 @@ const FeaturedNews = ({ articles }: FeaturedNewsProps) => {
                   />
                 </div>
                 <div className="p-4">
-                  <h4 className="font-bold text-gray-900 group-hover:text-red-600 line-clamp-2">
+                  <h4 className="font-semibold text-gray-900 group-hover:text-red-600 line-clamp-2">
                     {article.title}
                   </h4>
                 </div>
@@ -87,22 +86,22 @@ const FeaturedNews = ({ articles }: FeaturedNewsProps) => {
 
         {/* COLUMN 3 – Small square images */}
         <div className="space-y-4 lg:col-span-4">
-          {articles.slice(1, 4).map((article) => (
+          {articles.slice(1, 7).map((article) => (
             <Link
               key={article._id}
               href={`/news/${article._id}`}
               className="flex gap-4  hover:transition overflow-hidden group"
             >
               {/* Small square image */}
-              <div className="w-18 h-18 shrink-0">
+              <div className="w-18 h-16 shrink-0">
                 <img
                   src={getImageUrl(article)}
                   alt={article.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full rounded h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="flex-1 p-2 flex items-center">
-                <h3 className="font-bold text-gray-900 group-hover:text-red-600 line-clamp-3">
+                <h3 className="font-semibold text-gray-900 group-hover:text-red-600 line-clamp-3">
                   {article.title}
                 </h3>
               </div>
@@ -114,4 +113,4 @@ const FeaturedNews = ({ articles }: FeaturedNewsProps) => {
   );
 };
 
-export default FeaturedNews;
+export default LocalLevelNews;

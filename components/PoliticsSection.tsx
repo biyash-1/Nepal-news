@@ -94,11 +94,11 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
     <Link 
       href={`/news/${article._id}`}
       key={article._id}
-      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer block"
+      className="bg-white rounded shadow-md overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer block"
     >
       <div className="flex items-center">
         <div className="w-3/5 p-4">
-          <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+          <h4 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
             {article.title}
           </h4>
         </div>
@@ -106,7 +106,7 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
           <img 
             src={getImageUrl(article)} 
             alt={article.title}
-            className="w-5/5 h-32 object-cover group-hover:scale-105 transition-transform duration-300 rounded-lg"
+            className="w-5/5 h-32 object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
       </div>

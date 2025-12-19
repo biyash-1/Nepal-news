@@ -72,7 +72,7 @@ export default function EntertainmentPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <Link href={`/news/${headlineNews.main._id}`}>
-                  <div className="relative h-[500px] overflow-hidden rounded-2xl group cursor-pointer">
+                  <div className="relative h-[500px] overflow-hidden rounded group cursor-pointer">
                     <img 
                       src={getImageUrl(headlineNews.main)} 
                       alt={headlineNews.main.title}
@@ -90,7 +90,7 @@ export default function EntertainmentPage() {
 
               <div className="space-y-6">
                 {headlineNews.side.map((news: any) => (
-                  <div key={news._id} className="relative h-59 overflow-hidden rounded-2xl group cursor-pointer">
+                  <div key={news._id} className="relative h-59 overflow-hidden rounded group cursor-pointer">
                     <Link href={`/news/${news._id}`}>
                       <img 
                         src={getImageUrl(news)} 
