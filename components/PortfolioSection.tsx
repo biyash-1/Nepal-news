@@ -53,8 +53,22 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
           <div className="flex justify-between items-center mb-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-               
-                <h2 className="text-3xl font-bold text-gray-900">पोर्टफोलियो</h2>
+                <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-700 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900">पोर्टफोलियो समाचार</h2>
               </div>
               <p className="text-gray-600 text-lg">
                 निवेश, बजार र आर्थिक विश्लेषण
@@ -139,7 +153,7 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
               <Link
                 key={article._id}
                 href={`/news/${article._id}`}
-                className="group block rounded overflow-hidden hover:transition-all duration-300 "
+                className="group block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100"
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -150,7 +164,22 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
                 <div className="p-5">
-                 
+                  <div className="flex items-center text-gray-500 text-sm mb-2">
+                    <svg
+                      className="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{getTimeAgo(article.createdAt)}</span>
+                  </div>
                   <h3 className="font-bold text-gray-900 group-hover:text-amber-600 transition-colors line-clamp-3">
                     {article.title}
                   </h3>
@@ -161,11 +190,11 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
 
           {/* Right Column - List of Articles */}
           <div className="lg:col-span-3">
-            <div className=" rounded-xl shadow-md  overflow-hidden">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
               <div className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 border-b">
                 <h3 className="font-bold text-gray-900">ताजा अपडेट</h3>
               </div>
-              <div className="divide-y ">
+              <div className="divide-y divide-gray-100">
                 {articles.slice(3, 8).map((article) => (
                   <Link
                     key={article._id}
@@ -256,6 +285,7 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
           </div>
         </div>
 
+        {/* Mobile "View All" Button */}
         <div className="mt-8 md:hidden">
           <Link
             href="/category/portfolio"

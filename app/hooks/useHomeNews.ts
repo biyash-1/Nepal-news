@@ -28,7 +28,11 @@ interface BreakingNews {
 }
 
 export const useHomeNews = () => {
-  const [breakingNews, setBreakingNews] = useState<BreakingNews>({ main: null, marquee: [] });
+  const [breakingNews, setBreakingNews] = useState<BreakingNews>({
+    main: null,
+    marquee: [],
+  });
+
   const [localLevelNews, setLocalLevelNews] = useState<Article[]>([]);
   const [healthNews, setLatestNews] = useState<Article[]>([]);
   const [sportsNews, setSportsNews] = useState<Article[]>([]);
@@ -36,6 +40,9 @@ export const useHomeNews = () => {
   const [politicsNews, setPoliticsNews] = useState<Article[]>([]);
   const [portfolioNews, setPortfolioNews] = useState<Article[]>([]);
   const [entertainmentNews, setEntertainmentNews] = useState<Article[]>([]);
+  const [globalNews, setGlobalNews] = useState<Article[]>([]);      
+  const [educationNews, setEducationNews] = useState<Article[]>([]); 
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,66 +52,82 @@ export const useHomeNews = () => {
         setLoading(true);
         setError(null);
 
-        const breakingRes = await axiosInstance.get('/articles/category/मुख्य', {
-          params: { limit: 5 }
+        const breakingRes = await axiosInstance.get("/articles/category/मुख्य", {
+          params: { limit: 5 },
         });
         if (breakingRes.data.success && breakingRes.data.articles.length > 0) {
           setBreakingNews({
             main: breakingRes.data.articles[0],
-            marquee: breakingRes.data.articles.slice(0, 4)
+            marquee: breakingRes.data.articles.slice(0, 4),
           });
         }
 
-        const localLevelRes = await axiosInstance.get('/articles/category/स्थानीय तह', {
-          params: { limit: 9 }
+        const localLevelRes = await axiosInstance.get("/articles/category/स्थानीय तह", {
+          params: { limit: 9 },
         });
         if (localLevelRes.data.success) {
           setLocalLevelNews(localLevelRes.data.articles);
         }
 
-        const healthRes = await axiosInstance.get('/articles/category/स्वास्थ्य', {
-          params: { limit: 8, sort: 'createdAt' }
+        const healthRes = await axiosInstance.get("/articles/category/स्वास्थ्य", {
+          params: { limit: 8, sort: "createdAt" },
         });
         if (healthRes.data.success) {
           setLatestNews(healthRes.data.articles);
         }
 
-        const sportsRes = await axiosInstance.get('/articles/category/खेलकुद', {
-          params: { limit: 4 }
+        const sportsRes = await axiosInstance.get("/articles/category/खेलकुद", {
+          params: { limit: 4 },
         });
         if (sportsRes.data.success) {
           setSportsNews(sportsRes.data.articles);
         }
 
-        const techRes = await axiosInstance.get('/articles/category/प्रविधि', {
-          params: { limit: 4 }
+        const techRes = await axiosInstance.get("/articles/category/प्रविधि", {
+          params: { limit: 4 },
         });
         if (techRes.data.success) {
           setTechNews(techRes.data.articles);
         }
 
-        const politicsRes = await axiosInstance.get('/articles/category/राजनीति', {
-          params: { limit: 8 }
+        const politicsRes = await axiosInstance.get("/articles/category/राजनीति", {
+          params: { limit: 8 },
         });
         if (politicsRes.data.success) {
           setPoliticsNews(politicsRes.data.articles);
         }
 
-        const portfolioRes = await axiosInstance.get('/articles/category/मनोरञ्जन', {
-          params: { limit: 3 }
+        const portfolioRes = await axiosInstance.get("/articles/category/मनोरञ्जन", {
+          params: { limit: 3 },
         });
         if (portfolioRes.data.success) {
           setPortfolioNews(portfolioRes.data.articles);
         }
 
-        const entertainmentRes = await axiosInstance.get('/articles/categories/multiple', {
-          params: { 
+        const entertainmentRes = await axiosInstance.get("/articles/categories/multiple", {
+          params: {
             categories: JSON.stringify(["मनोरञ्जन", "मुख्य"]),
-            limit: 3 
-          }
+            limit: 3,
+          },
         });
         if (entertainmentRes.data.success) {
           setEntertainmentNews(entertainmentRes.data.articles);
+        }
+
+    
+        const globalRes = await axiosInstance.get("/articles/category/विश्व", {
+          params: { limit: 6 },
+        });
+        if (globalRes.data.success) {
+          setGlobalNews(globalRes.data.articles);
+        }
+
+      
+        const educationRes = await axiosInstance.get("/articles/category/शिक्षा", {
+          params: { limit: 6 },
+        });
+        if (educationRes.data.success) {
+          setEducationNews(educationRes.data.articles);
         }
 
       } catch (err: any) {
@@ -127,7 +150,9 @@ export const useHomeNews = () => {
     politicsNews,
     portfolioNews,
     entertainmentNews,
+    globalNews,    
+    educationNews, 
     loading,
-    error
+    error,
   };
 };

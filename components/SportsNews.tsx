@@ -135,7 +135,7 @@ export default function SportsNews({ articles }: SportsNewsProps) {
         </h4>
       </div>
     </Link>
-  ))}
+  ))}p
 </div>
 
           </div>

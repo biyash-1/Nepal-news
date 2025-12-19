@@ -12,6 +12,8 @@ import EntertainmentNews from "@/components/Entertainment";
 import AdBanner from "@/components/AdBanner";
 import { useHomeNews } from "@/app/hooks/useHomeNews";
 import { useAds } from "@/app/hooks/useAds";
+import GlobalNews from "@/components/GlobalNews";
+import EducationNews from "@/components/EducationNews";
 
 export default function Home() {
   const {
@@ -23,6 +25,8 @@ export default function Home() {
     politicsNews,
     portfolioNews,
     entertainmentNews,
+    globalNews,
+    educationNews,
     loading,
     error,
   } = useHomeNews();
@@ -59,37 +63,65 @@ export default function Home() {
   return (
     <>
       <div className="mx-auto px-4 sm:px-6 py-8 max-w-[90%]">
-
-
         <BreakingNews main={breakingNews.main} marquee={breakingNews.marquee} />
 
-        <AdBanner ad={ads.belowBreaking} position="home-below-breaking" className="my-6" />
+        <AdBanner
+          ad={ads.belowBreaking}
+          position="home-below-breaking"
+          className="my-6"
+        />
 
         <LocalLevelNews articles={localLevelNews} />
 
-        <AdBanner ad={ads.belowFeatured} position="home-below-featured" className="my-6" />
+        <AdBanner
+          ad={ads.belowFeatured}
+          position="home-below-featured"
+          className="my-6"
+        />
 
         <HealthNews articles={healthNews} />
 
-        <AdBanner ad={ads.belowLatest} position="home-below-latest" className="my-6" />
+        <AdBanner
+          ad={ads.belowLatest}
+          position="home-below-latest"
+          className="my-6"
+        />
 
         <EntertainmentNews articles={entertainmentNews} />
 
         <SportsNews articles={sportsNews} />
 
-        <AdBanner ad={ads.belowSports} position="home-below-sports" className="my-6" />
+        <AdBanner
+          ad={ads.belowSports}
+          position="home-below-sports"
+          className="my-6"
+        />
+        <EducationNews articles={educationNews} />
 
         <PortfolioSection articles={portfolioNews} />
 
-        <AdBanner ad={ads.belowPortfolio} position="home-below-portfolio" className="my-6" />
+        <AdBanner
+          ad={ads.belowPortfolio}
+          position="home-below-portfolio"
+          className="my-6"
+        />
 
         <TechNews articles={techNews} />
+        <GlobalNews articles={globalNews} />
 
-        <AdBanner ad={ads.belowTech} position="home-below-tech" className="my-6" />
+        <AdBanner
+          ad={ads.belowTech}
+          position="home-below-tech"
+          className="my-6"
+        />
 
         <PoliticsSection articles={politicsNews} />
 
-        <AdBanner ad={ads.belowPolitics} position="home-below-politics" className="my-6" />
+        <AdBanner
+          ad={ads.belowPolitics}
+          position="home-below-politics"
+          className="my-6"
+        />
       </div>
     </>
   );

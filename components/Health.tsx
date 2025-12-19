@@ -35,7 +35,7 @@ export default function HealthNews({ articles }: HealthNewsProps) {
       <div className="mb-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold border-l-4 border-red-600 pl-3">स्वास्थ्य समाचार</h2>
-          <Link href="/category/Health" className="text-red-600 font-medium flex items-center hover:text-red-700 transition-colors">
+          <Link href="/health" className="text-red-600 font-medium flex items-center hover:text-red-700 transition-colors">
             सबै हेर्नुहोस्
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
