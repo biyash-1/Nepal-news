@@ -71,10 +71,17 @@ export default function EntertainmentPage() {
 
 
       {/* 80% Width Container for All Content */}
-      <div className="w-[75%] mx-auto py-12 " >
+      <div className="w-[75%] mx-auto py-6 " >
+        <div className="flex items-center justify-between">
+              <h3 className="text-3xl border-l-4 border-red-600 font-bold text-gray-900 pl-3">मनोरञ्जन</h3>
+              <Link href="/category/music" className="text-red-600 hover:text-red-700 font-medium">
+                सबै हेर्नुहोस् →
+              </Link>
+            </div>
+            <div className="h-0.5 bg-red-600 mt-2 mb-8"></div>
         {/* Top 3 Headlines */}
         {headlineNews.main && (
-          <div className="mb-16">
+          <div className="mb-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <Link href={`/news/${headlineNews.main._id}`}>
@@ -118,7 +125,7 @@ export default function EntertainmentPage() {
         )}
 
         {/* Horizontal News */}
-          <div className="w-full mb-16">
+          <div className="w-full mb-8">
   <div className="flex gap-4 w-full">
     {trendingNews.slice(0, 3).map((trend: any, index: number) => (
       <Link
@@ -146,20 +153,20 @@ export default function EntertainmentPage() {
 
 
         {/* Section Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-16"></div>
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-8"></div>
 
         {/* Layout A: Gossip Section with Sidebar */}
         {gossipNews.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-8">
             <div className="lg:col-span-2">
               <section>
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between ">
                   <h3 className="text-3xl font-bold text-gray-900">💬 गपशप</h3>
                   <Link href="/category/gossip" className="text-red-600 hover:text-red-700 font-medium">
                     सबै हेर्नुहोस् →
                   </Link>
                 </div>
-
+                <div className="h-0.5 bg-red-600 mt-2 mb-8"></div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   {gossipNews.map((news: any, i: number) => (
                     <Link href={`/news/${news._id}`}
@@ -195,7 +202,7 @@ export default function EntertainmentPage() {
 
             {/* Sidebar - Only appears next to Gossip */}
             <div className="space-y-8">
-              <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-6 shadow-sm">
+              <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded p-6">
                 <h4 className="text-2xl font-bold text-gray-900 mb-6">🔥 ट्रेन्डिङ</h4>
                 <div className="space-y-4">
                   {trendingNews.length > 0 ? (
@@ -217,20 +224,20 @@ export default function EntertainmentPage() {
         )}
 
         {/* Section Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-16"></div>
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-8"></div>
 
         {/* Layout B: Full-width sections after Gossip */}
 
         {/* Bollywood/Hollywood Section - Hero + 2x2 Grid */}
         {bollywoodHollywoodNews.length > 0 && (
-          <section className="mb-16">
-            <div className="flex items-center justify-between mb-8">
+          <section className="mb-8">
+            <div className="flex items-center justify-between">
               <h3 className="text-3xl font-bold text-gray-900">🎬 बलिउड / हलिउड</h3>
               <Link href="/category/bollywood" className="text-red-600 hover:text-red-700 font-medium">
                 सबै हेर्नुहोस् →
               </Link>
             </div>
-
+            <div className="h-0.5 bg-red-600 mt-2 mb-8"></div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Hero Article - Left Side */}
               <Link className="group cursor-pointer" href={`/news/${bollywoodHollywoodNews[0]._id}`}>
@@ -276,17 +283,18 @@ export default function EntertainmentPage() {
         )}
 
         {/* Section Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-16"></div>
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-8"></div>
 
         {/* Music Section - Balanced Grid */}
         {musicNews.length > 0 && (
-          <section className="mb-16">
-            <div className="flex items-center justify-between mb-8">
+          <section className="mb-8">
+            <div className="flex items-center justify-between">
               <h3 className="text-3xl font-bold text-gray-900">🎵 संगीत</h3>
               <Link href="/category/music" className="text-red-600 hover:text-red-700 font-medium">
                 सबै हेर्नुहोस् →
               </Link>
             </div>
+            <div className="h-0.5 bg-red-600 mt-2 mb-8"></div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {musicNews.map((news: any) => (
                 <Link href={`/news/${news._id}`} key={news._id} className="group cursor-pointer overflow-hidden">
@@ -307,22 +315,23 @@ export default function EntertainmentPage() {
         )}
 
         {/* Section Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-16"></div>
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-8"></div>
 
         {/* Featured Section - Hero + 2x2 Grid (Matching Bollywood/Hollywood Style) */}
         {featuredNews.length > 0 && (
-          <section className="mb-16">
-            <div className="flex items-center justify-between mb-8">
+          <section className="mb-8">
+            <div className="flex items-center justify-between">
               <h3 className="text-3xl font-bold text-gray-900">⭐ विशेष</h3>
               <Link href="/category/special" className="text-red-600 hover:text-red-700 font-medium">
                 सबै हेर्नुहोस् →
               </Link>
             </div>
+            <div className="h-0.5 bg-red-600 mt-2 mb-8"></div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Hero Featured - Left Side */}
               <Link href={`/news/${featuredNews[0]._id}`} className="group cursor-pointer">
-                <div className="relative h-full min-h-[500px] overflow-hidden rounded-lg">
+                <div className="relative h-full min-h-[500px] overflow-hidden">
                   <img 
                     src={getImageUrl(featuredNews[0])} 
                     alt={featuredNews[0].title}
@@ -345,7 +354,7 @@ export default function EntertainmentPage() {
                     key={news._id}
                     className="group cursor-pointer"
                   >
-                    <div className="relative h-45 overflow-hidden rounded-lg">
+                    <div className="relative h-45 overflow-hidden">
                       <img
                         src={getImageUrl(news)}
                         alt={news.title}
@@ -364,17 +373,18 @@ export default function EntertainmentPage() {
 
 
         {/* Section Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-16"></div>
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-8"></div>
 
         {/* Photo Gallery Section */}
-        <div className="mb-16">
-          <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
             <h3 className="text-3xl font-bold text-gray-900">📸 फोटो ग्यालेरी</h3>
             <a href="#" className="text-red-600 hover:text-red-700 font-medium">सबै हेर्नुहोस् →</a>
           </div>
+          <div className="h-0.5 bg-red-600 mt-2 mb-8"></div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {[...gossipNews, ...musicNews].slice(0, 6).map((news: any, index: number) => (
-              <Link href={`/news/${news._id}`} key={news._id} className="aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all group cursor-pointer">
+              <Link href={`/news/${news._id}`} key={news._id} className="aspect-square rounded overflow-hidden shadow-md hover:shadow-2xl transition-all group cursor-pointer">
                 <img 
                   src={getImageUrl(news)} 
                   alt={news.title}
