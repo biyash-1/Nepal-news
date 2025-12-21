@@ -75,7 +75,7 @@ export const useEntertainmentNews = () => {
 
         // Fetch music news (संगीत category)
         const musicRes = await axiosInstance.get('/articles/category/संगीत', {
-          params: { limit: 4 }
+          params: { limit: 8 }
         });
         if (musicRes.data.success) {
           setMusicNews(musicRes.data.articles);
@@ -83,7 +83,7 @@ export const useEntertainmentNews = () => {
 
         // Fetch featured news (विशेष category)
         const featuredRes = await axiosInstance.get('/articles/category/विशेष', {
-          params: { limit: 4 }
+          params: { limit: 5 }
         });
         if (featuredRes.data.success) {
           setFeaturedNews(featuredRes.data.articles);
