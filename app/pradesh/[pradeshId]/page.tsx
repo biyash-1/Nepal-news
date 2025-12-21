@@ -258,7 +258,7 @@ export default function PradeshNewsPage() {
 
             {/* Bottom Row */}
             {displayHeadlineNews.length >= 3 && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 {displayHeadlineNews.slice(0, 3).map((item: any) => (
                   <Link key={item._id} href={`/news/${item._id}`}>
                     <div className="rounded-lg p-4 hover:shadow-md transition-shadow group cursor-pointer">
@@ -288,7 +288,7 @@ export default function PradeshNewsPage() {
             <h3 className="text-2xl font-bold text-gray-900 mb-6 pb-2">
               अन्य समाचार
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {displayRegularNews.map((item: any) => (
                 <Link key={item._id} href={`/news/${item._id}`}>
                   <div className="rounded-lg overflow-hidden transition-shadow group cursor-pointer">
