@@ -36,8 +36,6 @@ interface NewsArticle {
   author: Author;
 }
 
-
-
 interface RelatedNews {
   _id: string;
   title: string;
@@ -48,6 +46,8 @@ interface RelatedNews {
 export const useNewsDetail = (id: string) => {
   const [article, setArticle] = useState<NewsArticle | null>(null);
   const [relatedNews, setRelatedNews] = useState<RelatedNews[]>([]);
+  const [trendingNews, setTrendingNews] = useState<RelatedNews[]>([]);
+  const [recentNews, setRecentNews] = useState<RelatedNews[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,6 +60,9 @@ export const useNewsDetail = (id: string) => {
       const articleData = res.data.article;
       setArticle(articleData);
 
+      // Prepare exclude list (current article + related + trending)
+      const excludeIds = [id];
+
       // Fetch related articles from same category (using first category if multiple)
       if (articleData.categories && articleData.categories.length > 0) {
         const primaryCategory = articleData.categories[0];
@@ -67,7 +70,41 @@ export const useNewsDetail = (id: string) => {
           `/articles/category/${primaryCategory}?limit=5&exclude=${id}`
         );
 
-        setRelatedNews(related.data.articles || []);
+        const relatedArticles = related.data.articles || [];
+        setRelatedNews(relatedArticles);
+        
+        // Add related article IDs to exclude list
+        excludeIds.push(...relatedArticles.map((a: any) => a._id));
+      }
+
+      // Fetch overall trending news (no category filter, exclude current + related)
+      const trendingRes = await axiosInstance.get("/articles/news/trending", {
+        params: {
+          limit: 5,
+          exclude: excludeIds.join(',')
+        }
+      });
+
+      if (trendingRes.data.success) {
+        setTrendingNews(trendingRes.data.articles || []);
+      }
+
+      // Fetch recent news (latest articles, exclude current + related + trending)
+      const allExcludeIds = [
+        ...excludeIds,
+        ...(trendingRes.data.articles || []).map((a: any) => a._id)
+      ].filter(Boolean);
+
+      const recentRes = await axiosInstance.get("/articles/news/other", {
+        params: {
+          page: 1,
+          limit: 5,
+          exclude: allExcludeIds.join(',')
+        }
+      });
+
+      if (recentRes.data.success) {
+        setRecentNews(recentRes.data.articles || []);
       }
       
       setError(null);
@@ -84,5 +121,5 @@ export const useNewsDetail = (id: string) => {
     if (id) fetchNewsDetail();
   }, [id]);
 
-  return { article, relatedNews, loading, error };
+  return { article, relatedNews, trendingNews, recentNews, loading, error };
 };

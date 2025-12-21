@@ -13,7 +13,7 @@ import { FaFacebookF, FaTwitter, FaWhatsapp, FaLinkedinIn } from 'react-icons/fa
 export default function NewsDetailPage() {
   const params = useParams();
   const id = params?.id as string;
-  const { article, relatedNews, loading, error } = useNewsDetail(id);
+  const { article, relatedNews, trendingNews,recentNews, loading, error } = useNewsDetail(id);
   const { user, isAuthenticated } = useAuthStore();
   
   // View tracking hook - now uses dynamic trending system
@@ -166,7 +166,7 @@ export default function NewsDetailPage() {
   const displayViews = viewCounted ? currentViews : (article.views || 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="w-[75%] mx-auto bg-gray-50">
       {/* Auth Modal */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
       
@@ -186,30 +186,16 @@ export default function NewsDetailPage() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Article Content */}
-            <article className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <article className="bg-white shadow-lg rounded overflow-hidden mb-8">
               <div className="px-8 pt-8">
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="inline-block bg-red-600 text-white px-4 py-1 rounded-full text-sm font-medium capitalize">
                     {article.categories[0]}
                   </span>
-                  
-                  {/* Dynamic Trending Badge - now based on trendingScore */}
-                  {isTrending && (
-                    <span className="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-full text-sm font-bold animate-pulse">
-                      🔥 ट्रेन्डिङ
-                    </span>
-                  )}
-                  
-                  {/* Optional: Show trending score for debugging (remove in production) */}
-                  {process.env.NODE_ENV === 'development' && trendingScore > 0 && (
-                    <span className="inline-block bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-mono">
-                      Score: {trendingScore}
-                    </span>
-                  )}
                 </div>
               </div>
 
@@ -240,12 +226,7 @@ export default function NewsDetailPage() {
                   <span>{displayViews} दृश्य</span>
                 </div>
                 
-                {/* Optional: Show 24h views for debugging */}
-                {process.env.NODE_ENV === 'development' && article.viewsLast24h !== undefined && (
-                  <div className="flex items-center space-x-2 text-orange-600">
-                    <span className="text-xs font-mono">24h: {article.viewsLast24h}</span>
-                  </div>
-                )}
+               
               </div>
 
               <div className="px-8 py-6 bg-gray-50 border-b">
@@ -279,7 +260,7 @@ export default function NewsDetailPage() {
               <div className="px-8 py-8">
                 <div className="prose prose-lg max-w-none">
                   <div 
-                    className="text-gray-800 leading-relaxed space-y-4"
+                    className="text-gray-800 text-lg leading-relaxed space-y-4"
                     dangerouslySetInnerHTML={{ __html: article.content }}
                   />
                 </div>
@@ -509,28 +490,95 @@ export default function NewsDetailPage() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="bg-gradient-to-r from-red-600 to-pink-600 px-6 py-4">
-                <h4 className="font-bold text-lg text-white">थप समाचारहरू</h4>
+            {/* Recent News Sidebar */}
+            <div className="overflow-hidden">
+              <div className="py-4 px-4">
+
+                <h4 className="font-bold pl-2 border-l-4 border-red-600 text-lg text-black">ताजा समाचार</h4>
+                <div className="h-0.5 bg-red-600 mt-2"></div>
               </div>
-              <div className="p-6 space-y-6">
-                {relatedNews.length > 0 ? (
-                  relatedNews.map((news) => (
-                    <Link key={news._id} href={`/news/${news._id}`}>
-                      <div className="group cursor-pointer border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+              
+              <div className="pt-3 pl-3 space-y-6">
+                {recentNews.length > 0 ? (
+                  recentNews.map((news) => (
+                    <Link key={news._id} href={`/news/${news._id}`} className='block mb-2'>
+                      <div className="group cursor-pointer border-b border-gray-100 last:border-0 last:pb-0">
                         <div className="flex space-x-4">
                           <img
                             src={news.image}
                             alt={news.title}
-                            className="w-24 h-20 object-cover rounded-lg group-hover:scale-105 transition-transform"
+                            className="w-24 h-20 object-cover rounded"
                           />
                           <div className="flex-1">
-                            <h5 className="font-semibold text-gray-900 text-sm leading-tight group-hover:text-red-600 transition-colors line-clamp-3">
+                            <h5 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-red-600 transition-colors line-clamp-3">
                               {news.title}
                             </h5>
-                            <p className="text-xs text-gray-500 mt-2">
-                              {formatRelativeTime(news.createdAt)}
-                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center py-4">ट्रेन्डिङ समाचार फेला परेन</p>
+                )}
+              </div>
+            </div>
+            
+            {/* Trending News Sidebar */}
+            <div className="overflow-hidden">
+              <div className="py-4 px-4">
+
+                <h4 className="font-bold pl-2 border-l-4 border-red-600 text-lg text-black">ट्रेन्डिङ समाचार</h4>
+                <div className="h-0.5 bg-red-600 mt-2"></div>
+              </div>
+              
+              <div className="pt-3 pl-3 space-y-6">
+                {trendingNews.length > 0 ? (
+                  trendingNews.map((news) => (
+                    <Link key={news._id} href={`/news/${news._id}`} className='block mb-2'>
+                      <div className="group cursor-pointer border-b border-gray-100 last:border-0 last:pb-0">
+                        <div className="flex space-x-4">
+                          <img
+                            src={news.image}
+                            alt={news.title}
+                            className="w-24 h-20 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <h5 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-red-600 transition-colors line-clamp-3">
+                              {news.title}
+                            </h5>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center py-4">ट्रेन्डिङ समाचार फेला परेन</p>
+                )}
+              </div>
+            </div>
+            {/* Related News Sidebar */}
+            <div className="overflow-hidden">
+              <div className="px-4 py-4">
+
+                <h4 className="font-bold pl-2 border-l-4 border-red-600 text-lg text-black">सम्बन्धित समाचार</h4>
+                <div className="h-0.5 bg-red-600 mt-2"></div>
+              </div>
+              <div className="pt-3 pl-3 space-y-6">
+                {relatedNews.length > 0 ? (
+                  relatedNews.map((news) => (
+                    <Link key={news._id} href={`/news/${news._id}`} className='block mb-2'>
+                      <div className="group cursor-pointer border-b border-gray-100 last:border-0 last:pb-0">
+                        <div className="flex space-x-4">
+                          <img
+                            src={news.image}
+                            alt={news.title}
+                            className="w-24 h-20 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <h5 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-red-600 transition-colors line-clamp-3">
+                              {news.title}
+                            </h5>
                           </div>
                         </div>
                       </div>
@@ -542,20 +590,6 @@ export default function NewsDetailPage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg p-6 text-white">
-              <h4 className="font-bold text-lg mb-3">न्यूजलेटर सदस्यता</h4>
-              <p className="text-gray-300 text-sm mb-4">
-                ताजा समाचार सिधै आफ्नो इमेलमा प्राप्त गर्नुहोस्
-              </p>
-              <input
-                type="email"
-                placeholder="तपाईंको इमेल"
-                className="w-full px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 mb-3"
-              />
-              <button className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition-colors">
-                सब्सक्राइब गर्नुहोस्
-              </button>
-            </div>
           </div>
         </div>
       </div>
