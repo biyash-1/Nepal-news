@@ -1,7 +1,7 @@
 "use client";
 import { useCategoryNews } from "@/app/hooks/useCategoryNews";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 interface Props {
   category: string;
@@ -14,11 +14,49 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
     useCategoryNews(category);
   const [email, setEmail] = useState("");
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const previousCategoryRef = useRef(category);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
+  // Deduplicate news array as safety net
+  const deduplicatedNews = useMemo(() => {
+    const seen = new Set<string>();
+    return news.filter((article) => {
+      if (seen.has(article._id)) {
+        console.warn(`Duplicate detected: ${article._id}`);
+        return false;
+      }
+      seen.add(article._id);
+      return true;
+    });
+  }, [news]);
+
+  // Reset scroll and cleanup observer when category changes
+  useEffect(() => {
+    if (previousCategoryRef.current !== category) {
+      console.log(`Category changed: ${previousCategoryRef.current} -> ${category}`);
+      previousCategoryRef.current = category;
+      
+      // Disconnect old observer
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+      
+      // Reset scroll position
+      window.scrollTo(0, 0);
+    }
+  }, [category]);
+
+  // Setup IntersectionObserver for infinite scroll
   useEffect(() => {
     if (!loadMoreRef.current) return;
 
-    const observer = new IntersectionObserver(
+    // Disconnect previous observer if exists
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver(
       (entries) => {
         const first = entries[0];
         if (
@@ -26,6 +64,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
           !loading &&
           currentPage < totalPages
         ) {
+          console.log(`Loading page ${currentPage + 1}...`);
           loadMore();
         }
       },
@@ -34,9 +73,14 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
       }
     );
 
-    observer.observe(loadMoreRef.current);
+    observerRef.current.observe(loadMoreRef.current);
 
-    return () => observer.disconnect();
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
   }, [loading, currentPage, totalPages, loadMore]);
 
   const formatDate = (dateString: string) => {
@@ -105,12 +149,12 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
     return icons[category as keyof typeof icons] || icons.default;
   };
 
-  // UPDATED: Featured news is first item, headlines are next 5, grid starts from index 6
-  const featuredNews = news.length > 0 ? news[0] : null;
-  const headlineNews = news.slice(1, 6); // Items 1-5 (headlines)
-  const moreNews = news.slice(6); // Items 6+ (grid articles)
+  // Use deduplicated news
+  const featuredNews = deduplicatedNews.length > 0 ? deduplicatedNews[0] : null;
+  const headlineNews = deduplicatedNews.slice(1, 6);
+  const moreNews = deduplicatedNews.slice(6);
 
-  if (loading && news.length === 0) {
+  if (loading && deduplicatedNews.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
         <div className="text-center">
@@ -148,123 +192,122 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
       {/* Category Header */}
       <div className={`sticky top-0 z-10 bg-gradient-to-r ${catGradient} shadow-lg`}>
         <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-white">{title}</h1>
-                <p className="text-white/80 mt-1">ताजा समाचार र अपडेटहरू</p>
-              </div>
+          <div className="flex flex-col md:flex-row md:items-center text-center justify-between gap-4">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <h1 className="text-3xl md:text-4xl font-semibold mb-3 text-white">
+                {title}
+              </h1>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container w-[75%] mx-auto px-4 py-8">
+        <div className="flex items-center justify-between">
+          <h3 className="text-3xl border-l-4 border-blue-600 font-bold text-gray-900 pl-3">{title}</h3>
+          <Link href="/category/music" className="text-blue-600 hover:text-red-700 font-medium">
+            सबै हेर्नुहोस् →
+          </Link>
+        </div>
+        <div className="h-0.5 bg-blue-600 mt-2 mb-8"></div>
+        
         <div className="flex flex-col lg:flex-row gap-8">
-          
           {/* Left Column - Main Content (75%) */}
           <div className="lg:w-3/4">
-            
             {/* Featured News Section */}
             {featuredNews && headlineNews.length > 0 && (
-  <div className="mb-12 grid gap-6" >
-    {/* Upper Row */}
-<div className="grid grid-cols-3 gap-6 ">
-  
-  {/* Left Column: Featured news spans 2/3 */}
-  <div className="col-span-2 h-full">
-  <Link href={`/news/${featuredNews._id}`} className="group block h-full">
-    <div className="relative h-full rounded shadow-xl overflow-hidden ">
-      <img
-        src={getImageSrc(featuredNews.featuredImage || featuredNews.image)}
-        alt={featuredNews.title}
-        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-      <div className="absolute bottom-0 left-0 right-0 p-6">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight mb-4 group-hover:text-gray-200 transition-colors">
-          {featuredNews.title}
-        </h2>
-      </div>
-    </div>
-  </Link>
-</div>
+              <div className="mb-12 grid gap-6">
+                {/* Upper Row */}
+                <div className="grid grid-cols-3 gap-6">
+                  {/* Left Column: Featured news spans 2/3 */}
+                  <div className="col-span-2 h-full">
+                    <Link href={`/news/${featuredNews._id}`} className="group block h-full">
+                      <div className="relative h-full rounded overflow-hidden">
+                        <img
+                          src={getImageSrc(featuredNews.featuredImage || featuredNews.image)}
+                          alt={featuredNews.title}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 right-0 p-6">
+                          <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-white leading-tight mb-4 group-hover:text-blue-600 transition-colors">
+                            {featuredNews.title}
+                          </h2>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
 
-  {/* Right Column: 2 stacked news */}
-  <div className="flex flex-col gap-6">
-    {headlineNews.slice(0, 2).map((newsItem) => (
-      <Link key={newsItem._id} href={`/news/${newsItem._id}`} className="group block">
-        <div className="rounded overflow-hidden ">
-          <img
-            src={getImageSrc(newsItem.featuredImage || newsItem.image)}
-            alt={newsItem.title}
-            className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-700"
-            loading="lazy"
-          />
-          <h3 className="pl-2 mt-2 text-lg font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
-            {newsItem.title}
-          </h3>
-        </div>
-      </Link>
-    ))}
-  </div>
-</div>
+                  {/* Right Column: 2 stacked news */}
+                  <div className="flex flex-col gap-6">
+                    {headlineNews.slice(0, 2).map((newsItem) => (
+                      <Link key={newsItem._id} href={`/news/${newsItem._id}`} className="group block">
+                        <div className="rounded overflow-hidden">
+                          <img
+                            src={getImageSrc(newsItem.featuredImage || newsItem.image)}
+                            alt={newsItem.title}
+                            className="w-full h-40 object-cover"
+                            loading="lazy"
+                          />
+                          <h3 className="pl-2 mt-2 text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                            {newsItem.title}
+                          </h3>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
 
-
-    {/* Lower Row: 3 equal columns */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-  {headlineNews.slice(2, 5).map((newsItem) => (
-    <Link key={newsItem._id} href={`/news/${newsItem._id}`} className="group block">
-      <div className="flex rounded overflow-hidden h-20">
-        {/* Image on the left with fixed height */}
-        <img
-          src={getImageSrc(newsItem.featuredImage || newsItem.image)}
-          alt={newsItem.title}
-          className="w-1/4 h-full object-cover group-hover:scale-105 transition-transform duration-700"
-          loading="lazy"
-        />
-        {/* Title on the right */}
-        <div className="p-4 flex items-center">
-          <h3 className="text-base font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
-            {newsItem.title}
-          </h3>
-        </div>
-      </div>
-    </Link>
-  ))}
-</div>
-
-  </div>
-)}
-
+                {/* Lower Row: 3 equal columns */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {headlineNews.slice(2, 5).map((newsItem) => (
+                    <Link key={newsItem._id} href={`/news/${newsItem._id}`} className="group block w-full">
+                      <div className="flex h-20 w-full">
+                        <img
+                          src={getImageSrc(newsItem.featuredImage || newsItem.image)}
+                          alt={newsItem.title}
+                          className="w-26 h-full object-cover rounded"
+                          loading="lazy"
+                        />
+                        <div className="p-4 flex items-center flex-1">
+                          <h3 className="text-base font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                            {newsItem.title}
+                          </h3>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Latest News Grid */}
             {moreNews.length > 0 && (
               <div className="mb-12">
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-2xl font-bold text-gray-900">ताजा समाचार</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-2xl border-l-4 border-blue-600 font-bold text-gray-900 pl-3">ताजा समाचार</h3>
                 </div>
+                <div className="h-0.5 bg-blue-600 mt-2 mb-8"></div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {moreNews.slice(0, currentPage * 30).map((article) => (
                     <Link
                       href={`/news/${article._id}`}
                       key={article._id}
-                      className="group bg-white rounded transition-all duration-300 overflow-hidden"
+                      className="group transition-all duration-300 overflow-hidden"
                     >
                       <div className="relative overflow-hidden">
                         <img
                           src={getImageSrc(article.featuredImage || article.image)}
                           alt={article.title}
-                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-48 object-cover rounded"
                           loading="lazy"
                         />
                       </div>
-                      <div className="p-5">
-                        
-                        <h4 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-2 mb-4">
+                      <div className="p-2">
+                        <h4 className="font-semibold text-gray-900 text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
                           {article.title}
                         </h4>
                       </div>
@@ -273,8 +316,6 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 </div>
               </div>
             )}
-
-            
 
             {/* Infinite Scroll Sentinel */}
             {currentPage < totalPages && (
@@ -295,7 +336,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">धन्यवाद!</h3>
                 <p className="text-gray-600 max-w-md mx-auto">
-                  तपाईंले {news.length} समाचारहरू हेर्नुभयो। नयाँ समाचारहरूको लागि फेरि भेटौंला।
+                  तपाईंले {deduplicatedNews.length} समाचारहरू हेर्नुभयो। नयाँ समाचारहरूको लागि फेरि भेटौंला।
                 </p>
               </div>
             )}
@@ -303,8 +344,6 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
 
           {/* Right Column - Sidebar (25%) */}
           <div className="lg:w-1/4 space-y-8">
-            
-            {/* Popular News */}
             <div className="sticky top-24">
               <div className="overflow-hidden">
                 <div className={`px-5 py-1`}>
@@ -324,11 +363,11 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                         className="group block p-4 hover:bg-gray-50 transition-colors"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded bg-gray-100">
+                          <div className="flex-shrink-0 bg-gray-100">
                             <img
                               src={article.image}
                               alt={article.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              className="w-26 h-18 object-cover rounded"
                               loading="lazy"
                             />
                           </div>
@@ -349,52 +388,51 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
               </div>
 
               <div className={`${light} border ${border} rounded-xl p-5 overflow-hidden`}>
-  <div className="px-5 py-1">
-    <h4 className="text-lg font-bold flex items-center gap-2">
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-        <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
-      </svg>
-      हाल ट्रेन्डिङ
-    </h4>
-  </div>
-  <div className="divide-y divide-gray-100 mt-3">
-    {trendingNews.length > 0 ? (
-      trendingNews.map((article) => (
-        <Link
-          key={article._id}
-          href={`/news/${article._id}`}
-          className="group block p-4 hover:bg-white transition-colors rounded-lg"
-        >
-          <div className="flex items-start gap-3">
-            {article.image && (
-              <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-                <img
-                  src={article.image}
-                  alt={article.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
+                <div className="px-5 py-1">
+                  <h4 className="text-lg font-bold flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
+                    </svg>
+                    हाल ट्रेन्डिङ
+                  </h4>
+                </div>
+                <div className="divide-y divide-gray-100 mt-3">
+                  {trendingNews.length > 0 ? (
+                    trendingNews.map((article) => (
+                      <Link
+                        key={article._id}
+                        href={`/news/${article._id}`}
+                        className="group block p-2"
+                      >
+                        <div className="flex items-start gap-3">
+                          {article.image && (
+                            <div className="w-26 h-18 flex-shrink-0 overflow-hidden rounded bg-gray-100">
+                              <img
+                                src={article.image}
+                                alt={article.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                loading="lazy"
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h5 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-blue-600 transition-colors line-clamp-3">
+                              {article.title}
+                            </h5>
+                          </div>
+                          {article.isTrending && (
+                            <span className="text-xs ml-2 flex-shrink-0">🔥</span>
+                          )}
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-gray-500 text-sm">
+                      कुनै ट्रेन्डिङ समाचार छैन
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <h5 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-blue-600 transition-colors line-clamp-3">
-                {article.title}
-              </h5>
-            </div>
-            {article.isTrending && (
-              <span className="text-xs ml-2 flex-shrink-0">🔥</span>
-            )}
-          </div>
-        </Link>
-      ))
-    ) : (
-      <div className="p-4 text-center text-gray-500 text-sm">
-        कुनै ट्रेन्डिङ समाचार छैन
-      </div>
-    )}
-  </div>
-</div>
-
             </div>
           </div>
         </div>

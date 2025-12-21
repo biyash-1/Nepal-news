@@ -21,12 +21,13 @@ export default function EntertainmentPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
-        <div className="bg-gradient-to-r from-red-600 via-red-500 to-pink-600 text-white py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-5xl md:text-6xl font-bold mb-3">मनोरञ्जन</h1>
-            <p className="text-red-100 text-lg">ताजा मनोरञ्जन समाचार र अपडेट</p>
-          </div>
+        <div className="bg-red-600 py-12 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-3xl md:text-4xl font-semibold mb-3 text-white">
+            मनोरञ्जन
+          </h1>
         </div>
+      </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center py-20">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
@@ -40,12 +41,13 @@ export default function EntertainmentPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
-        <div className="bg-gradient-to-r from-red-600 via-red-500 to-pink-600 text-white py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-5xl md:text-6xl font-bold mb-3">मनोरञ्जन</h1>
-            <p className="text-red-100 text-lg">ताजा मनोरञ्जन समाचार र अपडेट</p>
-          </div>
+        <div className="bg-red-600 py-12 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-3xl md:text-4xl font-semibold mb-3 text-white">
+            मनोरञ्जन
+          </h1>
         </div>
+      </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center py-20">
             <p className="text-red-600 text-lg">{error}</p>
@@ -57,7 +59,7 @@ export default function EntertainmentPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
-    <div className="bg-red-400 py-12 relative">
+    <div className="bg-red-600 py-12 relative">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-3xl md:text-4xl font-semibold mb-3 text-white">
           मनोरञ्जन

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/lib/axios";
 
 export const useCategoryNews = (category: string) => {
@@ -12,6 +12,20 @@ export const useCategoryNews = (category: string) => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  
+  // Track loaded page numbers to prevent duplicate fetches
+  const loadedPagesRef = useRef<Set<number>>(new Set());
+  const isInitialLoadRef = useRef<boolean>(false);
+  const currentCategoryRef = useRef<string>(category);
+
+  // Reset refs when category changes
+  useEffect(() => {
+    if (currentCategoryRef.current !== category) {
+      console.log(`Category changed from ${currentCategoryRef.current} to ${category}, resetting refs`);
+      loadedPagesRef.current.clear();
+      currentCategoryRef.current = category;
+    }
+  }, [category]);
 
   // Step 1: Fetch featured + headlines (first 6 articles)
   const fetchFeaturedAndHeadlines = async () => {
@@ -26,7 +40,7 @@ export const useCategoryNews = (category: string) => {
 
       if (res.data.success) {
         setNews(res.data.articles);
-        return res.data.articles; // Return for exclusion in next steps
+        return res.data.articles;
       }
       return [];
     } catch (err: any) {
@@ -81,6 +95,15 @@ export const useCategoryNews = (category: string) => {
 
   // Step 3: Fetch grid news (remaining articles with all exclusions)
   const fetchGridNews = async (page: number, excludeIds: string) => {
+    // Prevent duplicate page fetches
+    if (loadedPagesRef.current.has(page)) {
+      console.log(`Page ${page} already loaded, skipping`);
+      return;
+    }
+
+    // Mark as loading BEFORE the request
+    loadedPagesRef.current.add(page);
+
     try {
       setLoading(true);
       setError(null);
@@ -95,19 +118,19 @@ export const useCategoryNews = (category: string) => {
       });
 
       if (res.data.success) {
-        if (page === 1) {
-          // First grid page - append to existing featured+headlines
-          setNews(prev => [...prev, ...res.data.articles]);
-        } else {
-          // Subsequent pages - append to existing news
-          setNews(prev => [...prev, ...res.data.articles]);
-        }
+        // Always append new articles (don't duplicate the first 6)
+        setNews(prev => [...prev, ...res.data.articles]);
 
         // Update pagination state from backend response
         setCurrentPage(res.data.currentPage || page);
         setTotalPages(res.data.totalPages || 1);
+      } else {
+        // If request failed, remove from loaded pages so it can retry
+        loadedPagesRef.current.delete(page);
       }
     } catch (err: any) {
+      // Remove from loaded pages on error so it can retry
+      loadedPagesRef.current.delete(page);
       setError(err.response?.data?.message || "समाचार लोड गर्न समस्या भयो");
       console.error(err);
     } finally {
@@ -118,22 +141,34 @@ export const useCategoryNews = (category: string) => {
   // Load More function for pagination
   const loadMore = () => {
     if (!loading && currentPage < totalPages) {
-      fetchGridNews(currentPage + 1, baseExcludeIds);
+      const nextPage = currentPage + 1;
+      // Only fetch if not already loaded
+      if (!loadedPagesRef.current.has(nextPage)) {
+        fetchGridNews(nextPage, baseExcludeIds);
+      }
     }
   };
 
   // Initial load sequence
   useEffect(() => {
     if (category) {
-      // Reset state when category changes
+      console.log(`Loading category: ${category}`);
+      
+      // Reset ALL state when category changes
       setNews([]);
       setPopularNews([]);
       setTrendingNews([]);
       setCurrentPage(1);
       setTotalPages(1);
-      setBaseExcludeIds(""); // ✅ important
+      setBaseExcludeIds("");
       setLoading(true);
       setError(null);
+      
+      // Reset loaded pages tracking
+      loadedPagesRef.current.clear();
+      isInitialLoadRef.current = true;
+      
+      console.log(`Loaded pages cleared, current set:`, loadedPagesRef.current);
 
       const loadData = async () => {
         try {
@@ -153,18 +188,19 @@ export const useCategoryNews = (category: string) => {
             fetchTrendingNews(excludeIdsStep2)
           ]);
           
-          // Step 3: Fetch grid news (exclude first 6 + popular + trending)
+          // Step 3: Freeze exclude list for entire grid pagination
           const frozenExcludeIds = [
-          ...firstSix.map((a: any) => a._id),
-          ...popular.map((a: any) => a._id),
-          ...trending.map((a: any) => a._id)
-        ].filter(Boolean).join(',');
+            ...firstSix.map((a: any) => a._id),
+            ...popular.map((a: any) => a._id),
+            ...trending.map((a: any) => a._id)
+          ].filter(Boolean).join(',');
 
-        // Freeze exclude for entire grid pagination
-        setBaseExcludeIds(frozenExcludeIds);
+          setBaseExcludeIds(frozenExcludeIds);
 
-        // Load first grid page
-        await fetchGridNews(1, frozenExcludeIds);
+          // Load first grid page
+          await fetchGridNews(1, frozenExcludeIds);
+          
+          isInitialLoadRef.current = false;
         } catch (err) {
           console.error("Error in loadData sequence:", err);
           setLoading(false);
