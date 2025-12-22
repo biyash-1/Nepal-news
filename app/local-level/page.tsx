@@ -16,12 +16,12 @@ export default function LocalLevelPage() {
     setDisplayCount(12);
   }, [articles.length]);
 
-  const mainFeatured = featuredArticles[1];
+  const mainFeatured = featuredArticles[0];
   const middleSectionNews = featuredArticles.slice(1, 7);
   const remainingArticles = articles.slice(7);
   const displayedArticles = remainingArticles.slice(0, displayCount);
   const hasMoreArticles = displayCount < remainingArticles.length;
-
+  console.log(middleSectionNews)
   const loadMoreArticles = useCallback(() => {
     if (isLoadingMore || !hasMoreArticles) return;
     
@@ -97,10 +97,7 @@ export default function LocalLevelPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
             स्थानीय तह
           </h1>
-          <p className="text-lg text-gray-600">
-            स्थानीय सरकार, विकास कार्य, समुदाय समाचार र स्थानीय स्तरका
-            जानकारीहरू
-          </p>
+          
         </div>
 
         {/* Main Featured News */}

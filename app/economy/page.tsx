@@ -97,9 +97,6 @@ export default function EconomyPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
             अर्थतन्त्र
           </h1>
-          <p className="text-lg text-gray-600">
-            बैंकिङ, बजार, रोजगारी, व्यापार र आर्थिक नीतिसम्बन्धी ताजा समाचारहरू
-          </p>
         </div>
 
       {/* Main Featured News */}
