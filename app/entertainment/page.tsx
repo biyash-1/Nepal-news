@@ -107,7 +107,7 @@ export default function EntertainmentPage() {
             मनोरञ्जन
           </h3>
           <Link
-            href="/category/music"
+            href="/ncategory/music"
             className="text-red-600 hover:text-red-700 font-medium"
           >
             सबै हेर्नुहोस् →
@@ -120,11 +120,11 @@ export default function EntertainmentPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <Link href={`/news/${headlineNews.main._id}`}>
-                  <div className="relative h-[500px] overflow-hidden rounded group cursor-pointer">
+                  <div className="relative h-[500px] overflow-hidden  group cursor-pointer">
                     <img
                       src={getImageUrl(headlineNews.main)}
                       alt={headlineNews.main.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover rounded"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-8">
@@ -140,13 +140,13 @@ export default function EntertainmentPage() {
                 {headlineNews.side.map((news: any) => (
                   <div
                     key={news._id}
-                    className="relative h-59 overflow-hidden rounded group cursor-pointer"
+                    className="relative h-59 overflow-hidden  group cursor-pointer"
                   >
                     <Link href={`/news/${news._id}`}>
                       <img
                         src={getImageUrl(news)}
                         alt={news.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover rounded"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
                       <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -176,7 +176,7 @@ export default function EntertainmentPage() {
                     <img
                       src={getImageUrl(trend)}
                       alt={trend.title}
-                      className="w-30 h-22 object-cover rounded flex-shrink-0 group-hover:scale-105 transition-transform duration-500"
+                      className="w-30 h-22 object-cover rounded flex-shrink-0 "
                     />
                     <span className="text-gray-800 font-semibold text-base flex-1 line-clamp-3 group-hover:text-red-600 transition-colors">
                       {trend.title}
@@ -199,7 +199,7 @@ export default function EntertainmentPage() {
                 <div className="flex items-center justify-between ">
                   <h3 className="text-3xl font-bold text-gray-900">💬 गपशप</h3>
                   <Link
-                    href="/category/gossip"
+                    href="/ncategory/gossip"
                     className="text-red-600 hover:text-red-700 font-medium"
                   >
                     सबै हेर्नुहोस् →
@@ -223,7 +223,7 @@ export default function EntertainmentPage() {
                         <img
                           src={getImageUrl(news)}
                           alt={news.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded"
+                          className="w-full h-full object-cover rounded"
                         />
                       </div>
 
@@ -254,7 +254,7 @@ export default function EntertainmentPage() {
                       <Link
                         href={`/news/${trend._id}`}
                         key={trend._id}
-                        className="flex items-center space-x-4 rounded cursor-pointer transition-all"
+                        className="flex items-center space-x-4 rounded cursor-pointer "
                       >
                         <img
                           src={getImageUrl(trend)}
@@ -290,7 +290,7 @@ export default function EntertainmentPage() {
                 🎬 बलिउड / हलिउड
               </h3>
               <Link
-                href="/category/bollywood"
+                href="/ncategory/bollywood"
                 className="text-red-600 hover:text-red-700 font-medium"
               >
                 सबै हेर्नुहोस् →
@@ -303,11 +303,11 @@ export default function EntertainmentPage() {
                 className="group cursor-pointer"
                 href={`/news/${bollywoodHollywoodNews[0]._id}`}
               >
-                <div className="relative h-full min-h-[500px] overflow-hidden rounded">
+                <div className="relative h-full min-h-[500px] overflow-hidden ">
                   <img
                     src={getImageUrl(bollywoodHollywoodNews[0])}
                     alt={bollywoodHollywoodNews[0].title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover rounded "
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -330,7 +330,7 @@ export default function EntertainmentPage() {
                       <img
                         src={getImageUrl(news)}
                         alt={news.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded"
+                        className="w-full h-full object-cover  rounded"
                       />
                     </div>
                     <h5 className="mt-2 font-semibold text-lg text-gray-900 group-hover:text-red-600 transition-colors line-clamp-2">
@@ -352,7 +352,7 @@ export default function EntertainmentPage() {
             <div className="flex items-center justify-between">
               <h3 className="text-3xl font-bold text-gray-900">🎵 संगीत</h3>
               <Link
-                href="/category/music"
+                href="/ncategory/music"
                 className="text-red-600 hover:text-red-700 font-medium"
               >
                 सबै हेर्नुहोस् →
@@ -370,10 +370,10 @@ export default function EntertainmentPage() {
                     <img
                       src={getImageUrl(news)}
                       alt={news.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded"
+                      className="w-full h-full object-cover  rounded"
                     />
                   </div>
-                  <h4 className="mt-3 font-semibold text-lg text-gray-900 group-hover:text-red-600 transition-colors">
+                  <h4 className="mt-3 font-semibold text-lg text-xl group-hover:text-red-600 transition-colors">
                     {news.title}
                   </h4>
                 </Link>
@@ -391,7 +391,7 @@ export default function EntertainmentPage() {
             <div className="flex items-center justify-between">
               <h3 className="text-3xl font-bold text-gray-900">⭐ विशेष</h3>
               <Link
-                href="/category/special"
+                href="/ncategory/special"
                 className="text-red-600 hover:text-red-700 font-medium"
               >
                 सबै हेर्नुहोस् →
