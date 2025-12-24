@@ -97,7 +97,7 @@ export default function SportsNews({ articles }: SportsNewsProps) {
                     <img
                       src={getImageUrl(articles[0])}
                       alt={articles[0].title}
-                      className="w-full h-83 object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-83 object-cover rounded "
                     />
                 
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">

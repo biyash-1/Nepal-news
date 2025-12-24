@@ -49,7 +49,7 @@ export default function EntertainmentNews({ articles }: EntertainmentNewsProps) 
               <img 
                 src={getImageUrl(mainArticle)} 
                 alt={mainArticle.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-cover "
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
               <div className="absolute bottom-0 left-0 right-0 p-8">
@@ -68,11 +68,11 @@ export default function EntertainmentNews({ articles }: EntertainmentNewsProps) 
                 <img 
                   src={getImageUrl(news)} 
                   alt={news.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover "
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="font-bold text-xl text-white drop-shadow-lg hover:text-red-300 transition-colors">
+                  <h3 className="font-semibold text-xl text-white drop-shadow-lg hover:text-red-300 transition-colors">
                     {news.title}
                   </h3>
                 </div>

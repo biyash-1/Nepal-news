@@ -18,7 +18,7 @@ interface EducationNewsProps {
 const getImageUrl = (article: Article) => {
   return (
     article.image ||
-    "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQs6cxoawnslMNC2DaEj4ukeP67sxHw5FOzlg&s"
   );
 };
 
@@ -44,91 +44,104 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
   }
 
   return (
-    <section className="py-12 ">
+    <section className="py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-            <div className="mb-10">
-       <div className="flex items-center justify-between">
-         <div className="flex items-center space-x-4">
-           <h2 className="text-3xl font-bold text-gray-900">शिक्षा समाचार</h2>
-         </div>
-         <Link href="/education" className="text-red-600 font-medium flex items-center hover:text-red-700 transition-colors">
-           सबै हेर्नुहोस्
-           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-           </svg>
-         </Link>
-       </div>
-       <div className="h-0.5 bg-red-600 mt-0.5"></div>
-     </div>
-       
-        
+        <div className="mb-10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <h2 className="text-3xl font-bold text-gray-900">शिक्षा समाचार</h2>
+            </div>
+            <Link href="/education" className="text-red-600 font-medium flex items-center hover:text-red-700 transition-colors">
+              सबै हेर्नुहोस्
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+          <div className="h-0.5 bg-red-600 mt-0.5"></div>
+        </div>
 
-    
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-      
-          <div className="space-y-6">
-            {articles.slice(0, 1).map((article, index) => (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+          {/* Left Column - Featured Article */}
+          <div className="lg:col-span-1">
+            {articles.slice(0, 1).map((article) => (
               <Link
                 href={`/news/${article._id}`}
                 key={article._id}
-                className="rounded shadow-lg overflow-hidden group cursor-pointer border  block"
+                className="rounded shadow-lg overflow-hidden group cursor-pointer border block"
               >
-                <div className="relative h-64 md:h-72">
+                <div className="relative">
                   <img
                     src={getImageUrl(article)}
                     alt={article.title}
-                    className="h-[200px] object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-[200px] object-cover rounded"
                   />
-                
                 </div>
                 <div className="p-5">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
                     {article.title}
                   </h3>
-                 
                 </div>
               </Link>
             ))}
           </div>
 
-      
-          <div className="space-y-4">
-            {articles.slice(2, 5).map((article, index) => (
-              <Link
-                href={`/news/${article._id}`}
-                key={article._id}
-                className=" rounded overflow-hidden group cursor-pointer hover:transition-all duration-300 block"
-              >
-                <div className="flex items-center p-4">
-                  {/* Small square photo */}
-                  <div className="w-20 h-20 flex-shrink-0 mr-4">
-                    <div className="relative w-full h-full rounded-lg overflow-hidden">
+          {/* Right Columns - Two columns of small news items */}
+          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* First Column - 3 items */}
+            <div className="space-y-4">
+              {articles.slice(1, 4).map((article) => (
+                <Link
+                  href={`/news/${article._id}`}
+                  key={article._id}
+                  className="rounded overflow-hidden group cursor-pointer block"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-20 h-20 flex-shrink-0">
                       <img
                         src={getImageUrl(article)}
                         alt={article.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="w-full h-full rounded object-cover"
                       />
-                   
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-3">
+                        {article.title}
+                      </h4>
                     </div>
                   </div>
-                  
-             
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-base font-semibold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors line-clamp-2">
-                      {article.title}
-                    </h4>
-                   
-                
+                </Link>
+              ))}
+            </div>
+
+            {/* Second Column - 3 items */}
+            <div className="space-y-4">
+              {articles.slice(4, 7).map((article) => (
+                <Link
+                  href={`/news/${article._id}`}
+                  key={article._id}
+                  className="rounded overflow-hidden group cursor-pointer block"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-20 h-20 flex-shrink-0">
+                      <img
+                        src={getImageUrl(article)}
+                        alt={article.title}
+                        className="w-full h-full rounded object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-3">
+                        {article.title}
+                      </h4>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
-
-        {/* Additional Education News Grid - Horizontal cards */}
-       
       </div>
     </section>
   );

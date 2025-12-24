@@ -31,7 +31,7 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
       <div className="container mx-auto px-4">
         {/* SECTION TITLE */}
         <div className="mb-8 border-b pb-3">
-          <h2 className="text-3xl font-bold text-gray-900">पोर्टफोलियो</h2>
+          <h2 className="text-3xl font-semibold text-gray-900">पोर्टफोलियो</h2>
         </div>
 
         {/* BIG FEATURE CARD */}
@@ -44,13 +44,13 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
             <img
               src={getImageUrl(featured)}
               alt={featured.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition"
+              className="w-full h-full rounded"
             />
           </div>
 
           {/* Content */}
           <div className="p-6 md:p-8 text-white flex flex-col justify-center">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4 group-hover:text-amber-300 transition">
+            <h3 className="text-2xl md:text-3xl font-semibold mb-4 group-hover:text-amber-300 transition">
               {featured.title}
             </h3>
             <p className="text-white/80 line-clamp-4">{featured.content}</p>
@@ -71,11 +71,11 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
                   <img
                     src={getImageUrl(article)}
                     alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition"
+                    className="w-full h-full object-cover rounded"
                   />
                 </div>
                 <div className="p-4">
-                  <h4 className="font-semibold text-gray-900 group-hover:text-amber-600 transition line-clamp-3">
+                  <h4 className="font-semibold  group-hover:text-amber-600 transition line-clamp-3">
                     {article.title}
                   </h4>
                 </div>
@@ -86,7 +86,7 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
           {/* VICHAR SECTION */}
           {/* VICHAR SECTION */}
           <div className="lg:col-span-4">
-            <h3 className="text-lg font-bold text-red-600 mb-4">विचार</h3>
+            <h3 className="text-lg font-semibold text-red-600 mb-4">विचार</h3>
 
             <div className="space-y-4">
               {vichar.map((article) => (
@@ -95,18 +95,18 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
                   href={`/news/${article._id}`}
                   className="flex gap-3 items-start hover:bg-gray-50 p-2 rounded-md transition"
                 >
-                  {/* Rounded Image */}
+            
                   <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded-full">
                     <img
                       src={getImageUrl(article)}
                       alt={article.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded"
                     />
                   </div>
 
                   {/* Text */}
                   <div className="flex flex-col">
-                    <h4 className="text-sm font-medium text-gray-900 line-clamp-3 hover:text-red-600 transition">
+                    <h4 className="text-lg font-semibold line-clamp-3 hover:text-red-600 transition">
                       {article.title}
                     </h4>
                     <span className="text-xs text-gray-500 mt-1">

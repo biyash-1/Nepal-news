@@ -92,10 +92,10 @@ const GlobalNews = ({ articles }: GlobalNewsProps) => {
           <img
             src={getImageUrl(article)}
             alt={article.title}
-            className="w-full h-full rounded object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full rounded object-cover "
           />
         </div>
-        <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-3">
+        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-3">
           {article.title}
         </h3>
       </Link>
@@ -122,7 +122,7 @@ const GlobalNews = ({ articles }: GlobalNewsProps) => {
       
       {/* Title only */}
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-3">
+        <h4 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-3">
           {article.title}
         </h4>
       </div>

@@ -51,13 +51,13 @@ export default function HealthNews({ articles }: HealthNewsProps) {
             <Link 
               href={`/news/${article._id}`}
               key={article._id}
-              className="flex flex-col rounded-lg overflow-hidden news-card cursor-pointer group"
+              className="flex flex-col rounded overflow-hidden news-card cursor-pointer group"
             >
               <div className="w-full h-48 overflow-hidden">
                 <img 
                   src={getImageUrl(article)} 
                   alt={article.title} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full 0"
                 />
               </div>
               <div className="p-4 flex-1">

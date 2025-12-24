@@ -70,12 +70,12 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
           {/* Main Politics News */}
           <div className="lg:col-span-2">
             <Link href={`/news/${articles[0]._id}`}>
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer">
+              <div className="bg-white shadow-lg overflow-hidden group cursor-pointer">
                 <div className="relative h-108">
                   <img 
                     src={getImageUrl(articles[0])} 
                     alt={articles[0].title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover rounded"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -98,7 +98,7 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
     >
       <div className="flex items-center">
         <div className="w-3/5 p-4">
-          <h4 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
+          <h4 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
             {article.title}
           </h4>
         </div>
@@ -106,7 +106,7 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
           <img 
             src={getImageUrl(article)} 
             alt={article.title}
-            className="w-5/5 h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-5/5 h-32 object-cover "
           />
         </div>
       </div>
@@ -129,7 +129,7 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
                   <img 
                     src={getImageUrl(article)} 
                     alt={article.title}
-                    className="w-full h-full rounded object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full rounded object-cover "
                   />
                 </div>
                 <div className="p-5">

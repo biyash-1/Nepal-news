@@ -43,7 +43,7 @@ export default function TechNews({ articles }: TechNewsProps) {
     <section className="py-12 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-semibold text-gray-900 mb-4">
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               प्रविधि समाचार
             </span>
@@ -63,11 +63,11 @@ export default function TechNews({ articles }: TechNewsProps) {
                   key={tech._id}
                   className="group cursor-pointer"
                 >
-                  <div className="relative h-48 rounded-lg overflow-hidden">
+                  <div className="relative h-48  overflow-hidden">
                     <img
                       src={getImageUrl(tech)}
                       alt={tech.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover rounded"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
@@ -84,25 +84,25 @@ export default function TechNews({ articles }: TechNewsProps) {
             {/* Featured Tech Story */}
             {articles[0] && (
               <Link href={`/news/${articles[0]._id}`}>
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer">
+                <div className="bg-white shadow-lg overflow-hidden group cursor-pointer">
                   <div className="grid grid-cols-1 lg:grid-cols-2">
                     <div className="relative h-20 lg:h-full">
                       <img
                         src="https://plus.unsplash.com/premium_photo-1681426687411-21986b0626a8?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                         alt={articles[0].title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover rounded"
                       />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
                       <div className="absolute bottom-6 left-6 text-white">
                       
-                        <h3 className="text-2xl font-bold mb-2 group-hover:text-blue-300 transition-colors">
+                        <h3 className="text-2xl font-semibold mb-2 group-hover:text-blue-300 transition-colors">
                           {articles[0].title}
                         </h3>
                        
                       </div>
                     </div>
                     <div className="p-8 ">
-                      <h4 className="text-xl font-bold text-gray-900 mb-4">
+                      <h4 className="text-xl font-semibold text-gray-900 mb-4">
                         प्रविधि क्षेत्रमा नेपाल
                       </h4>
                       <div className="space-y-4">
