@@ -409,7 +409,7 @@ export default function EntertainmentPage() {
                   <img
                     src={getImageUrl(featuredNews[0])}
                     alt={featuredNews[0].title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded"
+                    className="w-full h-full object-cover rounded"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -432,7 +432,7 @@ export default function EntertainmentPage() {
                       <img
                         src={getImageUrl(news)}
                         alt={news.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded"
+                        className="w-full h-full object-cover rounded"
                       />
                     </div>
                     <h5 className="mt-2 font-semibold text-lg text-gray-900 group-hover:text-red-600 transition-colors line-clamp-2">
