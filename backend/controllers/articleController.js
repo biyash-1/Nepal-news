@@ -396,15 +396,14 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
 exports.getArticlesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const { page = 1, limit = 10, exclude = "" } = req.query;
+    const { page = 1, limit = 100, exclude = "" } = req.query;  // Increased limit
 
     const excludedIds = exclude
       ? exclude.split(",").map(id => id.trim()).filter(Boolean)
       : [];
 
     const query = {
-      categories: category,
-      tags: { $ne: "लोकप्रिय" },
+      categories: category,  // This matches any array containing this category
       ...(excludedIds.length && { _id: { $nin: excludedIds } }),
     };
 
@@ -415,7 +414,7 @@ exports.getArticlesByCategory = async (req, res) => {
     const total = await Article.countDocuments(query);
 
     const articles = await Article.find(query)
-      .sort({ createdAt: -1, _id: 1 }) // deterministic sort
+      .sort({ createdAt: -1, _id: 1 })
       .limit(limitNum)
       .skip(skip)
       .lean();
@@ -435,7 +434,6 @@ exports.getArticlesByCategory = async (req, res) => {
     });
   }
 };
-
 
 // ============================
 // SEARCH ARTICLES

@@ -27,7 +27,7 @@ export interface LocalArticle {
 
 // --- Existing hook for multiple articles ---
 export const useLocalData = (location?: string) => {
-   console.log("useLocalData location param:", location);
+  console.log("useLocalData location param:", location);
   const [articles, setArticles] = useState<LocalArticle[]>([]);
   const [featuredArticles, setFeaturedArticles] = useState<LocalArticle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,39 +54,43 @@ export const useLocalData = (location?: string) => {
         params: { categories: JSON.stringify(categories), limit: 30 },
       });
       console.log(
-  "FINAL categories array:",
-  categories,
-  "JSON:",
-  JSON.stringify(categories)
-);
-
-
-      
+        "FINAL categories array:",
+        categories,
+        "JSON:",
+        JSON.stringify(categories)
+      );
 
       if (res.data.success) {
-        const processedArticles: LocalArticle[] = res.data.articles.map((article: any) => ({
-          _id: article._id,
-          title: article.title,
-          content: article.content,
-          excerpt: article.content.slice(0, 100) + "...",
-          image: article.image,
-          categories: article.categories,
-          author: { _id: article.author.userId, username: article.author.username },
-          createdAt: article.createdAt,
-          updatedAt: article.updatedAt,
-          views: article.views,
-          location: extractLocationFromCategories(article.categories),
-          ward: undefined,
-          featured: article.featured || false,
-          time: formatTime(article.createdAt),
-        }));
+        const processedArticles: LocalArticle[] = res.data.articles.map(
+          (article: any) => ({
+            _id: article._id,
+            title: article.title,
+            content: article.content,
+            excerpt: article.content.slice(0, 100) + "...",
+            image: article.image,
+            categories: article.categories,
+            author: {
+              _id: article.author.userId,
+              username: article.author.username,
+            },
+            createdAt: article.createdAt,
+            updatedAt: article.updatedAt,
+            views: article.views,
+            location: extractLocationFromCategories(article.categories),
+            ward: undefined,
+            featured: article.featured || false,
+            time: formatTime(article.createdAt),
+          })
+        );
 
         setArticles(processedArticles);
         setFeaturedArticles(processedArticles.slice(0, 6));
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.message || "स्थानीय समाचार लोड गर्न समस्या भयो");
+      setError(
+        err.response?.data?.message || "स्थानीय समाचार लोड गर्न समस्या भयो"
+      );
     } finally {
       setLoading(false);
     }
@@ -100,7 +104,6 @@ export const useLocalData = (location?: string) => {
 
   return { articles, featuredArticles, loading, error, refreshData };
 };
-
 
 export const useArticle = (id: string) => {
   const [article, setArticle] = useState<LocalArticle | null>(null);
@@ -150,14 +153,24 @@ export const useArticle = (id: string) => {
 
 // --- Helpers ---
 const extractLocationFromCategories = (categories: string[]): string => {
-  const locationCategories = ["काठमाडौं", "ललितपुर", "भक्तपुर", "पोखरा", "बिराटनगर"];
-  return categories.find((cat) => locationCategories.includes(cat)) || "स्थानीय तह";
+  const locationCategories = [
+    "काठमाडौं",
+    "ललितपुर",
+    "भक्तपुर",
+    "पोखरा",
+    "बिराटनगर",
+  ];
+  return (
+    categories.find((cat) => locationCategories.includes(cat)) || "स्थानीय तह"
+  );
 };
 
 const formatTime = (createdAt: string): string => {
   const date = new Date(createdAt);
   const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  const diffInHours = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+  );
   if (diffInHours < 1) return "अहिले";
   if (diffInHours < 24) return `${diffInHours} घन्टा अघि`;
   const diffInDays = Math.floor(diffInHours / 24);
