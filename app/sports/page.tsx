@@ -133,7 +133,7 @@ export default function SportsPage() {
 
         {/* Right Link */}
         <Link 
-          href="/category/खेलकुद?type=फुटबल" 
+          href="/sports/football" 
           className="flex items-center text-purple-600 hover:text-purple-700 font-semibold"
         >
           सबै फुटबल समाचार
@@ -223,7 +223,7 @@ export default function SportsPage() {
               </div>
               
               <Link 
-                href="/category/खेलकुद?type=क्रिकेट" 
+                href="sports/cricket" 
                 className="text-yellow-600 hover:text-yellow-700 font-semibold"
               >
                 सबै क्रिकेट समाचार →
@@ -296,7 +296,7 @@ export default function SportsPage() {
                   <h3 className="text-2xl font-bold text-gray-900">बास्केटबल</h3>
                 </div>
                 <Link 
-                  href="/category/खेलकुद?type=बास्केटबल" 
+                  href="/sports/basketball" 
                   className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                 >
                   सबै हेर्नुहोस्
@@ -366,7 +366,7 @@ export default function SportsPage() {
 
         {/* Right Link */}
         <Link
-          href="/category/खेलकुद?type=भलिबल"
+          href="/sports/volleyball"
           className="flex items-center text-red-600 hover:text-red-700 text-sm font-medium"
         >
           सबै हेर्नुहोस्
