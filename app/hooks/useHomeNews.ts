@@ -77,7 +77,7 @@ export const useHomeNews = () => {
         }
 
         const sportsRes = await axiosInstance.get("/articles/category/खेलकुद", {
-          params: { limit: 4 },
+          params: { limit: 5 },
         });
         if (sportsRes.data.success) {
           setSportsNews(sportsRes.data.articles);
@@ -116,7 +116,7 @@ export const useHomeNews = () => {
 
     
         const globalRes = await axiosInstance.get("/articles/category/विश्व", {
-          params: { limit: 6 },
+          params: { limit: 12 },
         });
         if (globalRes.data.success) {
           setGlobalNews(globalRes.data.articles);
@@ -124,7 +124,7 @@ export const useHomeNews = () => {
 
       
         const educationRes = await axiosInstance.get("/articles/category/शिक्षा", {
-          params: { limit: 6 },
+          params: { limit: 7 },
         });
         if (educationRes.data.success) {
           setEducationNews(educationRes.data.articles);

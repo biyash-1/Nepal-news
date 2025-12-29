@@ -43,28 +43,20 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
   return (
     <section className="py-12 bg-gradient-to-br from-gray-50 to-slate-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="p-3 bg-red-600 rounded-lg">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">राजनीति</h2>
-              <p className="text-red-600 font-medium">राजनीतिक समाचार र विश्लेषण</p>
+              <h2 className="text-2xl font-bold   border-l-4 border-red-600 pl-3 text-gray-900">राजनीति</h2>
             </div>
           </div>
-          <Link 
-            href="/category/राजनीति" 
-            className="hidden md:flex items-center space-x-2 bg-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          >
-            <span>सबै राजनीति समाचार</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <Link href="/health" className="text-red-600 font-medium flex items-center hover:text-red-700 transition-colors">
+            सबै हेर्नुहोस्
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           </Link>
         </div>
+        <div className="h-0.5 bg-red-600 mt-0.5 mb-8"></div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Politics News */}
@@ -79,7 +71,7 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h3 className="text-4xl font-bold text-white mb-2 group-hover:text-red-300 transition-colors">
+                    <h3 className="text-3xl font-bold text-white mb-2 group-hover:text-red-400 transition-colors">
                       {articles[0].title}
                     </h3>
                   </div>
@@ -94,7 +86,7 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
     <Link 
       href={`/news/${article._id}`}
       key={article._id}
-      className="bg-white rounded shadow-md overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer block"
+      className="bg-white rounded overflow-hidden group cursor-pointer block"
     >
       <div className="flex items-center">
         <div className="w-3/5 p-4">
@@ -106,7 +98,7 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
           <img 
             src={getImageUrl(article)} 
             alt={article.title}
-            className="w-5/5 h-32 object-cover "
+            className="w-5/5 h-32 object-cover rounded"
           />
         </div>
       </div>

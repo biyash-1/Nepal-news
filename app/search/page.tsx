@@ -51,13 +51,14 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen w-[75%] mx-auto bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         {/* Search Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            खोज नतिजा: "{query}"
+          <h1 className="border-l-4 border-blue-600 pl-4 text-2xl font-bold text-gray-800">
+            {query}
           </h1>
+          <div className="h-0.5 bg-blue-600 mt-2 mb-8"></div>
           <p className="text-gray-600">
             {loading ? "खोजिँदै..." : `${results.length} वटा समाचार फेला पर्यो`}
           </p>
@@ -104,7 +105,7 @@ export default function SearchPage() {
               <Link
                 key={result._id}
                 href={`/news/${result._id}`}
-                className="rounded-lg  overflow-hidden  transition-shadow duration-300"
+                className="  overflow-hidden  transition-shadow duration-300"
               >
                 
                   <div className="relative h-48">
@@ -112,7 +113,7 @@ export default function SearchPage() {
                       <img
                         src={result.image}
                         alt={result.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded"
                       />
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center">

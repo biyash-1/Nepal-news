@@ -23,22 +23,7 @@ const getImageUrl = (article: Article) => {
   );
 };
 
-// Function to calculate relative time
-const getTimeAgo = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays > 0) {
-    return `${diffDays} दिन अघि`;
-  } else if (diffHours > 0) {
-    return `${diffHours} घण्टा अघि`;
-  } else {
-    return "अहिले";
-  }
-};
 
 const GlobalNews = ({ articles }: GlobalNewsProps) => {
   if (articles.length === 0) {
@@ -105,18 +90,18 @@ const GlobalNews = ({ articles }: GlobalNewsProps) => {
 
       {/* Right Column - Secondary Featured Articles */}
 <div className="lg:col-span-4 space-y-2">
-  {articles.slice(1, 9).map((article) => (
+  {articles.slice(6, 12).map((article) => (
     <Link
       href={`/news/${article._id}`}
       key={article._id}
-      className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors duration-200 group cursor-pointer"
+      className="flex items-start gap-3 p-2 hover:bg-gray-50  transition-colors duration-200 group cursor-pointer"
     >
       {/* Small square image */}
-      <div className="relative flex-shrink-0 w-16 h-16">
+      <div className="relative flex-shrink-0 w-22 h-18">
         <img
           src={getImageUrl(article)}
           alt={article.title}
-          className="w-full h-full object-cover rounded-md group-hover:opacity-90 transition-opacity duration-200"
+          className="w-full h-full object-cover rounded group-hover:opacity-90 transition-opacity duration-200"
         />
       </div>
       

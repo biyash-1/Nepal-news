@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/lib/axios";
 
 export interface Author {
@@ -25,13 +25,27 @@ export interface LocalArticle {
   time?: string;
 }
 
-// --- Existing hook for multiple articles ---
-export const useLocalData = (location?: string) => {
-  console.log("useLocalData location param:", location);
-  const [articles, setArticles] = useState<LocalArticle[]>([]);
-  const [featuredArticles, setFeaturedArticles] = useState<LocalArticle[]>([]);
+export const useLocalNews = (location?: string) => {
+  console.log("useLocalNews location param:", location);
+  const [mainHeadline, setMainHeadline] = useState<LocalArticle | null>(null);
+  const [freshNews, setFreshNews] = useState<LocalArticle[]>([]);
+  const [moreNews, setMoreNews] = useState<LocalArticle[]>([]);
+  const [allArticles, setAllArticles] = useState<LocalArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Track loaded articles to prevent duplicates
+  const loadedArticleIdsRef = useRef<Set<string>>(new Set());
+  const currentLocationRef = useRef<string | undefined>(location);
+
+  // Reset refs when location changes
+  useEffect(() => {
+    if (currentLocationRef.current !== location) {
+      console.log(`Location changed from ${currentLocationRef.current} to ${location}, resetting refs`);
+      loadedArticleIdsRef.current.clear();
+      currentLocationRef.current = location;
+    }
+  }, [location]);
 
   const fetchLocalNews = async (specificLocation?: string) => {
     try {
@@ -51,7 +65,7 @@ export const useLocalData = (location?: string) => {
       }
 
       const res = await axiosInstance.get("/articles/categories/multiple", {
-        params: { categories: JSON.stringify(categories), limit: 30 },
+        params: { categories: JSON.stringify(categories), limit: 50 },
       });
       console.log(
         "FINAL categories array:",
@@ -61,8 +75,8 @@ export const useLocalData = (location?: string) => {
       );
 
       if (res.data.success) {
-        const processedArticles: LocalArticle[] = res.data.articles.map(
-          (article: any) => ({
+        const processedArticles: LocalArticle[] = res.data.articles
+          .map((article: any) => ({
             _id: article._id,
             title: article.title,
             content: article.content,
@@ -80,11 +94,28 @@ export const useLocalData = (location?: string) => {
             ward: undefined,
             featured: article.featured || false,
             time: formatTime(article.createdAt),
-          })
+          }))
+          // Filter out duplicates using Set
+          .filter((article: LocalArticle) => {
+            if (loadedArticleIdsRef.current.has(article._id)) {
+              return false;
+            }
+            loadedArticleIdsRef.current.add(article._id);
+            return true;
+          });
+
+        // Sort by createdAt to ensure latest first
+        processedArticles.sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
 
-        setArticles(processedArticles);
-        setFeaturedArticles(processedArticles.slice(0, 6));
+        // Store all articles
+        setAllArticles(processedArticles);
+
+        // Slice articles in the hook itself
+        setMainHeadline(processedArticles[0] || null);
+        setFreshNews(processedArticles.slice(1, 8)); // 7 articles for ताजा स्थानीय समाचार
+        setMoreNews(processedArticles.slice(8)); // Rest for थप स्थानीय समाचार
       }
     } catch (err: any) {
       console.error(err);
@@ -100,9 +131,13 @@ export const useLocalData = (location?: string) => {
     fetchLocalNews(location);
   }, [location]);
 
-  const refreshData = () => fetchLocalNews(location);
+  const refreshData = () => {
+    // Clear loaded IDs before refresh
+    loadedArticleIdsRef.current.clear();
+    fetchLocalNews(location);
+  };
 
-  return { articles, featuredArticles, loading, error, refreshData };
+  return { mainHeadline, freshNews, moreNews, loading, error, refreshData };
 };
 
 export const useArticle = (id: string) => {

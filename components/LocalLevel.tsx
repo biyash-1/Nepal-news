@@ -28,7 +28,7 @@ const LocalLevelNews = ({ articles }: LocalLevelNewsProps) => {
         <div className="mb-8">
           <div className="flex items-end justify-between">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-1">स्थानीय तह समाचार</h2>
+              <h2 className="text-2xl font-bold text-gray-900  border-l-4 border-red-600 pl-3">स्थानीय तह </h2>
             </div>
             <Link
               href={`/local-level`}
@@ -37,13 +37,13 @@ const LocalLevelNews = ({ articles }: LocalLevelNewsProps) => {
               सबै हेर्नुहोस् <span>&gt;</span>
             </Link>
           </div>
-          <div className="h-0.5 bg-red-600 mt-2"></div>
+          <div className="h-0.5 bg-red-600 mt-0.5"></div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* COLUMN 1 – Main Featured (Wider) */}
           <Link href={`/news/${articles[0]._id}`} className="group lg:col-span-5">
-            <div className="relative h-[540px] rounded overflow-hidden">
+            <div className="relative h-125 rounded overflow-hidden">
               <img
                 src={getImageUrl(articles[0])}
                 alt={articles[0].title}
@@ -86,13 +86,13 @@ const LocalLevelNews = ({ articles }: LocalLevelNewsProps) => {
 
           {/* COLUMN 3 – List items with wider images */}
           <div className="space-y-4 lg:col-span-4">
-            {articles.slice(3, 9).map((article) => (
+            {articles.slice(3, 8).map((article) => (
               <Link
                 key={article._id}
                 href={`/news/${article._id}`}
                 className="flex gap-4 group"
               >
-                <div className="w-32 h-20 shrink-0">
+                <div className="w-32 h-22 shrink-0">
                   <img
                     src={getImageUrl(article)}
                     alt={article.title}

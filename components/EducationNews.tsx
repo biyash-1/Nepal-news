@@ -22,21 +22,7 @@ const getImageUrl = (article: Article) => {
   );
 };
 
-const getTimeAgo = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays > 0) {
-    return `${diffDays} दिन अघि`;
-  } else if (diffHours > 0) {
-    return `${diffHours} घण्टा अघि`;
-  } else {
-    return "अहिले";
-  }
-};
 
 const EducationNews = ({ articles }: EducationNewsProps) => {
   if (articles.length === 0) {
@@ -50,7 +36,7 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
         <div className="mb-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h2 className="text-3xl font-bold text-gray-900">शिक्षा समाचार</h2>
+              <h2 className="text-2xl font-bold border-l-4 border-red-600 pl-3 text-gray-900">शिक्षा</h2>
             </div>
             <Link href="/education" className="text-red-600 font-medium flex items-center hover:text-red-700 transition-colors">
               सबै हेर्नुहोस्
@@ -69,7 +55,7 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
               <Link
                 href={`/news/${article._id}`}
                 key={article._id}
-                className="rounded shadow-lg overflow-hidden group cursor-pointer border block"
+                className="rounded overflow-hidden group cursor-pointer border block"
               >
                 <div className="relative">
                   <img
@@ -98,7 +84,7 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
                   className="rounded overflow-hidden group cursor-pointer block"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-20 h-20 flex-shrink-0">
+                    <div className="w-23 h-20 flex-shrink-0">
                       <img
                         src={getImageUrl(article)}
                         alt={article.title}
@@ -106,7 +92,7 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-3">
+                      <h4 className="text-base font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-3">
                         {article.title}
                       </h4>
                     </div>
@@ -124,7 +110,7 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
                   className="rounded overflow-hidden group cursor-pointer block"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-20 h-20 flex-shrink-0">
+                    <div className="w-23 h-20 flex-shrink-0">
                       <img
                         src={getImageUrl(article)}
                         alt={article.title}
@@ -132,7 +118,7 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-3">
+                      <h4 className="text-base font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-3">
                         {article.title}
                       </h4>
                     </div>

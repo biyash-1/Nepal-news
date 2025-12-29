@@ -34,7 +34,7 @@ export default function HealthNews({ articles }: HealthNewsProps) {
     <section className="mb-10 py-6">
       <div className="mb-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold border-l-4 border-red-600 pl-3">स्वास्थ्य समाचार</h2>
+          <h2 className="text-2xl font-bold border-l-4 border-red-600 pl-3">स्वास्थ्य</h2>
           <Link href="/health" className="text-red-600 font-medium flex items-center hover:text-red-700 transition-colors">
             सबै हेर्नुहोस्
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,7 +42,7 @@ export default function HealthNews({ articles }: HealthNewsProps) {
             </svg>
           </Link>
         </div>
-        <div className="h-0.5 bg-red-600 mt-2"></div>
+        <div className="h-0.5 bg-red-600 mt-0.5"></div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -51,13 +51,13 @@ export default function HealthNews({ articles }: HealthNewsProps) {
             <Link 
               href={`/news/${article._id}`}
               key={article._id}
-              className="flex flex-col rounded overflow-hidden news-card cursor-pointer group"
+              className="flex flex-col  overflow-hidden news-card cursor-pointer group"
             >
               <div className="w-full h-48 overflow-hidden">
                 <img 
                   src={getImageUrl(article)} 
                   alt={article.title} 
-                  className="w-full h-full 0"
+                  className="w-full h-full 0 rounded"
                 />
               </div>
               <div className="p-4 flex-1">

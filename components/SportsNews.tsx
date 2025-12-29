@@ -21,22 +21,7 @@ const getImageUrl = (article: Article) => {
   );
 };
 
-const getTimeAgo = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays > 0) {
-    return `${diffDays} दिन अघि`;
-  } else if (diffHours > 0) {
-    return `${diffHours} घण्टा अघि`;
-  } else {
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    return `${diffMins} मिनेट अघि`;
-  }
-};
 
 export default function SportsNews({ articles }: SportsNewsProps) {
   return (
@@ -61,14 +46,11 @@ export default function SportsNews({ articles }: SportsNewsProps) {
             </div>
             <div>
               <h2 className="text-3xl font-bold text-gray-900">खेलकुद</h2>
-              <p className="text-blue-600 font-medium">
-                ताजा खेल समाचार र अपडेट
-              </p>
             </div>
           </div>
           <Link
-            href="/category/खेलकुद"
-            className="hidden md:flex items-center space-x-2 bg-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            href="/sports"
+            className="hidden md:flex items-center space-x-2 bg-white px-4 py-2 rounded-lg"
           >
             <span>सबै खेल समाचार</span>
             <svg
@@ -88,55 +70,56 @@ export default function SportsNews({ articles }: SportsNewsProps) {
         </div>
 
         {articles && articles.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {/* Main Sports News */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-3">
               <Link href={`/news/${articles[0]._id}`}>
-                <div className="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer h-full">
+                <div className="group cursor-pointer h-full rounded">
                   <div className="relative">
                     <img
                       src={getImageUrl(articles[0])}
                       alt={articles[0].title}
-                      className="w-full h-83 object-cover rounded "
+                      className="w-full h-96 object-cover rounded"
                     />
-
+                
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
-                      <h3 className="text-white text-2xl font-bold mb-2 group-hover:text-red-300 transition-colors">
+                      <h3 className="text-white text-2xl font-bold mb-2 group-hover:text-red-500 transition-colors">
                         {articles[0].title}
                       </h3>
                     </div>
                   </div>
+                 
                 </div>
               </Link>
             </div>
 
-            {/* Side Sports News */}
-            <div className="space-y-4">
-              {articles.slice(1, 5).map((article) => (
-                <Link
-                  href={`/news/${article._id}`}
-                  key={article._id}
-                  className="flex items-center gap-4 group"
-                >
-                  {/* Image */}
-                  <div className="w-1/3">
-                    <img
-                      src={getImageUrl(article)}
-                      alt={article.title}
-                      className="w-full h-20 object-cover"
-                    />
-                  </div>
+        {/* Side Sports News */}
+<div className="space-y-4 lg:col-span-2">
+  {articles.slice(1, 5).map((article) => (
+    <Link
+      href={`/news/${article._id}`}
+      key={article._id}
+      className="flex items-center gap-4 group"
+    >
+      {/* Image */}
+      <div className="w-30">
+        <img
+          src={getImageUrl(article)}
+          alt={article.title}
+          className="w-full h-21 object-cover rounded"
+        />
+      </div>
 
-                  {/* Title */}
-                  <div className="w-2/3 flex items-center">
-                    <h4 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors line-clamp-2">
-                      {article.title}
-                    </h4>
-                  </div>
-                </Link>
-              ))}
-              p
-            </div>
+      {/* Title */}
+      <div className="w-2/3 flex items-center">
+        <h4 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors line-clamp-2">
+          {article.title}
+        </h4>
+      </div>
+    </Link>
+  ))}
+</div>
+
           </div>
         ) : (
           <div className="bg-white rounded-2xl p-12 text-center">

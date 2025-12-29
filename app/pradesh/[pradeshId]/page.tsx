@@ -116,7 +116,7 @@ export default function PradeshNewsPage() {
           <div className="mb-12">
             {/* Section Header with Red Line */}
             <div className="flex items-center mb-6">
-              <h2 className="text-3xl font-bold text-red-600 whitespace-nowrap">
+              <h2 className="text-2xl font-bold text-red-600 whitespace-nowrap">
                 मुख्य समाचार
               </h2>
               <div className="flex-grow h-0.5 bg-red-600 ml-4"></div>
@@ -170,7 +170,7 @@ export default function PradeshNewsPage() {
                           className="w-full h-40 object-cover "
                         />
                       </div>
-                      <h4 className="font-semibold text-gray-900 text-sm leading-tight group-hover:text-red-600 transition-colors">
+                      <h4 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-red-600 transition-colors">
                         {item.title}
                       </h4>
                     </div>
@@ -205,7 +205,7 @@ export default function PradeshNewsPage() {
                   className="w-20 h-20 object-cover rounded shrink-0"
                 />
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-lg leading-tight group-hover:text-red-600 transition-colors">
+                  <h4 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-red-600 transition-colors">
                     {item.title}
                   </h4>
                 </div>
@@ -227,14 +227,14 @@ export default function PradeshNewsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {displayRegularNews.map((item: any) => (
                 <Link key={item._id} href={`/news/${item._id}`}>
-                  <div className="rounded-lg overflow-hidden transition-shadow group cursor-pointer">
+                  <div className=" overflow-hidden transition-shadow group cursor-pointer">
                     <img
                       src={getImageUrl(item)}
                       alt={item.title}
-                      className="w-full h-48 object-cover "
+                      className="w-full h-48 object-cover rounded "
                     />
                     <div className="p-4">
-                      <h4 className="font-semibold text-lg   text-gray-900 mb-2 leading-tight group-hover:text-red-600 transition-colors">
+                      <h4 className="font-semibold text-lg  text-gray-900 mb-2 leading-tight group-hover:text-red-600 transition-colors">
                         {item.title}
                       </h4>
                     </div>

@@ -30,14 +30,14 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* SECTION TITLE */}
-        <div className="mb-8 border-b pb-3">
-          <h2 className="text-3xl font-semibold text-gray-900">पोर्टफोलियो</h2>
+        <div className="">
+          <h2 className="text-2xl font-bold border-l-4 border-red-600 pl-3 text-gray-900">पोर्टफोलियो</h2>
         </div>
-
+        <div className="h-0.5 bg-red-600 mt-0.5 mb-8"></div>
         {/* BIG FEATURE CARD */}
         <Link
           href={`/news/${featured._id}`}
-          className="grid md:grid-cols-2 bg-slate-800 rounded overflow-hidden shadow-lg mb-10 group"
+          className="grid md:grid-cols-2 bg-slate-800 rounded overflow-hidden mb-10 group"
         >
           {/* Image */}
           <div className="h-64 md:h-auto overflow-hidden">
@@ -75,7 +75,7 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
                   />
                 </div>
                 <div className="p-4">
-                  <h4 className="font-semibold  group-hover:text-amber-600 transition line-clamp-3">
+                  <h4 className="font-semibold  group-hover:text-amber-400 transition line-clamp-3">
                     {article.title}
                   </h4>
                 </div>
@@ -86,8 +86,6 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
           {/* VICHAR SECTION */}
           {/* VICHAR SECTION */}
           <div className="lg:col-span-4">
-            <h3 className="text-lg font-semibold text-red-600 mb-4">विचार</h3>
-
             <div className="space-y-4">
               {vichar.map((article) => (
                 <Link
@@ -96,7 +94,7 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
                   className="flex gap-3 items-start hover:bg-gray-50 p-2 rounded-md transition"
                 >
             
-                  <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded-full">
+                  <div className="w-23 h-20 flex-shrink-0 overflow-hidden">
                     <img
                       src={getImageUrl(article)}
                       alt={article.title}
@@ -106,12 +104,9 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
 
                   {/* Text */}
                   <div className="flex flex-col">
-                    <h4 className="text-lg font-semibold line-clamp-3 hover:text-red-600 transition">
+                    <h4 className="text-lg font-semibold line-clamp-3 hover:text-amber-400 transition">
                       {article.title}
                     </h4>
-                    <span className="text-xs text-gray-500 mt-1">
-                      {formatTimeAgo(article.createdAt)}
-                    </span>
                   </div>
                 </Link>
               ))}

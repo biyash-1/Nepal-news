@@ -39,7 +39,7 @@ export default function EntertainmentNews({ articles }: EntertainmentNewsProps) 
             </svg>
           </Link>
         </div>
-        <div className="h-0.5 bg-red-600 mt-2"></div>
+        <div className="h-0.5 bg-red-600 mt-0.5"></div>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
