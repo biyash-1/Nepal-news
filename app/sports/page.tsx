@@ -192,11 +192,11 @@ export default function SportsPage() {
                       className="group cursor-pointer hover:bg-gray-50 transition-colors p-3 rounded-lg block"
                     >
                       <div className="mb-3">
-                        <div className="w-full h-48 overflow-hidden rounded">
+                        <div className="w-full h-48 overflow-hidden ">
                           <img
                             src={getImageUrl(news)}
                             alt={news.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover rounded"
                           />
                         </div>
                       </div>
