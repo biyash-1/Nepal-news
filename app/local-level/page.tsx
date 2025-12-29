@@ -9,8 +9,8 @@ export default function LocalLevelPage() {
     useLocalNews();
   const [displayCount, setDisplayCount] = useState(12);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const observerRef = useRef(null);
-  const loadMoreRef = useRef(null);
+const observerRef = useRef<IntersectionObserver | null>(null);
+const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setDisplayCount(12);

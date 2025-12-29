@@ -21,8 +21,6 @@ const getImageUrl = (article: Article) => {
   );
 };
 
-
-
 export default function SportsNews({ articles }: SportsNewsProps) {
   return (
     <section className="py-12 bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -81,45 +79,43 @@ export default function SportsNews({ articles }: SportsNewsProps) {
                       alt={articles[0].title}
                       className="w-full h-96 object-cover rounded"
                     />
-                
+
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
                       <h3 className="text-white text-2xl font-bold mb-2 group-hover:text-red-500 transition-colors">
                         {articles[0].title}
                       </h3>
                     </div>
                   </div>
-                 
                 </div>
               </Link>
             </div>
 
-        {/* Side Sports News */}
-<div className="space-y-4 lg:col-span-2">
-  {articles.slice(1, 5).map((article) => (
-    <Link
-      href={`/news/${article._id}`}
-      key={article._id}
-      className="flex items-center gap-4 group"
-    >
-      {/* Image */}
-      <div className="w-30">
-        <img
-          src={getImageUrl(article)}
-          alt={article.title}
-          className="w-full h-21 object-cover rounded"
-        />
-      </div>
+            {/* Side Sports News */}
+            <div className="space-y-4 lg:col-span-2">
+              {articles.slice(1, 5).map((article) => (
+                <Link
+                  href={`/news/${article._id}`}
+                  key={article._id}
+                  className="flex items-center gap-4 group"
+                >
+                  {/* Image */}
+                  <div className="w-30">
+                    <img
+                      src={getImageUrl(article)}
+                      alt={article.title}
+                      className="w-full h-21 object-cover rounded"
+                    />
+                  </div>
 
-      {/* Title */}
-      <div className="w-2/3 flex items-center">
-        <h4 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors line-clamp-2">
-          {article.title}
-        </h4>
-      </div>
-    </Link>
-  ))}
-</div>
-
+                  {/* Title */}
+                  <div className="w-2/3 flex items-center">
+                    <h4 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors line-clamp-2">
+                      {article.title}
+                    </h4>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="bg-white rounded-2xl p-12 text-center">

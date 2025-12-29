@@ -82,55 +82,28 @@ export default function TechNews({ articles }: TechNewsProps) {
             </div>
 
             {/* Featured Tech Story */}
-            {articles[0] && (
-              <Link href={`/news/${articles[0]._id}`}>
-                <div className="bg-white shadow-lg overflow-hidden group cursor-pointer">
-                  <div className="grid grid-cols-1 lg:grid-cols-2">
-                    <div className="relative h-20 lg:h-full">
-                      <img
-                        src="https://plus.unsplash.com/premium_photo-1681426687411-21986b0626a8?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        alt={articles[0].title}
-                        className="w-full h-full object-cover rounded"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
-                      <div className="absolute bottom-6 left-6 text-white">
-                      
-                        <h3 className="text-2xl font-semibold mb-2 group-hover:text-blue-300 transition-colors">
-                          {articles[0].title}
-                        </h3>
-                       
-                      </div>
-                    </div>
-                    <div className="p-8 ">
-                      <h4 className="text-xl font-semibold text-gray-900 mb-4">
-                        प्रविधि क्षेत्रमा नेपाल
-                      </h4>
-                      <div className="space-y-4">
-                        {[
-                          "डिजिटल नेपालको नयाँ पहल",
-                          "युवा उद्यमीहरूले लगानी आकर्षण गर्दै",
-                          "सरकारले प्रविधि क्षेत्रमा विशेष बजेट",
-                          "अन्तर्राष्ट्रिय कम्पनीहरूको नेपालमा लगानी",
-                           "सरकारले प्रविधि क्षेत्रमा विशेष बजेट",
-                                  "युवा उद्यमीहरूले लगानी आकर्षण गर्दै",
-                        ].map((item, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center space-x-3"
-                          >
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span className="text-gray-700">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <button className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                        पूरै रिपोर्ट पढ्नुहोस्
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            )}
+      <Link
+          href={`/news/${articles[0]._id}`}
+          className="grid md:grid-cols-2 bg-slate-800 rounded overflow-hidden mb-10 group"
+        >
+          {/* Image */}
+          <div className="h-64 md:h-auto overflow-hidden">
+            <img
+              src={getImageUrl(articles[0])}
+              alt={articles[0].title}
+              className="w-full h-full rounded"
+            />
+          </div>
+
+          {/* Content */}
+          <div className="p-6 md:p-8 text-white flex flex-col justify-center">
+            <h3 className="text-2xl md:text-3xl font-semibold mb-4 group-hover:text-amber-300 transition">
+              {articles[0].title}
+            </h3>
+            <p className="text-white/80 line-clamp-4">{articles[0].content}</p>
+          </div>
+        </Link>
+
           </>
         ) : (
           <div className="bg-white rounded-2xl p-12 text-center">
