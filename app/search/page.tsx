@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import axiosInstance from "@/lib/axios";
 
 interface SearchResult {
@@ -17,7 +16,8 @@ interface SearchResult {
   slug: string;
 }
 
-export default function SearchPage() {
+// Separate component that uses useSearchParams
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
 
@@ -105,26 +105,24 @@ export default function SearchPage() {
               <Link
                 key={result._id}
                 href={`/news/${result._id}`}
-                className="  overflow-hidden  transition-shadow duration-300"
+                className="overflow-hidden transition-shadow duration-300"
               >
-                
-                  <div className="relative h-48">
-                    {result.image ? (
-                      <img
-                        src={result.image}
-                        alt={result.title}
-                        className="w-full h-full object-cover rounded"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-400 text-lg">📷</span>
-                      </div>
-                    )}
-                  </div>
-                
+                <div className="relative h-48">
+                  {result.image ? (
+                    <img
+                      src={result.image}
+                      alt={result.title}
+                      className="w-full h-full object-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-400 text-lg">📷</span>
+                    </div>
+                  )}
+                </div>
 
                 <div className="p-4">
-                  <h3 className="font-bold text-lg text-gray-800 ">
+                  <h3 className="font-bold text-lg text-gray-800">
                     {result.title}
                   </h3>
                 </div>
@@ -147,5 +145,27 @@ export default function SearchPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Loading fallback component
+function SearchLoading() {
+  return (
+    <div className="min-h-screen w-[75%] mx-auto bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchLoading />}>
+      <SearchContent />
+    </Suspense>
   );
 }

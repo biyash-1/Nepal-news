@@ -16,9 +16,9 @@ interface Article {
 
 
 // Helper function to remove duplicates by title
-const removeDuplicatesByTitle = (articles) => {
-  const seen = new Set();
-  const uniqueArticles = [];
+const removeDuplicatesByTitle = (articles: Article[]): Article[] => {
+  const seen = new Set<string>();
+  const uniqueArticles: Article[] = [];
   
   for (const article of articles) {
     if (!seen.has(article.title)) {
