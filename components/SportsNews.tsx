@@ -72,7 +72,7 @@ export default function SportsNews({ articles }: SportsNewsProps) {
             {/* Main Sports News */}
             <div className="lg:col-span-3">
               <Link href={`/news/${articles[0]._id}`}>
-                <div className="group cursor-pointer h-full rounded">
+                <div className="group cursor-pointer h-full">
                   <div className="relative">
                     <img
                       src={getImageUrl(articles[0])}
