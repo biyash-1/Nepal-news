@@ -1,0 +1,434 @@
+CREATE DATABASE IF NOT EXISTS lalitpurexpress_news CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE lalitpurexpress_news;
+
+-- =====================================================
+-- TABLE: users
+-- =====================================================
+CREATE TABLE users (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    username VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NULL,  -- NULL for OAuth users
+    google_id VARCHAR(255) NULL UNIQUE,
+    provider ENUM('local', 'google') DEFAULT 'local' NOT NULL,
+    role ENUM('reader', 'editor', 'admin') DEFAULT 'reader' NOT NULL,
+    avatar TEXT NULL,
+    newsletter BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_email (email),
+    INDEX idx_google_id (google_id),
+    INDEX idx_role (role),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- TABLE: articles
+-- =====================================================
+CREATE TABLE articles (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    title VARCHAR(500) NOT NULL,
+    content LONGTEXT NOT NULL,
+    image TEXT NULL,
+    author_user_id CHAR(36) NOT NULL,
+    author_username VARCHAR(255) NOT NULL,
+    author_avatar TEXT NULL,
+    
+    -- View tracking
+    views BIGINT UNSIGNED DEFAULT 0 NOT NULL,
+    views_last_24h INT UNSIGNED DEFAULT 0 NOT NULL,
+    views_last_7d INT UNSIGNED DEFAULT 0 NOT NULL,
+    
+    -- Precomputed scores
+    trending_score INT DEFAULT 0 NOT NULL,
+    popular_score INT DEFAULT 0 NOT NULL,
+    
+    -- Engagement
+    likes INT UNSIGNED DEFAULT 0 NOT NULL,
+    
+    -- Metadata
+    last_score_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Indexes for performance
+    INDEX idx_author (author_user_id),
+    INDEX idx_created_at (created_at),
+    INDEX idx_views_24h (views_last_24h),
+    INDEX idx_views_7d (views_last_7d),
+    INDEX idx_trending (trending_score, created_at),
+    INDEX idx_popular (popular_score, created_at),
+    INDEX idx_views (views),
+    INDEX idx_last_score_update (last_score_update),
+    
+    FULLTEXT INDEX ft_title_content (title, content),
+    
+    FOREIGN KEY (author_user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- TABLE: article_categories (Many-to-Many)
+-- =====================================================
+CREATE TABLE article_categories (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    article_id CHAR(36) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY unique_article_category (article_id, category),
+    INDEX idx_category (category),
+    INDEX idx_article_id (article_id),
+    
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- TABLE: article_tags (Many-to-Many)
+-- =====================================================
+CREATE TABLE article_tags (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    article_id CHAR(36) NOT NULL,
+    tag VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY unique_article_tag (article_id, tag),
+    INDEX idx_tag (tag),
+    INDEX idx_article_id (article_id),
+    
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- TABLE: user_preferences (One-to-One)
+-- =====================================================
+CREATE TABLE user_preferences (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id CHAR(36) NOT NULL UNIQUE,
+    category VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_user_id (user_id),
+    INDEX idx_category (category),
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- TABLE: saved_articles (Many-to-Many)
+-- =====================================================
+CREATE TABLE saved_articles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id CHAR(36) NOT NULL,
+    article_id CHAR(36) NOT NULL,
+    saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY unique_user_article (user_id, article_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_article_id (article_id),
+    INDEX idx_saved_at (saved_at),
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- TABLE: comments
+-- =====================================================
+CREATE TABLE comments (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    article_id CHAR(36) NOT NULL,
+    user_id CHAR(36) NOT NULL,
+    content TEXT NOT NULL,
+    is_edited BOOLEAN DEFAULT FALSE,
+    edited_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_article_created (article_id, created_at DESC),
+    INDEX idx_user_id (user_id),
+    INDEX idx_created_at (created_at),
+    
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    
+    CONSTRAINT chk_content_length CHECK (CHAR_LENGTH(content) <= 1000)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- TABLE: comment_likes (Many-to-Many)
+-- =====================================================
+CREATE TABLE comment_likes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    comment_id CHAR(36) NOT NULL,
+    user_id CHAR(36) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY unique_comment_like (comment_id, user_id),
+    INDEX idx_comment_id (comment_id),
+    INDEX idx_user_id (user_id),
+    
+    FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- TABLE: comment_dislikes (Many-to-Many)
+-- =====================================================
+CREATE TABLE comment_dislikes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    comment_id CHAR(36) NOT NULL,
+    user_id CHAR(36) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY unique_comment_dislike (comment_id, user_id),
+    INDEX idx_comment_id (comment_id),
+    INDEX idx_user_id (user_id),
+    
+    FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- TABLE: view_logs
+-- View tracking with automatic cleanup
+-- =====================================================
+CREATE TABLE view_logs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    article_id CHAR(36) NOT NULL,
+    identifier VARCHAR(64) NOT NULL,  -- SHA256 hash
+    viewed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NULL DEFAULT NULL,
+    
+    INDEX idx_article_identifier (article_id, identifier, viewed_at DESC),
+    INDEX idx_article_viewed (article_id, viewed_at DESC),
+    INDEX idx_expires_at (expires_at),
+    INDEX idx_viewed_at (viewed_at),
+    
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- STORED PROCEDURES FOR TRENDING & POPULAR SCORES
+-- =====================================================
+
+DROP PROCEDURE IF EXISTS bulk_update_trending_scores;
+DROP PROCEDURE IF EXISTS bulk_update_popular_scores;
+DROP PROCEDURE IF EXISTS cleanup_expired_views;
+
+DELIMITER //
+
+CREATE PROCEDURE bulk_update_trending_scores()
+BEGIN
+    DECLARE v_min_score INT DEFAULT 10;
+    DECLARE v_max_score INT DEFAULT 1000;
+    DECLARE v_recency_hours INT DEFAULT 48;
+    DECLARE v_velocity_weight DECIMAL(5,2) DEFAULT 1.5;
+
+    CREATE TEMPORARY TABLE IF NOT EXISTS temp_trending_metrics (
+        article_id CHAR(36) PRIMARY KEY,
+        views_24h INT DEFAULT 0,
+        created_at TIMESTAMP,
+        total_views BIGINT DEFAULT 0,
+        age_hours DECIMAL(10,2),
+        velocity_score DECIMAL(10,2) DEFAULT 0,
+        recency_bonus DECIMAL(10,2) DEFAULT 0,
+        engagement_bonus DECIMAL(10,2) DEFAULT 0,
+        raw_score DECIMAL(10,2) DEFAULT 0,
+        INDEX idx_raw_score (raw_score)
+    ) ENGINE=MEMORY;
+
+    INSERT INTO temp_trending_metrics (article_id, views_24h, created_at, total_views, age_hours)
+    SELECT 
+        a.id,
+        COALESCE(v.view_count, 0) as views_24h,
+        a.created_at,
+        a.views as total_views,
+        TIMESTAMPDIFF(MINUTE, a.created_at, NOW()) / 60.0 as age_hours
+    FROM articles a
+    LEFT JOIN (
+        SELECT article_id, COUNT(*) as view_count
+        FROM view_logs
+        WHERE viewed_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+        GROUP BY article_id
+    ) v ON a.id = v.article_id;
+
+    UPDATE temp_trending_metrics
+    SET velocity_score = CASE
+        WHEN age_hours > 0 AND age_hours <= 24 THEN
+            (views_24h / age_hours) * v_velocity_weight
+        WHEN age_hours > 24 THEN
+            (views_24h / 24.0) * v_velocity_weight
+        ELSE 0
+    END;
+
+    UPDATE temp_trending_metrics
+    SET recency_bonus = CASE
+        WHEN age_hours < v_recency_hours THEN
+            ((v_recency_hours - age_hours) / v_recency_hours) * 100
+        ELSE 0
+    END;
+
+    UPDATE temp_trending_metrics
+    SET engagement_bonus = LEAST(total_views * 0.05, 50);
+
+    UPDATE temp_trending_metrics
+    SET raw_score = (views_24h * 10) + velocity_score + recency_bonus + engagement_bonus;
+
+    UPDATE articles a
+    INNER JOIN temp_trending_metrics tm ON a.id = tm.article_id
+    INNER JOIN (
+        SELECT MAX(raw_score) as max_raw_score
+        FROM temp_trending_metrics
+        WHERE raw_score > 0
+    ) max_vals ON 1=1
+    SET 
+        a.views_last_24h = tm.views_24h,
+        a.trending_score = CASE
+            WHEN tm.views_24h = 0 THEN 0
+            WHEN max_vals.max_raw_score = 0 THEN v_min_score
+            ELSE GREATEST(
+                v_min_score,
+                LEAST(
+                    v_max_score,
+                    ROUND((tm.raw_score / max_vals.max_raw_score) * v_max_score)
+                )
+            )
+        END,
+        a.last_score_update = NOW();
+
+    DROP TEMPORARY TABLE IF EXISTS temp_trending_metrics;
+
+    SELECT 
+        COUNT(*) as total_articles_updated,
+        SUM(CASE WHEN views_last_24h > 0 THEN 1 ELSE 0 END) as articles_with_views,
+        MAX(trending_score) as max_trending_score,
+        AVG(CASE WHEN trending_score > 0 THEN trending_score ELSE NULL END) as avg_trending_score,
+        MIN(CASE WHEN trending_score > 0 THEN trending_score ELSE NULL END) as min_trending_score,
+        NOW() as updated_at
+    FROM articles;
+END //
+
+CREATE PROCEDURE bulk_update_popular_scores()
+BEGIN
+    DECLARE v_min_score INT DEFAULT 10;
+    DECLARE v_max_score INT DEFAULT 1000;
+    DECLARE v_recency_days INT DEFAULT 14;
+    DECLARE v_consistency_weight DECIMAL(5,2) DEFAULT 1.2;
+    DECLARE v_like_weight INT DEFAULT 5;
+
+    CREATE TEMPORARY TABLE IF NOT EXISTS temp_popular_metrics (
+        article_id CHAR(36) PRIMARY KEY,
+        views_7d INT DEFAULT 0,
+        created_at TIMESTAMP,
+        likes INT DEFAULT 0,
+        age_days DECIMAL(10,2),
+        consistency_score DECIMAL(10,2) DEFAULT 0,
+        recency_factor DECIMAL(10,2) DEFAULT 0,
+        engagement_score DECIMAL(10,2) DEFAULT 0,
+        raw_score DECIMAL(10,2) DEFAULT 0,
+        INDEX idx_raw_score (raw_score)
+    ) ENGINE=MEMORY;
+
+    INSERT INTO temp_popular_metrics (article_id, views_7d, created_at, likes, age_days)
+    SELECT 
+        a.id,
+        COALESCE(v.view_count, 0) as views_7d,
+        a.created_at,
+        a.likes,
+        TIMESTAMPDIFF(HOUR, a.created_at, NOW()) / 24.0 as age_days
+    FROM articles a
+    LEFT JOIN (
+        SELECT article_id, COUNT(*) as view_count
+        FROM view_logs
+        WHERE viewed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        GROUP BY article_id
+    ) v ON a.id = v.article_id;
+
+    UPDATE temp_popular_metrics
+    SET consistency_score = CASE
+        WHEN age_days >= 7 THEN
+            (views_7d / 7.0) * v_consistency_weight
+        WHEN age_days > 0 AND age_days < 7 THEN
+            (views_7d / age_days) * v_consistency_weight
+        ELSE 0
+    END;
+
+    UPDATE temp_popular_metrics
+    SET recency_factor = CASE
+        WHEN age_days < v_recency_days THEN
+            ((v_recency_days - age_days) / v_recency_days) * 100
+        ELSE 0
+    END;
+
+    UPDATE temp_popular_metrics
+    SET engagement_score = likes * v_like_weight;
+
+    UPDATE temp_popular_metrics
+    SET raw_score = (views_7d * 10) + consistency_score + recency_factor + engagement_score;
+
+    UPDATE articles a
+    INNER JOIN temp_popular_metrics pm ON a.id = pm.article_id
+    INNER JOIN (
+        SELECT MAX(raw_score) as max_raw_score
+        FROM temp_popular_metrics
+        WHERE raw_score > 0
+    ) max_vals ON 1=1
+    SET 
+        a.views_last_7d = pm.views_7d,
+        a.popular_score = CASE
+            WHEN pm.views_7d = 0 THEN 0
+            WHEN max_vals.max_raw_score = 0 THEN v_min_score
+            ELSE GREATEST(
+                v_min_score,
+                LEAST(
+                    v_max_score,
+                    ROUND((pm.raw_score / max_vals.max_raw_score) * v_max_score)
+                )
+            )
+        END,
+        a.last_score_update = NOW();
+
+    DROP TEMPORARY TABLE IF EXISTS temp_popular_metrics;
+
+    SELECT 
+        COUNT(*) as total_articles_updated,
+        SUM(CASE WHEN views_last_7d > 0 THEN 1 ELSE 0 END) as articles_with_views,
+        MAX(popular_score) as max_popular_score,
+        AVG(CASE WHEN popular_score > 0 THEN popular_score ELSE NULL END) as avg_popular_score,
+        MIN(CASE WHEN popular_score > 0 THEN popular_score ELSE NULL END) as min_popular_score,
+        NOW() as updated_at
+    FROM articles;
+END //
+
+CREATE PROCEDURE cleanup_expired_views()
+BEGIN
+    DELETE FROM view_logs
+    WHERE expires_at < NOW()
+    LIMIT 10000;
+
+    SELECT ROW_COUNT() as deleted_count;
+END //
+
+DELIMITER ;
+-- =====================================================
+-- VIEWS FOR COMMON QUERIES
+-- =====================================================
+
+-- Articles with category and tag counts
+CREATE VIEW v_articles_with_counts AS
+SELECT 
+    a.*,
+    (SELECT COUNT(*) FROM article_categories WHERE article_id = a.id) as category_count,
+    (SELECT COUNT(*) FROM article_tags WHERE article_id = a.id) as tag_count,
+    (SELECT COUNT(*) FROM comments WHERE article_id = a.id) as comment_count
+FROM articles a;
+
+-- Comments with like/dislike counts
+CREATE VIEW v_comments_with_counts AS
+SELECT 
+    c.*,
+    (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as like_count,
+    (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id) as dislike_count
+FROM comments c;
+

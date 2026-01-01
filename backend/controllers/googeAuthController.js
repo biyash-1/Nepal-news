@@ -1,6 +1,7 @@
 const { OAuth2Client } = require("google-auth-library");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const jwt = require('jsonwebtoken');
+const { User } = require('../models');
+const { pool } = require('../config/db');
 
 const client = new OAuth2Client({
   clientId: process.env.GOOGLE_CLIENT_ID,
@@ -8,7 +9,7 @@ const client = new OAuth2Client({
   redirectUri: process.env.GOOGLE_REDIRECT_URI,
 });
 
-
+// Redirect to Google OAuth
 exports.googleAuth = (req, res) => {
   const redirectUrl = client.generateAuthUrl({
     access_type: "offline",
@@ -19,7 +20,7 @@ exports.googleAuth = (req, res) => {
   res.redirect(redirectUrl);
 };
 
-//  Handle callback from Google
+// Handle callback from Google
 exports.googleCallback = async (req, res) => {
   try {
     const { code } = req.query;
@@ -35,21 +36,48 @@ exports.googleCallback = async (req, res) => {
 
     const { email, name, picture, id: googleId } = userInfoResponse.data;
 
-
-    let user = await User.findOne({ email });
+    // Check if user exists
+    let user = await User.findByEmail(email);
+    
     if (!user) {
-      user = new User({
+      // Create new user
+      const userId = await User.create({
         username: name,
         email,
-        avatar: picture,
         googleId,
+        provider: 'google',
+        password: null
       });
-      await user.save();
+
+      // Update avatar if provided
+      if (picture) {
+        await pool.execute('UPDATE users SET avatar = ? WHERE id = ?', [picture, userId]);
+      }
+      
+      user = await User.findById(userId);
+    } else if (!user.google_id) {
+      // Link existing account with Google
+      const updates = ['google_id = ?'];
+      const params = [googleId];
+      
+      if (picture) {
+        updates.push('avatar = ?');
+        params.push(picture);
+      }
+      
+      params.push(user.id);
+      await pool.execute(
+        `UPDATE users SET ${updates.join(', ')} WHERE id = ?`, 
+        params
+      );
+      
+      // Refresh user data
+      user = await User.findById(user.id);
     }
 
-
+    // Generate JWT
     const token = jwt.sign(
-      { userId: user._id, role: user.role },
+      { userId: user.id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );

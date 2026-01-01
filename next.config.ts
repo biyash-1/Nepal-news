@@ -1,13 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
+
   images: {
-    domains: ['images.unsplash.com'],
-    // Disable image optimization for cPanel shared hosting
-    unoptimized: process.env.NODE_ENV === 'production',
+    domains: ["images.unsplash.com"],
+    unoptimized: true, // REQUIRED for static export
   },
-  // Important for custom server
-  compress: true,
+
+  trailingSlash: true, // IMPORTANT for Apache routing
+
   poweredByHeader: false,
 };
 

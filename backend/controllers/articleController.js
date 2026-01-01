@@ -1,14 +1,7 @@
-// controllers/articleController.js
-const Article = require('../models/Article');
-const ViewLog = require('../models/ViewLog');
-const crypto = require('crypto');
+const { Article, createIdentifier } = require('../models');
+const { pool } = require('../config/db');
 
-// Helper function to create unique identifier from IP + User Agent
-const createIdentifier = (ip, userAgent) => {
-  const data = `${ip}-${userAgent}`;
-  return crypto.createHash('sha256').update(data).digest('hex');
-};
-
+// Helper to parse categories from query
 const parseCategories = (catParam) => {
   if (!catParam) return undefined;
 
@@ -24,27 +17,58 @@ const parseCategories = (catParam) => {
   }
 };
 
+// Helper function to fetch categories and tags for articles
+async function fetchArticleRelations(articleIds) {
+  if (!articleIds.length) return { categories: {}, tags: {} };
+  
+  // Fetch all categories
+  const [categoryRows] = await pool.execute(
+    'SELECT article_id, category FROM article_categories WHERE article_id IN (?)',
+    [articleIds]
+  );
+  
+  // Fetch all tags
+  const [tagRows] = await pool.execute(
+    'SELECT article_id, tag FROM article_tags WHERE article_id IN (?)',
+    [articleIds]
+  );
+  
+  // Group by article_id
+  const categories = {};
+  const tags = {};
+  
+  categoryRows.forEach(row => {
+    if (!categories[row.article_id]) categories[row.article_id] = [];
+    categories[row.article_id].push(row.category);
+  });
+  
+  tagRows.forEach(row => {
+    if (!tags[row.article_id]) tags[row.article_id] = [];
+    tags[row.article_id].push(row.tag);
+  });
+  
+  return { categories, tags };
+}
 
+// ============================
+// GET ALL ARTICLES (with pagination)
+// ============================
 exports.getAllArticles = async (req, res) => {
   try {
     const { page = 1, limit = 10, category } = req.query;
 
-    const query = category ? { categories: category } : {};
-
-    const articles = await Article.find(query)
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
-      .skip((page - 1) * parseInt(limit))
-      .lean();
-
-    const total = await Article.countDocuments(query);
+    const result = await Article.findAll({
+      page: parseInt(page),
+      limit: parseInt(limit),
+      category
+    });
 
     res.json({
       success: true,
-      articles,
-      totalPages: Math.ceil(total / limit),
-      currentPage: Number(page),
-      total,
+      articles: result.articles,
+      totalPages: result.totalPages,
+      currentPage: result.currentPage,
+      total: result.total,
     });
   } catch (err) {
     res.status(500).json({
@@ -55,10 +79,12 @@ exports.getAllArticles = async (req, res) => {
   }
 };
 
-
+// ============================
+// GET ARTICLE BY ID
+// ============================
 exports.getArticleById = async (req, res) => {
   try {
-    const article = await Article.findById(req.params.id).lean();
+    const article = await Article.findById(req.params.id);
 
     if (!article) {
       return res.status(404).json({
@@ -91,28 +117,10 @@ exports.incrementView = async (req, res) => {
     // Create unique identifier
     const identifier = createIdentifier(clientIp, userAgent);
     
-    // Check if this identifier has viewed this article in last 24 hours
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const existingView = await ViewLog.findOne({
-      article: id,
-      identifier: identifier,
-      viewedAt: { $gte: twentyFourHoursAgo }
-    });
+    // Increment view (checks for duplicates internally)
+    const result = await Article.incrementView(id, identifier);
     
-    if (existingView) {
-      // Already viewed recently - don't count again
-      const article = await Article.findById(id).lean();
-      return res.json({ 
-        success: true, 
-        views: article.views || 0,
-        viewsLast24h: article.viewsLast24h || 0,
-        trendingScore: article.trendingScore || 0,
-        alreadyCounted: true,
-        message: 'View already counted in last 24 hours'
-      });
-    }
-    
-    // Find article
+    // Get updated article data
     const article = await Article.findById(id);
     
     if (!article) {
@@ -122,24 +130,13 @@ exports.incrementView = async (req, res) => {
       });
     }
 
-    // Log the view with 7-day expiration
-    await ViewLog.create({
-      article: id,
-      identifier: identifier,
-      viewedAt: new Date(),
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    });
-
-    // Increment view count (includes rolling window updates)
-    await article.incrementView();
-
     res.json({ 
       success: true, 
-      views: article.views,
-      viewsLast24h: article.viewsLast24h,
-      trendingScore: article.trendingScore,
-      alreadyCounted: false,
-      message: 'View counted successfully'
+      views: article.views || 0,
+      viewsLast24h: article.views_last_24h || 0,
+      trendingScore: article.trending_score || 0,
+      alreadyCounted: result.alreadyCounted,
+      message: result.alreadyCounted ? 'View already counted in last 24 hours' : 'View counted successfully'
     });
   } catch (err) {
     console.error('View increment error:', err);
@@ -152,32 +149,44 @@ exports.incrementView = async (req, res) => {
 };
 
 // ============================
-// GET /news/headlines
-// Latest 3 articles
+// GET HEADLINES (Latest articles)
 // ============================
 exports.getHeadlines = async (req, res) => {
   try {
     const { limit = 3, categories, category } = req.query;
-
     const catParam = categories || category;
+    const categoryArray = parseCategories(catParam);
 
-    let query = {};
-    if (catParam) {
-      let categoryArray;
-      try {
-        categoryArray = JSON.parse(catParam);
-        if (!Array.isArray(categoryArray)) categoryArray = [categoryArray];
-      } catch {
-        categoryArray = [catParam];
-      }
+    let sql = 'SELECT a.* FROM articles a';
+    const params = [];
 
-      query.categories = { $in: categoryArray };
+    if (categoryArray) {
+      sql += ` WHERE EXISTS (
+        SELECT 1 FROM article_categories 
+        WHERE article_id = a.id AND category IN (?)
+      )`;
+      params.push(categoryArray);
     }
 
-    const articles = await Article.find(query)
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
-      .lean();
+    sql += ` ORDER BY created_at DESC LIMIT ?`;
+    params.push(parseInt(limit));
+
+    const [articles] = await pool.execute(sql, params);
+    
+    // Fetch categories and tags separately
+    const articleIds = articles.map(a => a.id);
+    const { categories: cats, tags: tgs } = await fetchArticleRelations(articleIds);
+    
+    // Transform results
+    articles.forEach(article => {
+      article.categories = cats[article.id] || [];
+      article.tags = tgs[article.id] || [];
+      article.author = {
+        userId: article.author_user_id,
+        username: article.author_username,
+        avatar: article.author_avatar
+      };
+    });
 
     res.json({ success: true, articles });
   } catch (err) {
@@ -190,7 +199,7 @@ exports.getHeadlines = async (req, res) => {
 };
 
 // ============================
-// GET /news/other - NOW WITH PAGINATION
+// GET OTHER NEWS (with pagination)
 // ============================
 exports.getOtherNews = async (req, res) => {
   try {
@@ -202,22 +211,50 @@ exports.getOtherNews = async (req, res) => {
 
     const categoryArray = parseCategories(categories || category);
 
-    const query = {
-      ...(excludedIds.length && { _id: { $nin: excludedIds } }),
-      ...(categoryArray && { categories: { $in: categoryArray } }),
-    };
+    let sql = 'SELECT a.* FROM articles a WHERE 1=1';
+    const params = [];
 
+    if (excludedIds.length > 0) {
+      sql += ` AND a.id NOT IN (?)`;
+      params.push(excludedIds);
+    }
+
+    if (categoryArray) {
+      sql += ` AND EXISTS (
+        SELECT 1 FROM article_categories 
+        WHERE article_id = a.id AND category IN (?)
+      )`;
+      params.push(categoryArray);
+    }
+
+    // Get total count first
+    const countSql = sql.replace('SELECT a.*', 'SELECT COUNT(*) as total');
+    const [countRows] = await pool.execute(countSql, params);
+    const total = countRows[0].total;
+
+    // Add pagination
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
-    const skip = (pageNum - 1) * limitNum;
+    const offset = (pageNum - 1) * limitNum;
 
-    const total = await Article.countDocuments(query);
+    sql += ` ORDER BY created_at DESC, id ASC LIMIT ? OFFSET ?`;
+    params.push(limitNum, offset);
 
-    const articles = await Article.find(query)
-      .sort({ createdAt: -1, _id: 1 }) // deterministic sort
-      .limit(limitNum)
-      .skip(skip)
-      .lean();
+    const [articles] = await pool.execute(sql, params);
+    
+    // Fetch categories separately
+    const articleIds = articles.map(a => a.id);
+    const { categories: cats } = await fetchArticleRelations(articleIds);
+    
+    // Transform results
+    articles.forEach(article => {
+      article.categories = cats[article.id] || [];
+      article.author = {
+        userId: article.author_user_id,
+        username: article.author_username,
+        avatar: article.author_avatar
+      };
+    });
 
     res.json({ 
       success: true, 
@@ -235,9 +272,8 @@ exports.getOtherNews = async (req, res) => {
   }
 };
 
-
 // ============================
-// GET /news/trending
+// GET TRENDING NEWS
 // ============================
 exports.getTrendingNews = async (req, res) => {
   try {
@@ -248,19 +284,22 @@ exports.getTrendingNews = async (req, res) => {
       ? exclude.split(",").map(id => id.trim()).filter(Boolean)
       : [];
 
-    const query = {
-      ...(categoryArray && { categories: { $in: categoryArray } }),
-      ...(excludedIds.length && { _id: { $nin: excludedIds } })
-    };
+    const articles = await Article.getTrending({
+      limit: parseInt(limit),
+      categories: categoryArray,
+      exclude: excludedIds
+    });
 
-    const articles = await Article.find(query)
-      .sort({ trendingScore: -1, createdAt: -1 })
-      .limit(parseInt(limit))
-      .lean();
+    // Transform results
+    articles.forEach(article => {
+      article.author = {
+        userId: article.author_user_id,
+        username: article.author_username,
+        avatar: article.author_avatar
+      };
+    });
 
-    const filtered = articles.filter(a => a.trendingScore > 0);
-
-    res.json({ success: true, articles: filtered, total: filtered.length });
+    res.json({ success: true, articles, total: articles.length });
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -271,7 +310,7 @@ exports.getTrendingNews = async (req, res) => {
 };
 
 // ============================
-// GET /news/popular
+// GET POPULAR NEWS
 // ============================
 exports.getPopularNews = async (req, res) => {
   try {
@@ -282,19 +321,22 @@ exports.getPopularNews = async (req, res) => {
       ? exclude.split(",").map(id => id.trim()).filter(Boolean)
       : [];
 
-    const query = {
-      ...(categoryArray && { categories: { $in: categoryArray } }),
-      ...(excludedIds.length && { _id: { $nin: excludedIds } })
-    };
+    const articles = await Article.getPopular({
+      limit: parseInt(limit),
+      categories: categoryArray,
+      exclude: excludedIds
+    });
 
-    const articles = await Article.find(query)
-      .sort({ popularScore: -1, createdAt: -1 })
-      .limit(parseInt(limit))
-      .lean();
+    // Transform results
+    articles.forEach(article => {
+      article.author = {
+        userId: article.author_user_id,
+        username: article.author_username,
+        avatar: article.author_avatar
+      };
+    });
 
-    const filtered = articles.filter(a => a.popularScore > 0);
-
-    res.json({ success: true, articles: filtered, total: filtered.length });
+    res.json({ success: true, articles, total: articles.length });
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -304,9 +346,8 @@ exports.getPopularNews = async (req, res) => {
   }
 };
 
-
 // ============================
-// ADMIN: Manually trigger score recalculation
+// RECALCULATE SCORES (Admin)
 // ============================
 exports.recalculateScores = async (req, res) => {
   try {
@@ -315,13 +356,13 @@ exports.recalculateScores = async (req, res) => {
     const results = {};
     
     if (timeWindow === '24h' || timeWindow === 'both') {
-      const result24h = await Article.bulkUpdateScores('24h');
-      results.trending = result24h;
+      const [result24h] = await pool.execute('CALL bulk_update_trending_scores()');
+      results.trending = result24h[0];
     }
     
     if (timeWindow === '7d' || timeWindow === 'both') {
-      const result7d = await Article.bulkUpdateScores('7d');
-      results.popular = result7d;
+      const [result7d] = await pool.execute('CALL bulk_update_popular_scores()');
+      results.popular = result7d[0];
     }
     
     res.json({
@@ -363,24 +404,43 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
       });
     }
 
-    const isBollywoodRequest = 
-      categoryArray.length === 2 && 
-      categoryArray.includes("बलिउड") && 
-      categoryArray.includes("हलिउड");
+    // Build SQL with placeholders
+    const placeholders = categoryArray.map(() => '?').join(',');
+    const sql = `
+      SELECT a.* 
+      FROM articles a 
+      WHERE EXISTS (
+        SELECT 1 
+        FROM article_categories ac 
+        WHERE ac.article_id = a.id 
+        AND ac.category IN (${placeholders})
+      )
+      ORDER BY created_at DESC 
+      LIMIT ?
+    `;
 
-    let query;
-    if (isBollywoodRequest) {
-      query = { categories: { $in: categoryArray } };
-    } else {
-      query = { categories: { $all: categoryArray } };
-    }
+    // Params: spread categories + limit
+    const params = [...categoryArray, parseInt(limit)];
 
-    const articles = await Article.find(query)
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
-      .lean();
+    const [articles] = await pool.execute(sql, params);
+
+    // Fetch categories and tags separately
+    const articleIds = articles.map(a => a.id);
+    const { categories: cats, tags: tgs } = await fetchArticleRelations(articleIds);
+
+    // Transform results
+    articles.forEach(article => {
+      article.categories = cats[article.id] || [];
+      article.tags = tgs[article.id] || [];
+      article.author = {
+        userId: article.author_user_id,
+        username: article.author_username,
+        avatar: article.author_avatar
+      };
+    });
 
     res.json({ success: true, articles });
+
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -390,34 +450,60 @@ exports.getArticlesByMultipleCategories = async (req, res) => {
   }
 };
 
+
 // ============================
 // GET ARTICLES BY CATEGORY
 // ============================
 exports.getArticlesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const { page = 1, limit = 100, exclude = "" } = req.query;  // Increased limit
+    const { page = 1, limit = 100, exclude = "" } = req.query;
 
     const excludedIds = exclude
       ? exclude.split(",").map(id => id.trim()).filter(Boolean)
       : [];
 
-    const query = {
-      categories: category,  // This matches any array containing this category
-      ...(excludedIds.length && { _id: { $nin: excludedIds } }),
-    };
+    let sql = `
+      SELECT a.* FROM articles a
+      WHERE EXISTS (
+        SELECT 1 FROM article_categories 
+        WHERE article_id = a.id AND category = ?
+      )
+    `;
+    const params = [category];
 
+    if (excludedIds.length > 0) {
+      sql += ` AND a.id NOT IN (?)`;
+      params.push(excludedIds);
+    }
+
+    // Get total count
+    const countSql = sql.replace('SELECT a.*', 'SELECT COUNT(*) as total');
+    const [countRows] = await pool.execute(countSql, params);
+    const total = countRows[0].total;
+
+    // Add pagination
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
-    const skip = (pageNum - 1) * limitNum;
+    const offset = (pageNum - 1) * limitNum;
 
-    const total = await Article.countDocuments(query);
+    sql += ` ORDER BY created_at DESC, id ASC LIMIT ? OFFSET ?`;
+    params.push(limitNum, offset);
 
-    const articles = await Article.find(query)
-      .sort({ createdAt: -1, _id: 1 })
-      .limit(limitNum)
-      .skip(skip)
-      .lean();
+    const [articles] = await pool.execute(sql, params);
+    
+    // Fetch categories separately
+    const articleIds = articles.map(a => a.id);
+    const { categories: cats } = await fetchArticleRelations(articleIds);
+    
+    articles.forEach(article => {
+      article.categories = cats[article.id] || [];
+      article.author = {
+        userId: article.author_user_id,
+        username: article.author_username,
+        avatar: article.author_avatar
+      };
+    });
 
     res.json({
       success: true,
@@ -453,76 +539,23 @@ exports.searchArticles = async (req, res) => {
       });
     }
 
-    const keywords = query
-      .toLowerCase()
-      .trim()
-      .split(/\s+/)
-      .filter(k => k.length > 0);
+    const result = await Article.search(query, parseInt(page), parseInt(limit));
 
-    const fullQuery = keywords.join(" ");
-    const allArticles = await Article.find({}).lean();
-
-    const scoredArticles = allArticles
-      .map(article => {
-        const titleLower = (article.title || "").toLowerCase();
-        const contentLower = (article.content || "").toLowerCase();
-
-        let score = 0;
-
-        if (titleLower.includes(fullQuery)) {
-          score += 100 * 2;
-        }
-        if (contentLower.includes(fullQuery)) {
-          score += 100;
-        }
-
-        let titleMatches = 0;
-        let contentMatches = 0;
-
-        keywords.forEach(keyword => {
-          if (titleLower.includes(keyword)) {
-            titleMatches++;
-          }
-          if (contentLower.includes(keyword)) {
-            contentMatches++;
-          }
-        });
-
-        const matchPercentage = Math.max(titleMatches, contentMatches) / keywords.length;
-
-        if (matchPercentage === 1) {
-          score += 80 * (titleMatches > 0 ? 2 : 1);
-        }
-        else if (matchPercentage > 0.5) {
-          score += 60 * matchPercentage * (titleMatches > 0 ? 2 : 1);
-        }
-        else if (matchPercentage > 0) {
-          score += 40 * matchPercentage * (titleMatches > 0 ? 2 : 1);
-        }
-
-        return {
-          ...article,
-          searchScore: Math.round(score)
-        };
-      })
-      .filter(article => article.searchScore >= 40)
-      .sort((a, b) => {
-        if (b.searchScore !== a.searchScore) {
-          return b.searchScore - a.searchScore;
-        }
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-
-    const start = (page - 1) * parseInt(limit);
-    const paginated = scoredArticles.slice(start, start + parseInt(limit));
-    const results = paginated.map(({ searchScore, ...article }) => article);
+    // Transform results
+    result.results.forEach(article => {
+      article.author = {
+        userId: article.author_user_id,
+        username: article.author_username,
+        avatar: article.author_avatar
+      };
+    });
 
     res.json({
       success: true,
-      results,
-      totalPages: Math.ceil(scoredArticles.length / limit),
-      currentPage: Number(page),
-      total: scoredArticles.length,
+      results: result.results,
+      totalPages: result.totalPages,
+      currentPage: result.currentPage,
+      total: result.total,
       query
     });
 
@@ -542,7 +575,7 @@ exports.createArticle = async (req, res) => {
   try {
     const { title, content, image, categories, tags } = req.body;
 
-    const newArticle = new Article({
+    const articleData = {
       title,
       content,
       image,
@@ -553,14 +586,15 @@ exports.createArticle = async (req, res) => {
         username: req.user?.username || "Anonymous",
         avatar: req.user?.avatar || null,
       },
-    });
+    };
 
-    await newArticle.save();
+    const articleId = await Article.create(articleData);
+    const article = await Article.findById(articleId);
 
     res.status(201).json({
       success: true,
       message: "Article created successfully",
-      article: newArticle,
+      article,
     });
   } catch (err) {
     res.status(500).json({
@@ -577,8 +611,9 @@ exports.createArticle = async (req, res) => {
 exports.updateArticle = async (req, res) => {
   try {
     const { title, content, image, categories, tags } = req.body;
+    const articleId = req.params.id;
 
-    const article = await Article.findById(req.params.id);
+    const article = await Article.findById(articleId);
 
     if (!article) {
       return res.status(404).json({ 
@@ -587,26 +622,75 @@ exports.updateArticle = async (req, res) => {
       });
     }
 
-    if (req.user && article.author?.userId !== req.user.userId) {
+    if (req.user && article.author_user_id !== req.user.userId) {
       return res.status(403).json({
         success: false,
         message: "Not authorized",
       });
     }
 
-    if (title !== undefined) article.title = title;
-    if (content !== undefined) article.content = content;
-    if (image !== undefined) article.image = image;
-    if (categories !== undefined) article.categories = categories;
-    if (tags !== undefined) article.tags = tags;
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
 
-    await article.save();
+      // Update article fields
+      const updates = [];
+      const params = [];
+      
+      if (title !== undefined) {
+        updates.push('title = ?');
+        params.push(title);
+      }
+      if (content !== undefined) {
+        updates.push('content = ?');
+        params.push(content);
+      }
+      if (image !== undefined) {
+        updates.push('image = ?');
+        params.push(image);
+      }
 
-    res.json({
-      success: true,
-      message: "Article updated",
-      article,
-    });
+      if (updates.length > 0) {
+        params.push(articleId);
+        await connection.execute(
+          `UPDATE articles SET ${updates.join(', ')} WHERE id = ?`,
+          params
+        );
+      }
+
+      // Update categories if provided
+      if (categories !== undefined) {
+        await connection.execute('DELETE FROM article_categories WHERE article_id = ?', [articleId]);
+        if (categories.length > 0) {
+          const catValues = categories.map(cat => [articleId, cat]);
+          await connection.query('INSERT INTO article_categories (article_id, category) VALUES ?', [catValues]);
+        }
+      }
+
+      // Update tags if provided
+      if (tags !== undefined) {
+        await connection.execute('DELETE FROM article_tags WHERE article_id = ?', [articleId]);
+        if (tags.length > 0) {
+          const tagValues = tags.map(tag => [articleId, tag]);
+          await connection.query('INSERT INTO article_tags (article_id, tag) VALUES ?', [tagValues]);
+        }
+      }
+
+      await connection.commit();
+      
+      const updatedArticle = await Article.findById(articleId);
+
+      res.json({
+        success: true,
+        message: "Article updated",
+        article: updatedArticle,
+      });
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -621,7 +705,8 @@ exports.updateArticle = async (req, res) => {
 // ============================
 exports.deleteArticle = async (req, res) => {
   try {
-    const article = await Article.findById(req.params.id);
+    const articleId = req.params.id;
+    const article = await Article.findById(articleId);
 
     if (!article) {
       return res.status(404).json({ 
@@ -630,14 +715,14 @@ exports.deleteArticle = async (req, res) => {
       });
     }
 
-    if (req.user && article.author?.userId !== req.user.userId) {
+    if (req.user && article.author_user_id !== req.user.userId) {
       return res.status(403).json({
         success: false,
         message: "Not authorized",
       });
     }
 
-    await Article.findByIdAndDelete(req.params.id);
+    await pool.execute('DELETE FROM articles WHERE id = ?', [articleId]);
 
     res.json({ 
       success: true, 

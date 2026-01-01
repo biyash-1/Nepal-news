@@ -1,5 +1,5 @@
-const Comment = require('../models/Comment');
-const User = require('../models/User');
+const { Comment, User } = require('../models');
+const { pool } = require('../config/db');
 
 // Get all comments for an article
 exports.getCommentsByArticle = async (req, res) => {
@@ -7,22 +7,28 @@ exports.getCommentsByArticle = async (req, res) => {
     const { articleId } = req.params;
     const { page = 1, limit = 20 } = req.query;
 
-    const comments = await Comment.find({ article: articleId })
-      .populate('user', 'username avatar email')
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .lean();
+    const result = await Comment.findByArticle(articleId, parseInt(page), parseInt(limit));
 
-    const total = await Comment.countDocuments({ article: articleId });
+    // Transform to match MongoDB format
+    result.comments = result.comments.map(comment => ({
+      ...comment,
+      user: {
+        _id: comment.user_id,
+        username: comment.username,
+        email: comment.email,
+        avatar: comment.avatar
+      },
+      likeCount: comment.like_count,
+      dislikeCount: comment.dislike_count
+    }));
 
     res.json({
       success: true,
-      comments,
+      comments: result.comments,
       pagination: {
-        total,
-        page: parseInt(page),
-        pages: Math.ceil(total / limit)
+        total: result.total,
+        page: result.page,
+        pages: result.pages
       }
     });
   } catch (error) {
@@ -54,21 +60,40 @@ exports.createComment = async (req, res) => {
       });
     }
 
-    const comment = new Comment({
+    const commentId = await Comment.create({
       article: articleId,
       user: req.user.userId,
       content: content.trim()
     });
 
-    await comment.save();
+    // Get the created comment with user data
+    const sql = `
+      SELECT c.*, u.username, u.email, u.avatar,
+        0 as like_count, 0 as dislike_count
+      FROM comments c
+      JOIN users u ON c.user_id = u.id
+      WHERE c.id = ?
+    `;
+    const [comments] = await pool.execute(sql, [commentId]);
+    const comment = comments[0];
 
-    // Populate user data before sending response
-    await comment.populate('user', 'username avatar email');
+    // Transform to match expected format
+    const transformedComment = {
+      ...comment,
+      user: {
+        _id: comment.user_id,
+        username: comment.username,
+        email: comment.email,
+        avatar: comment.avatar
+      },
+      likeCount: 0,
+      dislikeCount: 0
+    };
 
     res.status(201).json({
       success: true,
       message: 'Comment created successfully',
-      comment
+      comment: transformedComment
     });
   } catch (error) {
     res.status(500).json({
@@ -99,34 +124,48 @@ exports.updateComment = async (req, res) => {
       });
     }
 
-    const comment = await Comment.findById(commentId);
-
-    if (!comment) {
+    // Check ownership
+    const [comments] = await pool.execute('SELECT user_id FROM comments WHERE id = ?', [commentId]);
+    
+    if (comments.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Comment not found'
       });
     }
 
-    // Check if user owns the comment
-    if (comment.user.toString() !== req.user.userId) {
+    if (comments[0].user_id !== req.user.userId) {
       return res.status(403).json({
         success: false,
         message: 'You can only edit your own comments'
       });
     }
 
-    comment.content = content.trim();
-    comment.isEdited = true;
-    comment.editedAt = new Date();
-    await comment.save();
+    await Comment.update(commentId, content.trim());
 
-    await comment.populate('user', 'username avatar email');
+    // Get updated comment
+    const sql = `
+      SELECT c.*, u.username, u.email, u.avatar,
+        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as like_count,
+        (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id) as dislike_count
+      FROM comments c
+      JOIN users u ON c.user_id = u.id
+      WHERE c.id = ?
+    `;
+    const [updated] = await pool.execute(sql, [commentId]);
 
     res.json({
       success: true,
       message: 'Comment updated successfully',
-      comment
+      comment: {
+        ...updated[0],
+        user: {
+          _id: updated[0].user_id,
+          username: updated[0].username,
+          email: updated[0].email,
+          avatar: updated[0].avatar
+        }
+      }
     });
   } catch (error) {
     res.status(500).json({
@@ -142,24 +181,24 @@ exports.deleteComment = async (req, res) => {
   try {
     const { commentId } = req.params;
 
-    const comment = await Comment.findById(commentId);
-
-    if (!comment) {
+    // Check ownership
+    const [comments] = await pool.execute('SELECT user_id FROM comments WHERE id = ?', [commentId]);
+    
+    if (comments.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Comment not found'
       });
     }
 
-    // Check if user owns the comment or is admin
-    if (comment.user.toString() !== req.user.userId && req.user.role !== 'admin') {
+    if (comments[0].user_id !== req.user.userId && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'You can only delete your own comments'
       });
     }
 
-    await Comment.findByIdAndDelete(commentId);
+    await Comment.delete(commentId);
 
     res.json({
       success: true,
@@ -180,37 +219,31 @@ exports.likeComment = async (req, res) => {
     const { commentId } = req.params;
     const userId = req.user.userId;
 
-    const comment = await Comment.findById(commentId);
-
-    if (!comment) {
+    // Check if comment exists
+    const [comments] = await pool.execute('SELECT id FROM comments WHERE id = ?', [commentId]);
+    
+    if (comments.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Comment not found'
       });
     }
 
-    // Remove from dislikes if present
-    comment.dislikes = comment.dislikes.filter(id => id.toString() !== userId);
+    const result = await Comment.toggleLike(commentId, userId);
 
-    // Toggle like
-    const likeIndex = comment.likes.findIndex(id => id.toString() === userId);
-    
-    if (likeIndex > -1) {
-      // Already liked, so unlike
-      comment.likes.splice(likeIndex, 1);
-    } else {
-      // Not liked, so like
-      comment.likes.push(userId);
-    }
-
-    await comment.save();
+    // Get updated counts
+    const [counts] = await pool.execute(`
+      SELECT 
+        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = ?) as likes,
+        (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = ?) as dislikes
+    `, [commentId, commentId]);
 
     res.json({
       success: true,
-      message: likeIndex > -1 ? 'Like removed' : 'Comment liked',
-      likes: comment.likes.length,
-      dislikes: comment.dislikes.length,
-      isLiked: likeIndex === -1,
+      message: result.action === 'liked' ? 'Comment liked' : 'Like removed',
+      likes: counts[0].likes,
+      dislikes: counts[0].dislikes,
+      isLiked: result.action === 'liked',
       isDisliked: false
     });
   } catch (error) {
@@ -228,38 +261,32 @@ exports.dislikeComment = async (req, res) => {
     const { commentId } = req.params;
     const userId = req.user.userId;
 
-    const comment = await Comment.findById(commentId);
-
-    if (!comment) {
+    // Check if comment exists
+    const [comments] = await pool.execute('SELECT id FROM comments WHERE id = ?', [commentId]);
+    
+    if (comments.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Comment not found'
       });
     }
 
-    // Remove from likes if present
-    comment.likes = comment.likes.filter(id => id.toString() !== userId);
+    const result = await Comment.toggleDislike(commentId, userId);
 
-    // Toggle dislike
-    const dislikeIndex = comment.dislikes.findIndex(id => id.toString() === userId);
-    
-    if (dislikeIndex > -1) {
-      // Already disliked, so undislike
-      comment.dislikes.splice(dislikeIndex, 1);
-    } else {
-      // Not disliked, so dislike
-      comment.dislikes.push(userId);
-    }
-
-    await comment.save();
+    // Get updated counts
+    const [counts] = await pool.execute(`
+      SELECT 
+        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = ?) as likes,
+        (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = ?) as dislikes
+    `, [commentId, commentId]);
 
     res.json({
       success: true,
-      message: dislikeIndex > -1 ? 'Dislike removed' : 'Comment disliked',
-      likes: comment.likes.length,
-      dislikes: comment.dislikes.length,
+      message: result.action === 'disliked' ? 'Comment disliked' : 'Dislike removed',
+      likes: counts[0].likes,
+      dislikes: counts[0].dislikes,
       isLiked: false,
-      isDisliked: dislikeIndex === -1
+      isDisliked: result.action === 'disliked'
     });
   } catch (error) {
     res.status(500).json({

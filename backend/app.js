@@ -1,12 +1,12 @@
-// app.js
+// app.js - MySQL Version
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 require('dotenv').config();
-const mongoose = require('mongoose');
 
+const { connectDB } = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
-const articleRoutes = require('./routes/articles'); // updated file name
+const articleRoutes = require('./routes/articles');
 const commentRoutes = require('./routes/commentRoutes');
 
 const { 
@@ -17,7 +17,6 @@ const {
 } = require('./jobs/trendingCronJob');
 
 const app = express();
-
 
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -39,7 +38,7 @@ app.get('/health', (req, res) => {
   res.json({
     success: true,
     message: 'Server is running',
-    database: 'MongoDB Atlas'
+    database: 'MySQL'
   });
 });
 
@@ -56,30 +55,25 @@ app.use((err, req, res, next) => {
 });
 
 // ============================
-// CONNECT TO MONGODB & START CRON JOBS
+// CONNECT TO MYSQL & START CRON JOBS
 // ============================
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(async () => {
-  console.log('✅ MongoDB connected');
+connectDB()
+  .then(async () => {
+    console.log('✅ MySQL connected');
 
-  // Run initial score calculation on startup
-  await runInitialScoreCalculation();
+    // Run initial score calculation on startup
+    await runInitialScoreCalculation();
 
-  // Start cron jobs
-  startTrendingScoreCronJob();  // every 15 min
-  startPopularScoreCronJob();   // every 6 hours
-  startCleanupCronJob();        // daily at 3 AM
+    // Start cron jobs
+    startTrendingScoreCronJob();  // every 15 min
+    startPopularScoreCronJob();   // every 6 hours
+    startCleanupCronJob();        // daily at 3 AM
 
-  console.log('🚀 All cron jobs initialized');
-})
-.catch(err => {
-  console.error('❌ MongoDB connection error:', err);
-  process.exit(1);
-});
-
-
+    console.log('🚀 All cron jobs initialized');
+  })
+  .catch(err => {
+    console.error('❌ MySQL connection error:', err);
+    process.exit(1);
+  });
 
 module.exports = app;
