@@ -1,7 +1,7 @@
 "use client";
 import { useCategoryNews } from "@/app/hooks/useCategoryNews";
 import Link from "next/link";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Props {
   category: string;
@@ -16,19 +16,6 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const previousCategoryRef = useRef(category);
   const observerRef = useRef<IntersectionObserver | null>(null);
-
-  // Deduplicate news array as safety net
-  const deduplicatedNews = useMemo(() => {
-    const seen = new Set<string>();
-    return news.filter((article) => {
-      if (seen.has(article._id)) {
-        console.warn(`Duplicate detected: ${article._id}`);
-        return false;
-      }
-      seen.add(article._id);
-      return true;
-    });
-  }, [news]);
 
   // Reset scroll and cleanup observer when category changes
   useEffect(() => {
@@ -149,12 +136,12 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
     return icons[category as keyof typeof icons] || icons.default;
   };
 
-  // Use deduplicated news
-  const featuredNews = deduplicatedNews.length > 0 ? deduplicatedNews[0] : null;
-  const headlineNews = deduplicatedNews.slice(1, 6);
-  const moreNews = deduplicatedNews.slice(6);
+  // Direct news slicing - backend handles deduplication
+  const featuredNews = news.length > 0 ? news[0] : null;
+  const headlineNews = news.slice(1, 6);
+  const moreNews = news.slice(6);
 
-  if (loading && deduplicatedNews.length === 0) {
+  if (loading && news.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
         <div className="text-center">
@@ -206,7 +193,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
       <div className="container w-[75%] mx-auto px-4 py-8">
         <div className="flex items-center justify-between">
           <h3 className="text-3xl border-l-4 border-blue-600 font-bold text-gray-900 pl-3">{title}</h3>
-          <Link href="/category/music" className="text-blue-600 hover:text-red-700 font-medium">
+          <Link href={`/category/${category}`} className="text-blue-600 hover:text-red-700 font-medium">
             सबै हेर्नुहोस् →
           </Link>
         </div>
@@ -222,7 +209,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 <div className="grid grid-cols-3 gap-6">
                   {/* Left Column: Featured news spans 2/3 */}
                   <div className="col-span-2 h-full">
-                    <Link href={`/news/${featuredNews._id}`} className="group block h-full">
+                    <Link href={`/news/${featuredNews.id}`} className="group block h-full">
                       <div className="relative h-full rounded overflow-hidden">
                         <img
                           src={getImageSrc(featuredNews.featuredImage || featuredNews.image)}
@@ -243,7 +230,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                   {/* Right Column: 2 stacked news */}
                   <div className="flex flex-col gap-6">
                     {headlineNews.slice(0, 2).map((newsItem) => (
-                      <Link key={newsItem._id} href={`/news/${newsItem._id}`} className="group block">
+                      <Link key={newsItem.id} href={`/news/${newsItem.id}`} className="group block">
                         <div className="rounded overflow-hidden">
                           <img
                             src={getImageSrc(newsItem.featuredImage || newsItem.image)}
@@ -263,7 +250,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 {/* Lower Row: 3 equal columns */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {headlineNews.slice(2, 5).map((newsItem) => (
-                    <Link key={newsItem._id} href={`/news/${newsItem._id}`} className="group block w-full">
+                    <Link key={newsItem.id} href={`/news/${newsItem.id}`} className="group block w-full">
                       <div className="flex h-20 w-full">
                         <img
                           src={getImageSrc(newsItem.featuredImage || newsItem.image)}
@@ -292,10 +279,10 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 <div className="h-0.5 bg-blue-600 mt-2 mb-8"></div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {moreNews.slice(0, currentPage * 30).map((article) => (
+                  {moreNews.map((article) => (
                     <Link
-                      href={`/news/${article._id}`}
-                      key={article._id}
+                      href={`/news/${article.id}`}
+                      key={article.id}
                       className="group transition-all duration-300 overflow-hidden"
                     >
                       <div className="relative overflow-hidden">
@@ -336,7 +323,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">धन्यवाद!</h3>
                 <p className="text-gray-600 max-w-md mx-auto">
-                  तपाईंले {deduplicatedNews.length} समाचारहरू हेर्नुभयो। नयाँ समाचारहरूको लागि फेरि भेटौंला।
+                  तपाईंले {news.length} समाचारहरू हेर्नुभयो। नयाँ समाचारहरूको लागि फेरि भेटौंला।
                 </p>
               </div>
             )}
@@ -356,10 +343,10 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                 </div>
                 <div className="divide-y divide-gray-100">
                   {popularNews.length > 0 ? (
-                    popularNews.map((article, index) => (
+                    popularNews.map((article) => (
                       <Link
-                        href={`/news/${article._id}`}
-                        key={article._id}
+                        href={`/news/${article.id}`}
+                        key={article.id}
                         className="group block p-4 hover:bg-gray-50 transition-colors"
                       >
                         <div className="flex items-start gap-3">
@@ -400,8 +387,8 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
                   {trendingNews.length > 0 ? (
                     trendingNews.map((article) => (
                       <Link
-                        key={article._id}
-                        href={`/news/${article._id}`}
+                        key={article.id}
+                        href={`/news/${article.id}`}
                         className="group block p-2"
                       >
                         <div className="flex items-start gap-3">

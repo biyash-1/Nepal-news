@@ -6,7 +6,7 @@ import { useEconomy } from "@/app/hooks/useEconomy";
 
 
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   excerpt?: string;
@@ -31,7 +31,7 @@ const removeDuplicatesByTitle = (articles: Article[]): Article[] => {
 };
 
 export default function EconomyPage() {
-  const { articles, featuredArticles, loading, error, refreshData } = useEconomy("all");
+  const { articles, featuredArticles, loading, error, refreshData } = useEconomy();
   const [displayCount, setDisplayCount] = useState(12);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 const observerRef = useRef<IntersectionObserver | null>(null);
@@ -41,8 +41,8 @@ const loadMoreRef = useRef<HTMLDivElement | null>(null);
     setDisplayCount(12);
   }, [articles.length]);
 
-  // Filter out duplicates from both arrays
   const uniqueArticles = removeDuplicatesByTitle(articles);
+  console.log("Unique Articles Count:", uniqueArticles);
   const uniqueFeaturedArticles = removeDuplicatesByTitle(featuredArticles);
 
 
@@ -61,20 +61,20 @@ if (uniqueFeaturedArticles.length > 1) {
 // If we still need more articles, get from regular articles
 if (freshNews.length < neededFreshCount) {
   const usedIds = new Set();
-  if (mainHeadline) usedIds.add(mainHeadline._id);
-  freshNews.forEach(article => usedIds.add(article._id));
+  if (mainHeadline) usedIds.add(mainHeadline.id);
+  freshNews.forEach(article => usedIds.add(article.id));
   
-  const availableRegular = uniqueArticles.filter(article => !usedIds.has(article._id));
+  const availableRegular = uniqueArticles.filter(article => !usedIds.has(article.id));
   const needed = neededFreshCount - freshNews.length;
   freshNews = [...freshNews, ...availableRegular.slice(0, needed)];
 }
   
   // Get remaining articles for infinite scroll, excluding those already used
   const usedArticleIds = new Set();
-  if (mainHeadline) usedArticleIds.add(mainHeadline._id);
-  freshNews.forEach(article => usedArticleIds.add(article._id));
+  if (mainHeadline) usedArticleIds.add(mainHeadline.id);
+  freshNews.forEach(article => usedArticleIds.add(article.id));
   
-  const moreNews = uniqueArticles.filter(article => !usedArticleIds.has(article._id));
+  const moreNews = uniqueArticles.filter(article => !usedArticleIds.has(article.id));
   
   const displayedArticles = moreNews.slice(0, displayCount);
   const hasMoreArticles = displayCount < moreNews.length;
@@ -161,7 +161,8 @@ if (freshNews.length < neededFreshCount) {
           <div className="mb-10">
             <div className="flex flex-col lg:flex-row ">
               <div className="lg:w-1/2">
-                <Link href={`/news/${mainHeadline._id}`}>
+                <Link href={`/news/${mainHeadline.id}`}
+                  >
                   <img
                     src={mainHeadline.image}
                     alt={mainHeadline.title}
@@ -173,7 +174,7 @@ if (freshNews.length < neededFreshCount) {
               <div className="lg:w-1/2 border bg-amber-100">
                 <div className="h-full p-4 flex flex-col justify-center items-center text-center">
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight hover:text-green-600 transition-colors">
-                    <Link href={`/news/${mainHeadline._id}`}>
+                    <Link href={`/news/${mainHeadline.id}`}>
                       {mainHeadline.title}
                     </Link>
                   </h2>
@@ -199,7 +200,7 @@ if (freshNews.length < neededFreshCount) {
       
               {freshNews[0] && (
                 <div className="lg:w-1/2">
-                  <Link href={`/news/${freshNews[0]._id}`} className="group">
+                  <Link href={`/news/${freshNews[0].id}`} className="group">
                     <div className="mb-3 overflow-hidden ">
                       <img
                         src={freshNews[0].image}
@@ -216,8 +217,8 @@ if (freshNews.length < neededFreshCount) {
 
               {/* Middle column - 2 medium news */}
               <div className="lg:w-1/4 space-y-6">
-                {freshNews.slice(1, 3).map((news) => (
-                  <Link key={news._id} href={`/news/${news._id}`} className="group block">
+                {freshNews.slice(1, 3).map((news, index) => (
+                  <Link key={`${news.id}-${index}`} href={`/news/${news.id}`} className="group block">
                     <div className="mb-2 overflow-hidden rounded">
                       <img
                         src={news.image}
@@ -234,8 +235,9 @@ if (freshNews.length < neededFreshCount) {
 
               {/* Right column - 4 small news with thumbnails */}
               <div className="lg:w-1/4 space-y-4">
-                {freshNews.slice(3, 7).map((news) => (
-                  <Link key={news._id} href={`/news/${news._id}`} className="group flex gap-3">
+                {freshNews.slice(3, 7).map((news,index) => (
+                  <Link key={`${news.id}-${index}`}  href={`/news/${news.id}`
+                  } className="group flex gap-3">
                     <div className="w-23 h-20 flex-shrink-0 overflow-hidden ">
                       <img
                         src={news.image}
@@ -268,8 +270,8 @@ if (freshNews.length < neededFreshCount) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {displayedArticles.map((news, index) => (
                 <Link
-                  key={news._id}
-                  href={`/news/${news._id}`}
+                  key={`${news.id}-${index}`} 
+                  href={`/news/${news.id}`}
                   className="group animate-fadeIn"
                   style={{
                     animationDelay: `${(index % 12) * 50}ms`,

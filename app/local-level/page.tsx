@@ -101,7 +101,7 @@ const loadMoreRef = useRef<HTMLDivElement | null>(null);
           <div className="mb-10">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="lg:w-1/2">
-                <Link href={`/news/${mainHeadline._id}`}>
+                <Link href={`/news/${mainHeadline.id}`}>
                   <img
                     src={mainHeadline.image}
                     alt={mainHeadline.title}
@@ -113,7 +113,7 @@ const loadMoreRef = useRef<HTMLDivElement | null>(null);
               <div className="lg:w-1/2 border bg-amber-100">
                 <div className="h-full p-4 flex flex-col justify-center items-center text-center">
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight hover:text-green-600 transition-colors">
-                    <Link href={`/news/${mainHeadline._id}`}>
+                    <Link href={`/news/${mainHeadline.id}`}>
                       {mainHeadline.title}
                     </Link>
                   </h2>
@@ -138,7 +138,7 @@ const loadMoreRef = useRef<HTMLDivElement | null>(null);
             <div className="flex flex-col lg:flex-row gap-6">
               {freshNews[0] && (
                 <div className="lg:w-1/2">
-                  <Link href={`/news/${freshNews[0]._id}`} className="group">
+                  <Link href={`/news/${freshNews[0].id}`} className="group">
                     <div className="mb-3 overflow-hidden rounded">
                       <img
                         src={freshNews[0].image}
@@ -155,7 +155,7 @@ const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
               <div className="lg:w-1/4 space-y-6">
                 {freshNews.slice(1, 3).map((news) => (
-                  <Link key={news._id} href={`/news/${news._id}`} className="group block">
+                  <Link key={news.id} href={`/news/${news.id}`} className="group block">
                     <div className="mb-2 overflow-hidden rounded">
                       <img
                         src={news.image}
@@ -172,7 +172,7 @@ const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
               <div className="lg:w-1/4 space-y-4">
                 {freshNews.slice(3, 7).map((news) => (
-                  <Link key={news._id} href={`/news/${news._id}`} className="group flex gap-3">
+                  <Link key={news.id} href={`/news/${news.id}`} className="group flex gap-3">
                     <div className="w-23 h-20 flex-shrink-0 overflow-hidden rounded">
                       <img
                         src={news.image}
@@ -205,8 +205,8 @@ const loadMoreRef = useRef<HTMLDivElement | null>(null);
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {displayedArticles.map((news, index) => (
                 <Link
-                  key={news._id}
-                  href={`/news/${news._id}`}
+                  key={news.id}
+                  href={`/news/${news.id}`}
                   className="group animate-fadeIn"
                   style={{
                     animationDelay: `${(index % 12) * 50}ms`,

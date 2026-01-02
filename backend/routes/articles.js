@@ -3,31 +3,72 @@ const router = express.Router();
 const articleController = require("../controllers/articleController");
 const { authenticate } = require("../middleware/auth");
 
-router.get("/search", articleController.searchArticles);
-router.get("/", articleController.getAllArticles);
-router.get("/news/headlines", articleController.getHeadlines);
-router.get("/news/other", articleController.getOtherNews);
-router.get("/news/trending", articleController.getTrendingNews);
-router.get("/news/popular", articleController.getPopularNews);
+// ===== Helper to check controller functions =====
+function assertHandler(fn, name) {
+  if (typeof fn !== "function") {
+    throw new Error(`Controller function "${name}" is not defined or not a function`);
+  }
+  return fn;
+}
+
+// ============================
+// Public Routes
+// ============================
+
+// Search articles
+router.get("/search", assertHandler(articleController.searchArticles, "searchArticles"));
+
+// Get all articles with pagination
+router.get("/", assertHandler(articleController.getAllArticles, "getAllArticles"));
+
+// Get other news with pagination
+router.get("/news/other", assertHandler(articleController.getOtherNews, "getOtherNews"));
+
+// Get trending news
+router.get("/news/trending", assertHandler(articleController.getTrendingNews, "getTrendingNews"));
+
+// Get popular news
+router.get("/news/popular", assertHandler(articleController.getPopularNews, "getPopularNews"));
+
+// Get articles by multiple categories
 router.get(
   "/categories/multiple",
-  articleController.getArticlesByMultipleCategories
+  assertHandler(articleController.getArticlesByMultipleCategories, "getArticlesByMultipleCategories")
 );
-router.get("/category/:category", articleController.getArticlesByCategory);
 
-// Admin & root routes
+// Get articles by single category
+router.get("/category/:category", assertHandler(articleController.getArticlesByCategory, "getArticlesByCategory"));
+
+// Increment view count for an article
+router.post("/:id/view", assertHandler(articleController.incrementView, "incrementView"));
+
+// Get single article by ID
+router.get("/:id", assertHandler(articleController.getArticleById, "getArticleById"));
+
+// ============================
+// Admin / Authenticated Routes
+// ============================
+
+// Recalculate trending & popular scores (Admin)
 router.post(
   "/admin/recalculate-scores",
   authenticate,
-  articleController.recalculateScores
+  assertHandler(articleController.recalculateScores, "recalculateScores")
 );
-router.post("/", authenticate, articleController.createArticle);
-router.post("/:id/view", articleController.incrementView);
-router.put("/:id", authenticate, articleController.updateArticle);
-router.delete("/:id", authenticate, articleController.deleteArticle);
 
-router.get("/:id", articleController.getArticleById);
+// Create new article
+router.post("/", authenticate, assertHandler(articleController.createArticle, "createArticle"));
 
+// Update existing article
+router.put("/:id", authenticate, assertHandler(articleController.updateArticle, "updateArticle"));
+
+// Delete article
+router.delete("/:id", authenticate, assertHandler(articleController.deleteArticle, "deleteArticle"));
+
+// ============================
+// Route configuration check
+// ============================
 console.log("✅ Article routes configured successfully!");
+console.log("Available controller functions:", Object.keys(articleController));
 
 module.exports = router;

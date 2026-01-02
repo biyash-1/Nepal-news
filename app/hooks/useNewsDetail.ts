@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 
 interface Author {
-  _id: string;
+  id: string;
   username: string;
   avatar?: string;
 }
 
 interface NewsArticle {
-  _id: string;               // MongoDB ObjectId as string
+  id: string;               // MongoDB ObjectId as string
   title: string;
   content: string;
   image?: string;
@@ -37,7 +37,7 @@ interface NewsArticle {
 }
 
 interface RelatedNews {
-  _id: string;
+  id: string;
   title: string;
   image: string;
   createdAt: string;
@@ -58,6 +58,7 @@ export const useNewsDetail = (id: string) => {
       // Fetch main article
       const res = await axiosInstance.get(`/articles/${id}`);
       const articleData = res.data.article;
+      console.log("Fetched article data:", articleData);
       setArticle(articleData);
 
       // Prepare exclude list (current article + related + trending)
@@ -74,7 +75,7 @@ export const useNewsDetail = (id: string) => {
         setRelatedNews(relatedArticles);
         
         // Add related article IDs to exclude list
-        excludeIds.push(...relatedArticles.map((a: any) => a._id));
+        excludeIds.push(...relatedArticles.map((a: any) => a.id));
       }
 
       // Fetch overall trending news (no category filter, exclude current + related)
@@ -92,7 +93,7 @@ export const useNewsDetail = (id: string) => {
       // Fetch recent news (latest articles, exclude current + related + trending)
       const allExcludeIds = [
         ...excludeIds,
-        ...(trendingRes.data.articles || []).map((a: any) => a._id)
+        ...(trendingRes.data.articles || []).map((a: any) => a.id)
       ].filter(Boolean);
 
       const recentRes = await axiosInstance.get("/articles/news/other", {

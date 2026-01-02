@@ -4,7 +4,7 @@ import Link from "next/link";
 import { formatTimeAgo } from "@/lib/formatTime";
 
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   image?: string;
@@ -36,7 +36,7 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
         <div className="h-0.5 bg-red-600 mt-0.5 mb-8"></div>
         {/* BIG FEATURE CARD */}
         <Link
-          href={`/news/${featured._id}`}
+          href={`/news/${featured.id}`}
           className="grid md:grid-cols-2 bg-slate-800 rounded overflow-hidden mb-10 group"
         >
           {/* Image */}
@@ -61,10 +61,11 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* 3 IMAGE CARDS */}
           <div className="lg:col-span-8 grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {gridArticles.map((article) => (
+            {gridArticles.map((article,index) => (
               <Link
-                key={article._id}
-                href={`/news/${article._id}`}
+                 
+                href={`/news/${article.id}`}
+                key={`${article.id}-${index}`}
                 className=" rounded overflow-hidden  hover:transition group"
               >
                 <div className="h-44 overflow-hidden">
@@ -87,10 +88,10 @@ const PortfolioSection = ({ articles }: PortfolioSectionProps) => {
           {/* VICHAR SECTION */}
           <div className="lg:col-span-4">
             <div className="space-y-4">
-              {vichar.map((article) => (
+              {vichar.map((article,index) => (
                 <Link
-                  key={article._id}
-                  href={`/news/${article._id}`}
+                  key={`${article.id}-${index}`}
+                  href={`/news/${article.id}`}
                   className="flex gap-3 items-start hover:bg-gray-50 p-2 rounded-md transition"
                 >
             

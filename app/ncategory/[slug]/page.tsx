@@ -1,5 +1,14 @@
 import NcategoryNewsPage from "@/components/Ncategory";
 
+// Generate all possible slugs at build time
+export async function generateStaticParams() {
+  const slugs = ["bollywood", "gossip", "music", "special"];
+  
+  return slugs.map((slug) => ({
+    slug: slug,
+  }));
+}
+
 export default async function Page({
   params,
 }: {
@@ -16,7 +25,6 @@ export default async function Page({
   };
 
   const nepaliWord = dict[decodedSlug]
-
 
   return (
     <NcategoryNewsPage

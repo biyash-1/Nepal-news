@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 
 interface Author {
-  _id: string;
+  id: string;
   username: string;
 }
 
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   categories: string[];
@@ -36,7 +36,7 @@ export const usePradeshNews = (pradeshName: string) => {
       const res = await axiosInstance.get("/articles/categories/multiple", {
         params: { categories: categoryArray, limit: 30 } // fetch enough for all sections
       });
-
+        console.log("Fetched pradesh articles:", res.data.articles);
       if (res.data.success) {
         const articles: Article[] = res.data.articles;
 

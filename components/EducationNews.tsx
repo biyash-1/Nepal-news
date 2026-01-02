@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   image?: string;
@@ -51,10 +51,10 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
           {/* Left Column - Featured Article */}
           <div className="lg:col-span-1">
-            {articles.slice(0, 1).map((article) => (
+            {articles.slice(0, 1).map((article,index) => (
               <Link
-                href={`/news/${article._id}`}
-                key={article._id}
+                href={`/news/${article.id}`}
+                key={`${article.id}-${index}`} 
                 className="rounded overflow-hidden group cursor-pointer border block"
               >
                 <div className="relative">
@@ -77,10 +77,10 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* First Column - 3 items */}
             <div className="space-y-4">
-              {articles.slice(1, 4).map((article) => (
+              {articles.slice(1, 4).map((article,index) => (
                 <Link
-                  href={`/news/${article._id}`}
-                  key={article._id}
+                  href={`/news/${article.id}`}
+                  key={`${article.id}-${index}`} 
                   className="rounded overflow-hidden group cursor-pointer block"
                 >
                   <div className="flex items-center gap-3">
@@ -103,10 +103,10 @@ const EducationNews = ({ articles }: EducationNewsProps) => {
 
             {/* Second Column - 3 items */}
             <div className="space-y-4">
-              {articles.slice(4, 7).map((article) => (
+              {articles.slice(4, 7).map((article,index) => (
                 <Link
-                  href={`/news/${article._id}`}
-                  key={article._id}
+                  href={`/news/${article.id}`}
+                     key={`${article.id}-${index}`} 
                   className="rounded overflow-hidden group cursor-pointer block"
                 >
                   <div className="flex items-center gap-3">

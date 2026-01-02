@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   image?: string;
@@ -47,10 +47,10 @@ export default function HealthNews({ articles }: HealthNewsProps) {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {articles.length > 0 ? (
-          articles.map((article) => (
+          articles.map((article,index) => (
             <Link 
-              href={`/news/${article._id}`}
-              key={article._id}
+              href={`/news/${article.id}`}
+            key={`${article.id}-${index}`} 
               className="flex flex-col  overflow-hidden news-card cursor-pointer group"
             >
               <div className="w-full h-48 overflow-hidden">

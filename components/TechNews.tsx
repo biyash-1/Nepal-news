@@ -57,10 +57,10 @@ export default function TechNews({ articles }: TechNewsProps) {
         {articles.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              {articles.map((tech) => (
+              {articles.map((tech,index) => (
                 <Link
                   href={`/news/${tech._id}`}
-                  key={tech._id}
+                  key={`${tech._id}-${index}`}
                   className="group cursor-pointer"
                 >
                   <div className="relative h-48  overflow-hidden">

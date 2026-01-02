@@ -1,12 +1,11 @@
 "use client";
 
-import { pradeshData } from "@/lib/PradeshData";
-import { notFound, useParams } from "next/navigation";
 import { usePradeshNews } from "@/app/hooks/usePradeshNews";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 const fallbackNews = {
-  _id: "fallback",
+  id: "fallback",
   title: "यस प्रदेशका थप समाचारहरू चाँडै नै उपलब्ध हुनेछन्",
   content:
     "हामी यस प्रदेशका नयाँ समाचारहरू संकलन गर्दैछौं। यस प्रदेशका ताजा समाचारहरू चाँडै नै उपलब्ध हुनेछन्।",
@@ -20,6 +19,17 @@ const fallbackNews = {
   createdAt: new Date().toISOString(),
 };
 
+// Map pradesh IDs to their Nepali names
+const pradeshNameMap: { [key: string]: string } = {
+  "1": "कोशी",
+  "2": "मधेश",
+  "3": "बाग्मती",
+  "4": "गण्डकी",
+  "5": "लुम्बिनी",
+  "6": "कर्णाली",
+  "7": "सुदूरपश्चिम",
+};
+
 const getImageUrl = (article: any) => {
   return (
     article?.image ||
@@ -27,26 +37,19 @@ const getImageUrl = (article: any) => {
   );
 };
 
-const getExcerpt = (content: string, maxLength: number = 150) => {
-  if (content.length <= maxLength) return content;
-  return content.substring(0, maxLength) + "...";
-};
-
-export default function PradeshNewsPage() {
+export default function PradeshPage() {
   const params = useParams();
   const pradeshId = params?.pradeshId as string;
 
-  const pradesh = pradeshData[pradeshId];
-
-  if (!pradesh) {
-    notFound();
-  }
+  // Get the pradesh name based on ID
+  const pradeshName = pradeshNameMap[pradeshId] || "बाग्मती प्रदेश";
 
   const { mainNews, featuredNews, headlineNews, regularNews, loading, error } =
-    usePradeshNews(pradesh.name);
+    usePradeshNews(pradeshName);
 
   // Prepare data with fallbacks
   const displayMainNews = mainNews || fallbackNews;
+  console.log("Display Main News:", displayMainNews);
   const displayFeaturedNews = [
     ...(featuredNews || []),
     ...Array(Math.max(0, 2 - (featuredNews?.length || 0))).fill(fallbackNews),
@@ -64,7 +67,7 @@ export default function PradeshNewsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="container mx-auto px-4 py-20" style={{ width: '75%' }}>
+        <div className="container mx-auto px-4 py-20" style={{ width: "75%" }}>
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
             <p className="mt-4 text-gray-600">समाचार लोड हुँदैछ...</p>
@@ -77,7 +80,7 @@ export default function PradeshNewsPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="container mx-auto px-4 py-20" style={{ width: '75%' }}>
+        <div className="container mx-auto px-4 py-20" style={{ width: "75%" }}>
           <div className="text-center">
             <p className="text-red-600 text-lg">{error}</p>
           </div>
@@ -88,7 +91,7 @@ export default function PradeshNewsPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-6" style={{ width: '75%' }}>
+      <div className="container mx-auto px-4 py-6" style={{ width: "75%" }}>
         {/* Large Headline - Main News Title */}
         <div className="mb-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
@@ -98,14 +101,12 @@ export default function PradeshNewsPage() {
 
         {/* Main News Section - Image Only */}
         <div className="mb-8">
-          <Link
-            href={displayMainNews._id ? `/news/${displayMainNews._id}` : "#"}
-          >
+          <Link href={displayMainNews.id ? `/news/${displayMainNews.id}` : "#"}>
             <div className="relative h-[400px] md:h-[500px] overflow-hidden rounded-lg group cursor-pointer">
               <img
                 src={getImageUrl(displayMainNews)}
                 alt={displayMainNews.title}
-                className="w-full h-full object-cover "
+                className="w-full h-full object-cover"
               />
             </div>
           </Link>
@@ -123,100 +124,102 @@ export default function PradeshNewsPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Column - Large Square Image with Title Below */}
-            {displayFeaturedNews[1] && (
-              <div>
-                <Link
-                  href={
-                    displayFeaturedNews[1]._id
-                      ? `/news/${displayFeaturedNews[1]._id}`
-                      : "#"
-                  }
-                >
-                  <div className="group cursor-pointer">
-                    <div className="rounded overflow-hidden mb-3">
-                      <img
-                        src={getImageUrl(displayFeaturedNews[1])}
-                        alt={displayFeaturedNews[1].title}
-                        className="w-full h-full  object-cover "
-                      />
-                    </div>
-                    <h3 className="text-2xl font-semibold text-gray-900 leading-tight group-hover:text-red-600 transition-colors">
-                      {displayFeaturedNews[0].title}
-                    </h3>
-                  </div>
-                </Link>
-              </div>
-            )}
-
-            {/* Right Column - 4 News Items in 2x2 Grid */}
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              {/* Get 4 news items for the right column */}
-              {[
-                displayFeaturedNews[1],
-                displayHeadlineNews[3],
-                displayHeadlineNews[1],
-                displayHeadlineNews[4],
-              ]
-                .filter(Boolean)
-                .slice(0, 4)
-                .map((item: any, index: number) => (
-                  <Link key={item._id || index} href={item._id ? `/news/${item._id}` : "#"}>
+              {/* Left Column - Large Square Image with Title Below */}
+              {displayFeaturedNews[0] && (
+                <div>
+                  <Link
+                    href={
+                      displayFeaturedNews[0].id
+                        ? `/news/${displayFeaturedNews[0].id}`
+                        : "#"
+                    }
+                  >
                     <div className="group cursor-pointer">
-                      <div className="rounded overflow-hidden mb-2">
+                      <div className="rounded overflow-hidden mb-3">
                         <img
-                          src={getImageUrl(item)}
-                          alt={item.title}
-                          className="w-full h-40 object-cover "
+                          src={getImageUrl(displayFeaturedNews[0])}
+                          alt={displayFeaturedNews[0].title}
+                          className="w-full h-full object-cover"
                         />
                       </div>
-                      <h4 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-red-600 transition-colors">
-                        {item.title}
-                      </h4>
+                      <h3 className="text-2xl font-semibold text-gray-900 leading-tight group-hover:text-red-600 transition-colors">
+                        {displayFeaturedNews[0].title}
+                      </h3>
                     </div>
                   </Link>
-                ))}
-            </div>
+                </div>
+              )}
+
+              {/* Right Column - 4 News Items in 2x2 Grid */}
+              <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                {/* Get 4 news items for the right column */}
+                {[
+                  displayFeaturedNews[1],
+                  displayHeadlineNews[0],
+                  displayHeadlineNews[1],
+                  displayHeadlineNews[2],
+                ]
+                  .filter(Boolean)
+                  .slice(0, 4)
+                  .map((item: any, index: number) => (
+                    <Link
+                      key={item.id || index}
+                      href={item.id ? `/news/${item.id}` : "#"}
+                    >
+                      <div className="group cursor-pointer">
+                        <div className="rounded overflow-hidden mb-2">
+                          <img
+                            src={getImageUrl(item)}
+                            alt={item.title}
+                            className="w-full h-40 object-cover"
+                          />
+                        </div>
+                        <h4 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-red-600 transition-colors">
+                          {item.title}
+                        </h4>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
             </div>
           </div>
         )}
 
-      {/* Pradesh Headlines Section */}
-  {allNews.length >= 3 && (
-  <div className="bg-yellow-50 border rounded-lg p-6 mb-8">
-    <h3 className="text-2xl font-bold text-gray-900 mb-2">
-      प्रदेशका हेडलाइन
-    </h3>
+        {/* Pradesh Headlines Section */}
+        {allNews.length >= 3 && (
+          <div className="bg-yellow-50 border rounded-lg p-6 mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              प्रदेशका हेडलाइन
+            </h3>
 
-    {/* Red horizontal line */}
-    <hr className="w-full border-red-600 w-20 mb-6" />
+            {/* Red horizontal line */}
+            <hr className="w-full border-red-600 w-20 mb-6" />
 
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {[mainNews, ...featuredNews, ...displayHeadlineNews]
-        .filter(Boolean)
-        .slice(0, 6)
-        .map((item: any) => (
-          <Link key={item._id} href={`/news/${item._id}`}>
-            <div className="rounded p-4 transition-shadow group cursor-pointer">
-              <div className="flex items-center space-x-3">
-                <img
-                  src={getImageUrl(item)}
-                  alt={item.title}
-                  className="w-20 h-20 object-cover rounded shrink-0"
-                />
-                <div>
-                  <h4 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-red-600 transition-colors">
-                    {item.title}
-                  </h4>
-                </div>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[mainNews, ...featuredNews, ...displayHeadlineNews]
+                .filter(Boolean)
+                .slice(0, 6)
+                .map((item: any) => (
+                  <Link key={item.id} href={`/news/${item.id}`}>
+                    <div className="rounded p-4 transition-shadow group cursor-pointer">
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={getImageUrl(item)}
+                          alt={item.title}
+                          className="w-20 h-20 object-cover rounded shrink-0"
+                        />
+                        <div>
+                          <h4 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-red-600 transition-colors">
+                            {item.title}
+                          </h4>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
             </div>
-          </Link>
-        ))}
-    </div>
-  </div>
-)}
-
+          </div>
+        )}
 
         {/* Regular News Grid */}
         {displayRegularNews.length > 0 && (
@@ -226,15 +229,15 @@ export default function PradeshNewsPage() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {displayRegularNews.map((item: any) => (
-                <Link key={item._id} href={`/news/${item._id}`}>
-                  <div className=" overflow-hidden transition-shadow group cursor-pointer">
+                <Link key={item.id} href={`/news/${item.id}`}>
+                  <div className="overflow-hidden transition-shadow group cursor-pointer">
                     <img
                       src={getImageUrl(item)}
                       alt={item.title}
-                      className="w-full h-48 object-cover rounded "
+                      className="w-full h-48 object-cover rounded"
                     />
                     <div className="p-4">
-                      <h4 className="font-semibold text-lg  text-gray-900 mb-2 leading-tight group-hover:text-red-600 transition-colors">
+                      <h4 className="font-semibold text-lg text-gray-900 mb-2 leading-tight group-hover:text-red-600 transition-colors">
                         {item.title}
                       </h4>
                     </div>

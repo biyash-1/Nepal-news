@@ -4,12 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@/lib/axios";
 
 export interface Author {
-  _id: string;
+  id: string;
   username: string;
 }
 
 export interface LocalArticle {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   excerpt?: string;
@@ -77,14 +77,14 @@ export const useLocalNews = (location?: string) => {
       if (res.data.success) {
         const processedArticles: LocalArticle[] = res.data.articles
           .map((article: any) => ({
-            _id: article._id,
+            id: article.id,
             title: article.title,
             content: article.content,
             excerpt: article.content.slice(0, 100) + "...",
             image: article.image,
             categories: article.categories,
             author: {
-              _id: article.author.userId,
+              id: article.author.userId,
               username: article.author.username,
             },
             createdAt: article.createdAt,
@@ -97,10 +97,10 @@ export const useLocalNews = (location?: string) => {
           }))
           // Filter out duplicates using Set
           .filter((article: LocalArticle) => {
-            if (loadedArticleIdsRef.current.has(article._id)) {
+            if (loadedArticleIdsRef.current.has(article.id)) {
               return false;
             }
-            loadedArticleIdsRef.current.add(article._id);
+            loadedArticleIdsRef.current.add(article.id);
             return true;
           });
 
@@ -153,13 +153,13 @@ export const useArticle = (id: string) => {
         if (res.data.success) {
           const a = res.data.article;
           const processed: LocalArticle = {
-            _id: a._id,
+            id: a.id,
             title: a.title,
             content: a.content,
             excerpt: a.content.slice(0, 100) + "...",
             image: a.image,
             categories: a.categories,
-            author: { _id: a.author.userId, username: a.author.username },
+            author: { id: a.author.userId, username: a.author.username },
             createdAt: a.createdAt,
             updatedAt: a.updatedAt,
             views: a.views,

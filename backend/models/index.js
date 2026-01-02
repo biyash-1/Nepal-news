@@ -247,68 +247,80 @@ const Article = {
   },
 
   async getTrending({ limit = 10, categories = null, exclude = [] }) {
-    let sql = `
-      SELECT a.*,
-        (SELECT JSON_ARRAYAGG(category) FROM article_categories WHERE article_id = a.id) as categories
-      FROM articles a
-      WHERE trending_score > 0
-    `;
-    const params = [];
+  let sql = `
+    SELECT a.*,
+      (SELECT GROUP_CONCAT(category) FROM article_categories WHERE article_id = a.id) as categories
+    FROM articles a
+    WHERE trending_score > 0
+  `;
+  const params = [];
 
-    if (categories && categories.length > 0) {
-      sql += ` AND EXISTS (
-        SELECT 1 FROM article_categories 
-        WHERE article_id = a.id AND category IN (?)
-      )`;
-      params.push(categories);
-    }
+  if (categories && categories.length > 0) {
+    sql += ` AND EXISTS (
+      SELECT 1 FROM article_categories 
+      WHERE article_id = a.id AND category IN (${categories.map(() => '?').join(',')})
+    )`;
+    params.push(...categories);
+  }
 
-    if (exclude.length > 0) {
-      sql += ` AND a.id NOT IN (?)`;
-      params.push(exclude);
-    }
+  if (exclude.length > 0) {
+    sql += ` AND a.id NOT IN (${exclude.map(() => '?').join(',')})`;
+    params.push(...exclude);
+  }
 
-    sql += ` ORDER BY trending_score DESC, created_at DESC LIMIT ?`;
-    params.push(limit);
+  sql += ` ORDER BY trending_score DESC, created_at DESC LIMIT ?`;
+  params.push(limit);
 
-    const [rows] = await pool.execute(sql, params);
-    rows.forEach(row => {
-      row.categories = JSON.parse(row.categories || '[]');
-    });
-    return rows;
-  },
+  const [rows] = await pool.execute(sql, params);
+
+  // Convert categories string to array
+  rows.forEach(row => {
+    row.categories = row.categories ? row.categories.split(',') : [];
+  });
+
+  return rows;
+},
 
   async getPopular({ limit = 10, categories = null, exclude = [] }) {
-    let sql = `
-      SELECT a.*,
-        (SELECT JSON_ARRAYAGG(category) FROM article_categories WHERE article_id = a.id) as categories
-      FROM articles a
-      WHERE popular_score > 0
-    `;
-    const params = [];
+  let sql = `
+    SELECT a.*,
+      (SELECT GROUP_CONCAT(category) 
+       FROM article_categories 
+       WHERE article_id = a.id) AS categories
+    FROM articles a
+    WHERE popular_score > 0
+  `;
+  const params = [];
 
-    if (categories && categories.length > 0) {
-      sql += ` AND EXISTS (
-        SELECT 1 FROM article_categories 
-        WHERE article_id = a.id AND category IN (?)
-      )`;
-      params.push(categories);
-    }
+  // Filter by categories
+  if (categories && categories.length > 0) {
+    sql += ` AND EXISTS (
+      SELECT 1 FROM article_categories 
+      WHERE article_id = a.id AND category IN (?)
+    )`;
+    params.push(categories);
+  }
 
-    if (exclude.length > 0) {
-      sql += ` AND a.id NOT IN (?)`;
-      params.push(exclude);
-    }
+  // Exclude IDs
+  if (exclude.length > 0) {
+    sql += ` AND a.id NOT IN (?)`;
+    params.push(exclude);
+  }
 
-    sql += ` ORDER BY popular_score DESC, created_at DESC LIMIT ?`;
-    params.push(limit);
+  // Order & limit
+  sql += ` ORDER BY popular_score DESC, created_at DESC LIMIT ?`;
+  params.push(limit);
 
-    const [rows] = await pool.execute(sql, params);
-    rows.forEach(row => {
-      row.categories = JSON.parse(row.categories || '[]');
-    });
-    return rows;
-  },
+  const [rows] = await pool.execute(sql, params);
+
+  // Convert categories string to array
+  rows.forEach(row => {
+    row.categories = row.categories ? row.categories.split(',') : [];
+  });
+
+  return rows;
+}
+,
 
   async search(searchQuery, page = 1, limit = 10) {
     const offset = (page - 1) * limit;

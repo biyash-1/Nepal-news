@@ -47,6 +47,7 @@ export const useCategoryNews = (category: string) => {
 
       if (mainRes.data.success) {
         const articles = mainRes.data.articles;
+        console.log(`Fetched ${articles.length} articles for category ${category}`);
         
         // Store all articles
         setAllArticles(articles);

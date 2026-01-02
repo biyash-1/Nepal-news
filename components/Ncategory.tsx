@@ -15,17 +15,19 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
   const itemsPerPage = 12;
 
   // Deduplicate news array as safety net
-  const deduplicatedNews = useMemo(() => {
-    const seen = new Set<string>();
-    return news.filter((article) => {
-      if (seen.has(article._id)) {
-        console.warn(`Duplicate detected: ${article._id}`);
-        return false;
-      }
-      seen.add(article._id);
-      return true;
-    });
-  }, [news]);
+ const deduplicatedNews = useMemo(() => {
+  const seen = new Set();
+  return news.filter((article) => {
+    const id = article._id || article.id; // fallback to article.id
+    if (!id) return false; // skip if no id
+    if (seen.has(id)) {
+      console.warn(`Duplicate detected: ${id}`);
+      return false;
+    }
+    seen.add(id);
+    return true;
+  });
+}, [news]);
 
   const getImageSrc = (img?: string) => {
     return img && img.trim() !== ""
@@ -58,6 +60,7 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentNews = deduplicatedNews.slice(startIndex, endIndex);
+  console.log("currentNews:", currentNews);
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
@@ -116,10 +119,10 @@ const CategoryNewsPage = ({ category, title, gradient }: Props) => {
         {currentNews.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {currentNews.map((article) => (
+              {currentNews.map((article,index) => (
                 <Link
                   href={`/news/${article._id}`}
-                  key={article._id}
+                  key={`${article._id}-${index}`}
                   className="group transition-all duration-300"
                 >
                   <div className="bg-white rounded overflow-hidden  hover transition-shadow">

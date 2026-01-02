@@ -2,7 +2,7 @@
 import Link from "next/link";
 
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   image?: string;
@@ -44,7 +44,7 @@ export default function EntertainmentNews({ articles }: EntertainmentNewsProps) 
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <Link href={`/news/${mainArticle._id}`}>
+          <Link href={`/news/${mainArticle.id}`}>
             <div className="relative h-[500px] overflow-hidden rounded group cursor-pointer">
               <img 
                 src={getImageUrl(mainArticle)} 
@@ -62,9 +62,12 @@ export default function EntertainmentNews({ articles }: EntertainmentNewsProps) 
         </div>
 
         <div className="space-y-6">
-          {sideArticles.map((news: Article) => (
-            <div key={news._id} className="relative h-59 overflow-hidden rounded group cursor-pointer">
-              <Link href={`/news/${news._id}`}>
+          {sideArticles.map((news, index) => (
+            <div 
+              key={`${news.id}-${index}`}  // Moved key here, and added index
+              className="relative h-59 overflow-hidden rounded group cursor-pointer"
+            >
+              <Link href={`/news/${news.id}`}>  {/* Removed key from here */}
                 <img 
                   src={getImageUrl(news)} 
                   alt={news.title}

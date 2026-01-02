@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   image?: string;
@@ -66,10 +66,10 @@ const GlobalNews = ({ articles }: GlobalNewsProps) => {
           {/* Left Column - 6 News Items (3 top, 3 bottom) */}
       <div className="lg:col-span-8">
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-    {articles.slice(0, 6).map((article) => (
+    {articles.slice(0, 6).map((article,index) => (
       <Link
-        href={`/news/${article._id}`}
-        key={article._id}
+        href={`/news/${article.id}`}
+        key={`${article.id}-${index}`}
         className="group cursor-pointer"
       >
         {/* 4:3 aspect ratio - common for news thumbnails */}
@@ -90,10 +90,10 @@ const GlobalNews = ({ articles }: GlobalNewsProps) => {
 
       {/* Right Column - Secondary Featured Articles */}
 <div className="lg:col-span-4 space-y-2">
-  {articles.slice(6, 12).map((article) => (
+  {articles.slice(6, 12).map((article,index) => (
     <Link
-      href={`/news/${article._id}`}
-      key={article._id}
+      href={`/news/${article.id}`}
+      key={`${article.id}-${index}`}
       className="flex items-start gap-3 p-2 hover:bg-gray-50  transition-colors duration-200 group cursor-pointer"
     >
       {/* Small square image */}

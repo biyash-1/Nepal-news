@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   image?: string;
@@ -61,7 +61,7 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Politics News */}
           <div className="lg:col-span-2">
-            <Link href={`/news/${articles[0]._id}`}>
+            <Link href={`/news/${articles[0].id}`}>
               <div className="bg-white shadow-lg overflow-hidden group cursor-pointer">
                 <div className="relative h-108">
                   <img 
@@ -82,10 +82,10 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
 
           {/* Side Politics News */}
           <div className="space-y-6">
-  {articles.slice(1, 4).map((article) => (
+  {articles.slice(1, 4).map((article,index) => (
     <Link 
-      href={`/news/${article._id}`}
-      key={article._id}
+      href={`/news/${article.id}`}
+      key={`${article.id}-${index}`}
       className="bg-white rounded overflow-hidden group cursor-pointer block"
     >
       <div className="flex items-center">
@@ -111,10 +111,10 @@ const PoliticsSection = ({ articles }: PoliticsSectionProps) => {
         {/* Additional Politics News */}
         {articles.length > 4 && (
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {articles.slice(4).map((article) => (
+            {articles.slice(4).map((article,index) => (
               <Link 
-                href={`/news/${article._id}`}
-                key={article._id}
+                href={`/news/${article.id}`}
+                key={`${article.id}-${index}`}
                 className="overflow-hidden group cursor-pointer"
               >
                 <div className="relative h-48">

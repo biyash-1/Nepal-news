@@ -162,7 +162,7 @@ export default function SportsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Column: Main Football News */}
               <div>
-                <Link href={`/news/${footballNews[0]._id}`}>
+                <Link href={`/news/${footballNews[0].id}`}>
                   <div className="relative rounded overflow-hidden group cursor-pointer mb-6">
                     <div className="h-[520px]">
                       <img
@@ -185,10 +185,10 @@ export default function SportsPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-1">
                 {/* Middle Section: Two news items with image above title in column */}
                 <div className="">
-                  {footballNews.slice(1, 3).map((news) => (
+                  {footballNews.slice(1, 3).map((news,index) => (
                     <Link
-                      href={`/news/${news._id}`}
-                      key={news._id}
+                      href={`/news/${news.id}`}
+                      key={`${news.id}-${index}`}
                       className="group cursor-pointer hover:bg-gray-50 transition-colors p-3 rounded-lg block"
                     >
                       <div className="mb-3">
@@ -213,8 +213,8 @@ export default function SportsPage() {
                 <div className="space-y-4">
                   {footballNews.slice(3, 7).map((news) => (
                     <Link
-                      href={`/news/${news._id}`}
-                      key={news._id}
+                      href={`/news/${news.id}`}
+                      key={news.id}
                       className="flex items-center gap-4 group p-3 rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       {/* Image */}
@@ -287,8 +287,8 @@ export default function SportsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {cricketNews.slice(0, 3).map((news) => (
                 <Link
-                  href={`/news/${news._id}`}
-                  key={news._id}
+                  href={`/news/${news.id}`}
+                  key={news.id}
                   className="group cursor-pointer"
                 >
                   <div className="relative overflow-hidden  mb-3">
@@ -312,8 +312,8 @@ export default function SportsPage() {
               <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
                 {cricketNews.slice(3, 9).map((news) => (
                   <Link
-                    href={`/news/${news._id}`}
-                    key={news._id}
+                    href={`/news/${news.id}`}
+                    key={news.id}
                     className="flex items-center space-x-3 group cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
                   >
                     <div className="w-16 h-16 flex-shrink-0">
@@ -380,7 +380,7 @@ export default function SportsPage() {
                 {/* Left: Featured News */}
                 {basketballNews[0] && (
                   <Link
-                    href={`/news/${basketballNews[0]._id}`}
+                    href={`/news/${basketballNews[0].id}`}
                     className="group cursor-pointer"
                   >
                     <div className="relative rounded overflow-hidden h-full min-h-[300px]">
@@ -403,8 +403,8 @@ export default function SportsPage() {
                 <div className="space-y-3">
                   {basketballNews.slice(1, 5).map((news) => (
                     <Link
-                      href={`/news/${news._id}`}
-                      key={news._id}
+                      href={`/news/${news.id}`}
+                      key={news.id}
                       className="flex items-center gap-3 group cursor-pointer p-2 hover:bg-gray-50 rounded-lg transition-colors"
                     >
                       <div className="w-16 h-16 flex-shrink-0">
@@ -467,7 +467,7 @@ export default function SportsPage() {
                 {/* Left: Featured News */}
                 {volleyballNews[0] && (
                   <Link
-                    href={`/news/${volleyballNews[0]._id}`}
+                    href={`/news/${volleyballNews[0].id}`}
                     className="group cursor-pointer"
                   >
                     <div className="relative rounded overflow-hidden h-full min-h-[300px]">
@@ -490,8 +490,8 @@ export default function SportsPage() {
                 <div className="space-y-3">
                   {volleyballNews.slice(1, 5).map((news) => (
                     <Link
-                      href={`/news/${news._id}`}
-                      key={news._id}
+                      href={`/news/${news.id}`}
+                      key={news.id}
                       className="flex items-center gap-3 group cursor-pointer p-2 hover:bg-gray-50 rounded-lg transition-colors"
                     >
                       <div className="w-16 h-16 flex-shrink-0">
@@ -541,8 +541,8 @@ export default function SportsPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {otherSportsNews.slice(0, 8 ).map((news) => (
                 <Link
-                  href={`/news/${news._id}`}
-                  key={news._id}
+                  href={`/news/${news.id}`}
+                  key={news.id}
                   className="group cursor-pointer"
                 >
                   {/* Square image container */}

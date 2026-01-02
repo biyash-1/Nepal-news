@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 
 export interface EconomyArticle {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   excerpt?: string;
@@ -49,7 +49,7 @@ export const useEconomy = (category?: string) => {
 
       if (res.data.success) {
         const processed = res.data.articles.map((a: any) => ({
-          _id: a._id,
+          id: a.id,
           title: a.title,
           content: a.content,
           excerpt: a.content?.slice(0, 100) + "..." || "",

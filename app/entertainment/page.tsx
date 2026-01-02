@@ -134,12 +134,12 @@ export default function EntertainmentPage() {
                     </div>
                   </div>
                 </Link>
-              </div>
+              </div>  
 
               <div className="space-y-6">
-                {headlineNews.side.map((news: any) => (
+                {headlineNews.side.map((news: any, index: number) => ( // Added index
                   <div
-                    key={news._id}
+                    key={`${news._id}-${index}-headline`} // Added index to key
                     className="relative h-59 overflow-hidden  group cursor-pointer"
                   >
                     <Link href={`/news/${news._id}`}>
@@ -168,7 +168,7 @@ export default function EntertainmentPage() {
             {trendingNews.slice(0, 3).map((trend: any, index: number) => (
               <Link
                 href={`/news/${trend._id}`}
-                key={trend._id}
+                key={`${trend._id}-${index}-horizontal`} // Added index to key
                 className="flex-1 group"
               >
                 <div className="w-full">
@@ -210,7 +210,7 @@ export default function EntertainmentPage() {
                   {gossipNews.map((news: any, i: number) => (
                     <Link
                       href={`/news/${news._id}`}
-                      key={news._id}
+                      key={`${news._id}-${i}-gossip`} // Added index to key
                       className={`group cursor-pointer  overflow-hidden ${
                         i % 5 === 0 ? "md:col-span-2 md:row-span-2" : ""
                       }`}
@@ -253,7 +253,7 @@ export default function EntertainmentPage() {
                     trendingNews.map((trend: any, index: number) => (
                       <Link
                         href={`/news/${trend._id}`}
-                        key={trend._id}
+                        key={`${trend._id}-${index}-sidebar`} // Added index to key
                         className="flex items-center space-x-4 rounded cursor-pointer "
                       >
                         <img
@@ -320,10 +320,10 @@ export default function EntertainmentPage() {
 
               {/* 2x2 Grid - Right Side */}
               <div className="grid grid-cols-2 gap-4">
-                {bollywoodHollywoodNews.slice(1, 5).map((news: any) => (
+                {bollywoodHollywoodNews.slice(1, 5).map((news: any, index: number) => ( // Added index
                   <Link
                     href={`/news/${news._id}`}
-                    key={news._id}
+                    key={`${news._id}-${index}-bollywood`} // Added index to key
                     className="group cursor-pointer"
                   >
                     <div className="relative h-45 overflow-hidden">
@@ -360,10 +360,10 @@ export default function EntertainmentPage() {
             </div>
             <div className="h-0.5 bg-red-600 mt-2 mb-8"></div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {musicNews.map((news: any) => (
+              {musicNews.map((news: any, index: number) => ( // Added index
                 <Link
                   href={`/news/${news._id}`}
-                  key={news._id}
+                  key={`${news._id}-${index}-music`} // Added index to key
                   className="group cursor-pointer overflow-hidden"
                 >
                   <div className="relative h-50 overflow-hidden">
@@ -422,10 +422,10 @@ export default function EntertainmentPage() {
 
               {/* 2x2 Grid - Right Side */}
               <div className="grid grid-cols-2 gap-4">
-                {featuredNews.slice(1, 5).map((news: any) => (
+                {featuredNews.slice(1, 5).map((news: any, index: number) => ( // Added index
                   <Link
                     href={`/news/${news._id}`}
-                    key={news._id}
+                    key={`${news._id}-${index}-featured`} // Added index to key
                     className="group cursor-pointer"
                   >
                     <div className="relative h-45 overflow-hidden">
@@ -465,7 +465,7 @@ export default function EntertainmentPage() {
               .map((news: any, index: number) => (
                 <Link
                   href={`/news/${news._id}`}
-                  key={news._id}
+                  key={`${news._id}-${index}-gallery`} // Added index to key
                   className="aspect-square rounded overflow-hidden shadow-md hover:shadow-2xl transition-all group cursor-pointer"
                 >
                   <img

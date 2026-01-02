@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   image?: string;
@@ -71,7 +71,7 @@ export default function SportsNews({ articles }: SportsNewsProps) {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {/* Main Sports News */}
             <div className="lg:col-span-3">
-              <Link href={`/news/${articles[0]._id}`}>
+              <Link href={`/news/${articles[0].id}`}>
                 <div className="group cursor-pointer h-full">
                   <div className="relative">
                     <img
@@ -92,10 +92,10 @@ export default function SportsNews({ articles }: SportsNewsProps) {
 
             {/* Side Sports News */}
             <div className="space-y-4 lg:col-span-2">
-              {articles.slice(1, 5).map((article) => (
+              {articles.slice(1, 5).map((article,index) => (
                 <Link
-                  href={`/news/${article._id}`}
-                  key={article._id}
+                  href={`/news/${article.id}`}
+                  key={`${article.id}-${index}`} 
                   className="flex items-center gap-4 group"
                 >
                   {/* Image */}

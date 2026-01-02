@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 interface Article {
-  _id: string;
+  id: string;
   title: string;
   content: string;
   image?: string;
@@ -42,7 +42,7 @@ const LocalLevelNews = ({ articles }: LocalLevelNewsProps) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* COLUMN 1 – Main Featured (Wider) */}
-          <Link href={`/news/${articles[0]._id}`} className="group lg:col-span-5">
+          <Link href={`/news/${articles[0].id}`} className="group lg:col-span-5">
             <div className="relative h-125 rounded overflow-hidden">
               <img
                 src={getImageUrl(articles[0])}
@@ -60,10 +60,10 @@ const LocalLevelNews = ({ articles }: LocalLevelNewsProps) => {
 
           {/* COLUMN 2 – Two square cards */}
           <div className="space-y-6 lg:col-span-3">
-            {articles.slice(1, 3).map((article) => (
+            {articles.slice(1, 3).map((article, index) => (
               <Link
-                key={article._id}
-                href={`/news/${article._id}`}
+                key={`${article.id}-${index}-square`}
+                href={`/news/${article.id}`}
                 className="group block"
               >
                 <div className="rounded overflow-hidden">
@@ -86,10 +86,10 @@ const LocalLevelNews = ({ articles }: LocalLevelNewsProps) => {
 
           {/* COLUMN 3 – List items with wider images */}
           <div className="space-y-4 lg:col-span-4">
-            {articles.slice(3, 8).map((article) => (
+            {articles.slice(3, 8).map((article, index) => (
               <Link
-                key={article._id}
-                href={`/news/${article._id}`}
+                key={`${article.id}-${index}-list`}
+                href={`/news/${article.id}`}
                 className="flex gap-4 group"
               >
                 <div className="w-32 h-22 shrink-0">
